@@ -1,0 +1,78 @@
+---
+Test
+---
+This example shows how you can type data into elements. 
+You can also use special keys like Ctrl (^), Alt (%), Shift (+), arrow keys, tab, and so on.
+Ctrl, Alt and Shift use mode toggles: using the symbol once presses it, using it a second time releases it.
+
+|scenario   |Verify Set Element|element|to        |value          |
+|Set Element|@element          |to     |@value                    |
+|check      |attribute         |value  |of element|@element|@value|
+
+Some HTML5 input elements are not supported by all browsers. Then they fall back to plain text elements, which need to be handled differently
+To make things more stable, we use the value property as these have a well defined format. However we do need to maually trigger an onchange event then
+since programmatic updates of the value property don't trigger the onchange event.
+We need to use the colon specification explicitly here; otherwise the script execution can't see we're talking about an element.
+This is also a good workaround for the color picker - normally it opens a system dialog which Selenium can't get to.
+
+!define TriggerOnChange {if (typeof arguments[0].onchange == "function") { arguments[0].onchange();!-}-!}
+
+|scenario      |Verify Set Value of element|element        |to        |value          |
+|ensure        |element is clickable       |@element                                  |
+|Set attribute |value                      |of Element     |@element  |to      |@value|
+|execute script|${TriggerOnChange}         |with parameters|[@element]                |
+|check         |attribute                  |value          |of element|@element|@value|
+
+If we really want to use send keys, we need a method to identify whether the browser did fall back to text elements or not
+Send Keys If Type Is returns null if it didn't do anything and true if it did, so it's visible which one kicked in.
+
+|scenario |Verify Send Keys |keys      |to element|element   |if type|type|with fallback|fallback|
+|Send Keys|@keys            |To Element|@element  |If Type Is|@type                              |
+|Send Keys|^a^{DEL}@fallback|To Element|@element  |If Type Is|text                               |
+|check    |Attribute        |value     |Of Element|@element  |@fallback                          |
+
+!|script                                                             |
+|Send Keys|^a^{DEL}+abc+def+ghi|to element|text1                     |
+|Send Keys|^a^{DEL}{}[]{}      |to element|text2                     |
+|check    |attribute           |value     |of element|text1|ABCdefGHI|
+|check    |attribute           |value     |of element|text2|[]       |
+|Send Keys|^ac                 |to element|text1                     |
+|Send Keys|^av                 |to element|text2                     |
+|check    |attribute           |value     |of element|text2|ABCdefGHI|
+
+!|script                                               |
+|show              |version info|                      |
+|Verify Set Element|text1       |to|Some random text   |
+|Verify Set Element|email       |to|rik@home.net       |
+|Verify Set Element|url         |to|http://fitnesse.org|
+|Verify Set Element|tel         |to|+31234567890       |
+|Verify Set Element|height      |to|1.58               |
+|Verify Set Element|fibonacci   |to|13                 |
+|Verify Set Element|search      |to|Selenium           |
+|Verify Set Element|beer        |to|Quadrupel          |
+
+
+!|script                                                                                        |
+|verify set value of element|id:month           |to        |2004-03                             |
+|check                      |text in element    |id:status |2004-03                             |
+|verify set value of element|id:date            |to        |2014-07-02                          |
+|verify set value of element|id:time            |to        |01:23                               |
+|verify set value of element|id:datetime-local  |to        |2014-09-24T01:23                    |
+|verify set value of element|id:week            |to        |2013-W32                            |
+|verify set value of element|id:color           |to        |#ff7f00                             |
+|Verify Send Keys           |{END}{LEFT 25}{TAB}|To Element|skill|If Type|range|With Fallback|75|
+|show                       |screenshot                                                         |
+
+#|Verify Send Keys|3{TAB}2004            |To Element|month         |If Type|month         |With Fallback|2004-03         |
+#|Verify Send Keys|{END}{LEFT 25}{TAB}   |To Element|skill         |If Type|range         |With Fallback|75              |
+#|Verify Send Keys|472014                |To Element|week          |If Type|week          |With Fallback|2014-W47        |
+#|Verify Send Keys|0207{TAB}2014         |To Element|date          |If Type|date          |With Fallback|2014-07-02      |
+#|Verify Send Keys|{RIGHT 4}{LEFT}0123   |To Element|time          |If Type|time          |With Fallback|01:23           |
+#|Verify Send Keys|2409{TAB}2014{TAB}0123|To Element|datetime-local|If Type|datetime-local|With Fallback|2014-09-24T01:23|
+
+The color picker is a pain since it opens a system dialog which Selenium can't get to
+So we cheat here and directly set the attribute value
+
+!|script                                                    |
+|set attribute|value    |of element|color     |to   |#ff7f00|
+|check        |attribute|value     |of element|color|#ff7f00|

@@ -1,0 +1,30 @@
+This example shows how to set or clear checkable elements (radio buttons, check boxes)
+
+!|script                                            |
+|ensure     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|checked                       |
+|ensure     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|unchecked                     |
+|reject     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|unchecked                     |
+|reject     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|checked |true                 |
+|ensure     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|checked |false                |
+|reject     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|unchecked                     |
+|reject     |Element |checkbox|has attribute|checked|
+|Set element|checkbox|checked |true                 |
+|ensure     |Element |checkbox|has attribute|checked|
+
+!|script                                              |
+|ensure     |Element    |fm     |has attribute|checked|
+|reject     |Element    |am     |has attribute|checked|
+|note       |cannot clear a selected radio button     |
+|reject     |set element|fm     |unchecked            |
+|set Element|am         |checked                      |
+|ensure     |Element    |am     |has attribute|checked|
+|reject     |Element    |fm     |has attribute|checked|
+|set Element|fm         |checked|true                 |
+|ensure     |Element    |fm     |has attribute|checked|
+|reject     |Element    |am     |has attribute|checked|

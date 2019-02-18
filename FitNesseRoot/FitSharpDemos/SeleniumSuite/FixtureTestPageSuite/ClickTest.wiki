@@ -1,0 +1,19 @@
+This example shows how to click clickable elements (buttons, radio buttons, check boxes) and check their values
+
+!|script                                                    |
+|ensure       |element |button        |is clickable         |
+|ensure       |element |dragSource    |is clickable         |
+|reject       |element |disabledButton|is clickable         |
+|ensure       |Element |checkbox      |has attribute|checked|
+|Click Element|checkbox                                     |
+|reject       |Element |checkbox      |has attribute|checked|
+|ensure       |Element |fm            |has attribute|checked|
+|reject       |Element |am            |has attribute|checked|
+|Click Element|am                                           |
+|ensure       |Element |am            |has attribute|checked|
+|reject       |Element |fm            |has attribute|checked|
+|Set Element  |checkbox|checked                             |
+|ensure       |Element |checkbox      |has attribute|checked|
+|Set Element  |checkbox|unchecked                           |
+|reject       |Element |checkbox      |has attribute|checked|
+

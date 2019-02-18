@@ -1,0 +1,229 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta charset="UTF-8">
+        <title>Selenium Fixture Test Page</title>
+        <link href="TestPage.css" rel="stylesheet" type="text/css"/>
+        <script src="TestPage.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1>Selenium Fixture Test Page</h1>
+        </header>
+        <aside id="asideStatus"><div id="status"></div></aside>
+        <section id="sectionElements">
+            <h1>Elements</h1>
+            <p id="paragraph" ondblclick="changeParagraph()">This is a piece of text in paragraph elements</p>
+            <div id="div">This is a div element</div>
+            <br>
+            <img id="brokenImage" src="nonexisting.jpg" alt="broken image"/>
+            <form id="testForm">
+                <fieldset>
+                    <legend>Test Form</legend>
+                    <label>Text 1<input type="text" name="text1" id="text1" value="Default value for text box 1" required autofocus/></label>
+                    <label>Text 2<input type="text" name="text2" id="text2" value="Default value for text box 2"/></label>
+                    <label>Email<input type="email" name="email" id="email" placeholder="me@domain.org"/></label>
+                    <label>URL<input type="url" name="url" id="url" placeholder="http://fitnesse.org"/></label>
+                    <label>Telephone<input type="tel" name="tel" id="tel" placeholder="+31 6 1234567"/></label>
+                    <label>Height (m)<input type="number" name="height" id="height" min = "0" max="3" step="0.01" value="1.80"/></label>
+                    <label>Fibonacci<input type="number" name="fibonacci" id="fibonacci" list="fibonacciList"/>
+                        <datalist id="fibonacciList">
+                            <option value ="1"/>
+                            <option value ="2"/>
+                            <option value ="3"/>
+                            <option value ="5" selected="selected"/>
+                            <option value ="8"/>
+                            <option value ="13"/>
+                            <option value ="21"/>
+                        </datalist>
+                    </label>
+                    <label>Skill (0=low - 100=high)
+                        <input type="range" name="skill" id="skill" min = "0" max="100" value="0" onchange="updateOutput(value)"/>
+                        <output name="skillOutput" id="skillOutput">0</output>
+                        <script>
+                            function updateOutput(skill) {
+                                document.getElementById("skillOutput").value = skill;
+                            }
+                        </script>
+
+                    </label>
+                    <label>Favorite beer 
+                        <input id="beer" name="beer" list="beerStyles" type="text" value="Quadrupel"> 
+                        <datalist id="beerStyles"> 
+                            <option label="Dubbel" value="Dubbel" ></option> 
+                            <option label="Tripel" value="Tripel"></option> 
+                            <option label="Quadrupel" value="Quadrupel"></option> 
+                            <option label="IPA" value="IPA"></option> 
+                            <option label="Porter" value="Porter"></option> 
+                        </datalist>
+                    </label>
+                    <label>Month<input id="month" name="month" type="month" value="2015-02" onchange="updateMonth(value)"/></label>
+                    <label>Week<input id="week" name="week" type="week" value="2015-W06"/></label>
+                    <label>Date<input type="date" id="date" name="date" value="1965-02-23"></label>
+                    <label>Time<input type="time" id="time" name="time" value="12:34"></label>
+                    <label>DateTime Local<input type="datetime-local" id="datetime-local" name="datetime-local" value="2015-01-02T12:34"></label>
+                    <label>Checkbox<input type="checkbox" name="checkbox" id="checkbox" checked/></label>
+                    <label>Color<input type="color" name="color" id="color" value="#FF00FF"/></label>
+                    <label>Search<input type="search" name="search" id="search" value="FitNesse"/></label>
+                    <fieldset> 
+                        <legend>Radio</legend> 
+                        <input id="am" name="radio" type="radio"/> 
+                        <label for="am">AM</label> 
+                        <input id="fm" name="radio" type="radio" checked/>
+                        <label for="fm">FM</label> 
+                    </fieldset>
+                    <select name="single-select" id="single-select" size="6">
+                      <option>item 1</option>
+                      <option>item 2</option>
+                      <option>item 3</option>
+                      <option>item 4</option>
+                      <option>item 5</option>
+                      <option>item</option>
+                    </select>
+                    <select name="multi-select" id="multi-select" size="6" multiple="multiple">
+                      <option>item 1</option>
+                      <option>item 2</option>
+                      <option>item 3</option>
+                      <option>item 4</option>
+                      <option>item 5</option>
+                      <option>item</option>
+                    </select>
+                    <select name="dropdown" id="dropdown">
+                        <option value="item1">item 1</option>
+                        <option value="item2">item 2</option>
+                        <option value="item3">item 3</option>
+                        <option value="item4">item 4</option>
+                        <option value="item5">item 5</option>
+                        <option value="item0">item</option>
+                    </select>
+                </fieldset>
+                <button id="button">A Button doing nothing</button>
+                <button id="disabledButton" disabled="disabled">Disabled button</button>
+                <button id="hiddenButton" style="display:none">Hidden button</button>
+                delay<input id="delay" type="number" value="500" />
+                <button id="toggleDisabledButton" type="button" onclick="toggleDisabledButtonClick()">Toggle Dis/enabled button</button>
+                <button id="toggleHideButton" type="button" onclick="toggleHideButtonClick()">Toggle Hide/Unhide button</button>
+                <button type="submit" id="submitButton">Submit Form</button>
+            </form>
+        </section>
+        <section id="sectionDragAndDrop">
+            <h1>Drag and drop</h1>
+            <p>Drag the ball into the rectangle:</p>
+            <div id="dropTarget" ondrop="drop(event)" ondragover="allowDrop(event)">Drop here</div>
+            <img id="dragSource" src="ball.png" draggable="true" ondragstart="drag(event)" alt="ball">
+        </section>
+        <section id="sectionFileUploadDrop">
+            <h1>File Upload via Drag/Drop</h1>
+            <div id="fileDropTarget"></div> 
+            <p>Drag an image from your desktop on to the drop zone</p>
+            <p id="filePath"></p>
+            <script>
+                initFileDrop("fileDropTarget");
+            </script>
+        </section>
+        <section id="sectionJavaScript">
+            <h1>JavaScript Table</h1>
+            <script src="fibonacci.js"></script>
+            <table>
+                <thead>
+                    <tr><th>Number</th><th>Fibonacci</th><th>No Number</th></tr>
+                </thead>
+                <tbody id="tableTarget">
+                </tbody>
+            </table>
+
+            <script>
+                getJavaScriptTestTable("tableTarget");
+            </script>
+        </section>
+        <section id="sectionFrame">
+            <h1>Frames</h1>
+            <p>Nested frames</p>
+            <iframe id="iframe1" src="iframe1.html"></iframe>
+        </section>
+        <section id ="sectionLightbulb">
+            <h1>Light Bulb</h1>
+            <img id="imageLightbulb" onclick="changeLightbulbImage()" 
+                 onmouseover="hoverLightbulb(true)" onmouseout="hoverLightbulb(false)" 
+                src="pic_bulboff.gif" alt="light bulb off">
+            <p id="paragraphLightbulb">Click the light bulb to turn on/off the light.</p>
+        </section>
+        <section id="sectionTableExtract">
+            <h1>Table Extraction</h1>
+            <article class="align">
+                <h1>Normal Table</h1>
+                <table id="normalTable" >
+                    <thead><tr><th>header1</th><th>header2</th></tr></thead>
+                    <tbody>
+                        <tr><td>value 1</td><td>10</td></tr> 
+                        <tr><td>value 2</td><td>20</td></tr> 
+                        <tr><td>value 3</td><td>30</td></tr> 
+                    </tbody>
+                </table>
+            </article>
+            <article class="align">
+                <h1>Table without headers</h1>
+                <table id="tableWithoutHeaders">
+                    <tbody>
+                        <tr><td>value 4</td><td>40</td></tr> 
+                        <tr><td>value 5</td><td>50</td></tr> 
+                    </tbody>
+                </table>
+            </article>
+            <article class="align">
+                <h1>Table with empty headers</h1>
+                <table id="tableWithEmptyHeaders">
+                    <thead>
+                        <tr><th/><th/></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>value 6</td><td>60</td></tr> 
+                        <tr><td>value 7</td><td>70</td></tr> 
+                    </tbody>
+                </table>
+            </article>
+        </section>
+        <section id="sectionAsyncLoad">
+            <h1>Asynchronous Data Load</h1>
+            <div id="divAsyncLoad">Loading...</div>
+            <script>asyncDataLoad(writeData, "divAsyncLoad");</script>
+        </section>
+        <section id="sectionFileUpload">
+            <h1>File Upload</h1>
+            <form id="fileUpload" enctype="multipart/form-data">
+                <input type="file" accept="text/plain" name="fileToUpload" id="fileToUpload" onchange="upload(event);"/>
+            </form>
+            <div id="fileContent"></div>
+        </section>
+        <section id="sectionCssSelector">
+            <b>March 2014</b>
+            <table>
+            <tbody>
+            <tr><td>Unsched. Def.:</td><td style="text-align:right">128.74 TJ</td></tr>
+            <tr><td>Sched. Def.:</td><td style="text-align:right">276.72 TJ</td></tr>
+            <tr><td>ABNR:</td><td style="text-align:right">0.00 TJ</td></tr>
+            <tr><td><i>Totals:</i></td><td style="text-align:right"><i>405.46 TJ</i></td></tr>
+            <tr><td colspan="2"></td></tr><tr><td><i>Business Plan:</i></td><td style="text-align:right"><i>0.00 TJ</i></td></tr>
+            </tbody>
+            </table>
+        </section>
+    <section id="sectionLinks">
+        <a href="index.html" id="linkTab" target="_blank">Home in new tab</a>
+        <a href="iframe1.html" id="linkWindow" onclick="window.open('iframe1.html', 'newwindow', 'width=640, height=480'); return false;">iFrame1 in new browser window</a> <br />
+        <button id="alertButton" onclick="alert('Alert');">Alert</button>
+        <button id="confirmButton" onclick="showConfirmDialog();">Confirm</button>
+        <button id="promptButton" onclick="showPromptDialog();">Prompt</button>
+    </section>
+    <section id="sectionStorage">
+        <button id="setLocalData" onclick="setLocalData();">Set Local Data</button>
+        <button id="getLocalData" onclick="getLocalData();">Get Local Data</button>
+        <input type="text" id="localData"/>
+        <button id="clearLocalData" onclick="clearLocalData();">Clear Local Data</button><br />
+        <button id="setSessionData" onclick="setSessionData();">Set Session Data</button>
+        <button id="getSessionData" onclick="getSessionData();">Get Session Data</button>
+        <input type="text" id="sessionData" />
+        <button id="clearSessionData" onclick="clearSessionData();">Clear Session Data</button>
+    </section>
+    </body>
+</html>

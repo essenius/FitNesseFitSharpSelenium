@@ -1,0 +1,14 @@
+Non-existing elements return false (not exceptions)
+
+!|script                                                       |
+|set timeout|0.5                            |seconds           |
+|reject     |wait for element               |NonExistingElement|
+|reject     |wait until element is clickable|NonExistingElement|
+
+A wait should also work if the condition is true at the start
+
+!|script                                            |
+|ensure     |element is clickable           |button |
+|ensure     |wait until element is clickable|button |
+|ensure     |wait for element               |button |
+|set timeout|1                              |seconds|

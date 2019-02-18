@@ -1,0 +1,4 @@
+We're done - close the Selenium session and the browser.
+
+!|script|
+|close  |

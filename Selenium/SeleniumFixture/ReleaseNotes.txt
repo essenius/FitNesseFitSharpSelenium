@@ -1,0 +1,33 @@
+﻿1.3.6.6  Initial commit in Git
+1.3.6.7  Demo pages for local PhantomJS with authentication
+1.3.6.8  Added CSV Comparison
+1.3.6.9  Updated Selenium.Webdriver and Selenium.Support to version 3.4.
+1.3.7.0  Added Chrome Headless, updated Click Element to wait until it is clickable first, 
+         added javascript shim for PhantomJS so calls for alerts do not fail,
+		 improved method for element detection, added method to wait for Javascript result (kudos to Sean Jost)
+1.3.7.1  Updated Zones detection to use 4 locations, deprecated setting protected mode (too risky),
+         fixed bug in ElementExists in case of browser None, increased test coverage of Sean's additions.
+1.3.8.0  Introduced Model and Utilities namespaces, refactored BrowserDriver to eliminate static DesiredCapabilities calls,
+         fixed a number of ReSharper findings, removed zone writing capability, increased unit test coverage for BrowserDriverFactory.
+1.3.8.1  Fixed capatibility with updated Selenium version
+1.3.8.2  Added capability to read JavaScript errors
+         fixed a number of ReSharper findings, removed zone writing capability, increased unit test coverage for BrowserDriverFactory.
+1.3.8.7  Added ability to send keys to the currently focused element
+1.3.9.0  Updated Selenium Webdriver to version 3.8, deprecated NewRemoteBrowserAtAddressWithName and 
+         SetRemoteBrowserAtAddressWithName due to the applicationName capability no longer working (W3C spec violation)
+1.3.10.0 Introduced IntegratedAuthenticationDomain, DefaultSearchMethod, SearchDelimiter, Url, Driver, DriverId, DragElementAndDropOnElementInDriver.
+         Refactored ExtendedTests. Upgraded WebDriver to 3.11
+1.3.11.0 Took over Sean Jost's timeout mechanism for Firefox, added CommandTimeoutSeconds to parameterize that. Aligned standard command timeout to 60 seconds.
+         Disabled NewRemoteBrowserAtAddressWithName and SetRemoteBrowserAtAddressWithName. Added ClickElementWithModifier, Increased code coverage to 95%.
+		 Updated TestSite to enable higher coverage.
+1.3.12.0 Upgrade to WebDriver 3.14, removed PhantomJS and HTMLUnit support as WebDriver (.Net) no longer supports them.
+1.3.12.1 Bug fix in running JavaScript with plain parameters, and in Alert demo pages
+1.3.12.2 Add use of ChromeWebDriver, GeckoWebDriver and IEWebDriver environment variables to enable running from Azure DevOps hosted agents
+1.3.12.3 Added ClickElementIfVisible to handle cookie consent notifications (demo in TelerikTest)
+1.3.13.0 Introduced check for Internet Explorer that screen scaling is at 100%. Fixed bugs in CreateLocalDriver and RemoveDriver that sometimes 
+         left drivers running. Cleaned up a number of ReSharper findings.
+2.0.0	 Adopting Semantic Versioning with 3 levels (for alignment with Universal Packages).
+2.0.1    Introduced #{Selenium.DefaultBrowser}# variable for FixtureTestPageSuite
+2.0.2	 Made fixture more resilient against StaleElementReferenceExceptions and fixed issue with ToCapabilities method of ChromeDriver not returning a 
+         DesiredCapabilities under the hood in newer versions
+2.1.0    Removed deprecated functions RestoreProtectedModes, SetProtectedModes, TakeScreenshot, TakeScreenshotTo, initial commit to GitHub

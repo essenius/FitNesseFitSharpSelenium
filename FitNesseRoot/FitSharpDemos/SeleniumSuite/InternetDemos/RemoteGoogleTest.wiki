@@ -1,0 +1,12 @@
+!define SearchCriterion {Test Automation}
+
+!| import       |
+|SeleniumFixture|
+
+|Script                     |selenium                               |
+|set remote browser         |${BROWSER}|at address|${SeleniumServer}|
+|open                       |!-http://www.google.com?hl=en-!        |
+|set element                |name : q |to        |${SearchCriterion}|
+|submit element             |name : q                               |
+|wait until title matches|^(?i)(${SearchCriterion})                 |
+|close                                                              |

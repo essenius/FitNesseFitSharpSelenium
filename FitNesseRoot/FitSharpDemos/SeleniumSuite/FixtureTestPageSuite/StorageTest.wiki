@@ -1,0 +1,18 @@
+|script                                                                     |
+|use               |local      |web storage                                 |
+|Set Web Storage   |!{name:rik, address:here}                               |
+|show              |web storage                                             |
+|set               |testkey    |in web storage to|testvalue                 |
+|add to web storage|!{city: Rotterdam, country:Netherlands}                 |
+|check             |get        |testkey          |from web storage|testvalue|
+|check             |get        |city             |from web storage|Rotterdam|
+|click element     |setLocalData                                            |
+|check             |get        |lastName         |from web storage|Smith    |
+|$localStorage=    |Web Storage                                             |
+|use               |session    |web storage                                 |
+|show              |web storage                                             |
+|click element     |setSessionData                                          |
+|$webStorage=      |Web Storage                                             |
+|use               |local      |web storage                                 |
+|check             |web storage|$localStorage                               |
+

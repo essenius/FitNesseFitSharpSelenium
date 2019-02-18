@@ -1,0 +1,13 @@
+We can test and set attributes of HTML elements. 
+Setting them should be used with caution though, since end users generally can't do that
+We use it here to check whether changing the class of an element makes its color change.
+
+!|script                                                                               |
+|check          |attribute   |src             |of element|id:iframe1|=~/iframe1.html$/ |
+|$originalClass=|attribute   |class           |of element|status                       |
+|set attribute  |class       |of element      |status    |to        |fail              |
+|check          |css property|background-color|of element|status    |rgba(204, 0, 0, 1)|
+|set attribute  |class       |of element      |status    |to        |success           |
+|check          |css property|background-color|of element|status    |rgba(0, 204, 0, 1)|
+|set attribute  |class       |of element      |status    |to        |$originalClass    |
+

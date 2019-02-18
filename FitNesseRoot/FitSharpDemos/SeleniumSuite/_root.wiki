@@ -1,0 +1,3 @@
+!path "Selenium\SeleniumFixture\bin\release\SeleniumFixture.dll"
+!define COMMAND_PATTERN {%m -a ${user.dir}\Selenium\SeleniumFixture\bin\release\SeleniumFixture.dll.config -r fitsharp.Slim.Service.Runner,${FITSHARP_HOME}\fitsharp.dll %p}
+!contents -R2 -g -p -f -h

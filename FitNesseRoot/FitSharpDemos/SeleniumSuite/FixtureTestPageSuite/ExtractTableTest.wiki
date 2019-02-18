@@ -1,0 +1,37 @@
+We can extract HTML tables and check their values.
+Identification of the table to be extracted can be done using the normal selectors.
+
+First ensure we can revert to the Selenium fixture at the end of this test
+!|script     |
+|push fixture|
+
+|script:extract table values|xpath://table[@id='normalTable']|
+|check                      |row count            |3         |
+|check                      |column count         |2         |
+|$result=                   |get fixture                     |
+
+!|query:$result |
+|header1|header2|
+|value 1|10     |
+|value 2|20     |
+|value 3|30     |
+
+!|extract table values|id:tableWithoutHeaders|
+|Column 1             |Column 2              |
+|value 4              |40                    |
+|value 5              |50                    |
+
+!|extract table values|CssSelector: table#tableWithEmptyHeaders|
+|Column 1             |Column 2                                |
+|value 6              |60                                      |
+|value 7              |70                                      |
+
+We can also restrict the number of data rows we want to see maximally
+!|extract table values|id:normalTable|2|
+|header1              |header2         |
+|value 1              |10              |
+|value 2              |20              |
+
+Restore the Selenium fixture
+|script     |
+|pop fixture|

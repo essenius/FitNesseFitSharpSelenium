@@ -1,0 +1,12 @@
+Some examples of how to use locators to select elements. 
+Of course the best way is to have constant ids, but a lot of applications were not built with testability in mind, so we need other ways to access the elements.
+Usually the easiest to understand is the CSS selector, but sometimes you need the higher expressive capabilities of XPath.
+
+!| Script                                                                                                |
+|show |text in element|CssSelector : section#sectionCssSelector                                          |
+|check|text in element|XPath : //td[contains(text(),'Unsched. Def.')]/following-sibling::td   |128.74 TJ |
+|check|text in element|XPath : //td[contains(text(),'Sched. Def.')]/following-sibling::td     |276.72 TJ |
+|check|text in element|XPath : //td[contains(text(),'ABNR')]/following-sibling::td            |0.00 TJ   |
+|check|text in element|XPath : //td[*[contains(text(),'Totals')]]/following-sibling::td       |405.46 TJ |
+|check|text in element|XPath : //td[*[contains(text(),'Business Plan')]]/following-sibling::td|0.00 TJ   |
+|check|text in element|CssSelector : section#sectionCssSelector b                             |March 2014|

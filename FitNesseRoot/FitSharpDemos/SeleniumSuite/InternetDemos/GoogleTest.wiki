@@ -1,0 +1,16 @@
+!| import        |
+|SeleniumFixture |
+|SupportFunctions|
+
+!define SearchCriterion {Test Automation}
+
+!|Script                 |selenium                                             |
+|set browser             |${BROWSER}                                           |
+|open                    |http://www.google.com?hl=en                          |
+|set element             |name:q         |to             |${SearchCriterion}   |
+|submit element          |name:q                                               |
+|wait until title matches|^(?i)(${SearchCriterion})                            |
+|check                   |title          |=~/(?i)(${SearchCriterion}) - Google/|
+|wait for element        |id:resultStats                                       |
+|check                   |text in element|id:resultStats |=~/About.*results/   |
+|show                    |screenshot                                           |

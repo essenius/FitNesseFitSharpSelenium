@@ -1,0 +1,64 @@
+This driver switching does not work with Internet Explorer if ran in parallel on the same machine with other browsers.
+Apparently that driver has not been written with co-existence in mind
+
+First open a couple of driver sessions
+
+|Script     |!-SeleniumFixture.Selenium-!                                   |
+|$chrome=   |new browser       |Chrome                                      |
+|$firefox=  |new browser       |Firefox                                     |
+|$remote=   |new remote browser|Chrome         |at address|${SeleniumServer}|
+|$headless= |new remote browser|Chrome Headless|at address|${SeleniumServer}|
+|open       |!-http://www.google.com?hl=en-!                                |
+
+Do a Bing search on the Chrome driver
+
+!|script                                                    |
+|set driver              |$chrome                           |
+|open                    |http://www.bing.com               |
+|send keys               |Test Automation~|to element|name:q|
+|wait until title matches|^(?i)(Test Automation)            |
+|wait for element        |id:b_tween                        |
+
+Do a Google search on the Firefox driver
+
+!|script                                                    |
+|set driver              |$firefox                          |
+|open                    |http://www.google.nl              |
+|send keys               |Test Automation~|to element|name:q|
+|wait until title matches|^(?i)(Test Automation)            |
+|wait for element        |id:resultStats                    |
+
+Do a Yahoo search on the remote driver
+
+!|script                                             |
+|set driver              |$remote                    |
+|open                    |https://search.yahoo.com   |
+|click element if visible|ClassName:primary          |
+|send keys               |FitNesse~|to element|name:p|
+|wait until title matches|(?i)(FitNesse)             |
+|show|screenshot                                     |
+|close                                               |
+
+We already opened up Google on Headless. Also do a search here but search for something different than with Chrome so the screenshot is clearly different.
+
+!|script                                           |
+|set driver              |$headless                |
+|send keys               |Cheese~|to element|name:q|
+|wait until title matches|^(?i)(Cheese)            |
+|wait for element        |id:resultStats           |
+|take screenshot to      |Screenshot-headless.jpg  |
+|close                                             |
+
+Close Chrome. This shows that it doesn't matter in which order the browsers are closed
+
+!|script              |
+|set driver|$chrome   |
+|show      |screenshot|
+|close                |
+
+Close Firefox
+
+!|script              |
+|set driver|$firefox  |
+|show      |screenshot|
+|close                |

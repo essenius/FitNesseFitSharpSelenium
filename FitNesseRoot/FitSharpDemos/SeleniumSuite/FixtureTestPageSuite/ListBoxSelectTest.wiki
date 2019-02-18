@@ -1,0 +1,27 @@
+!|script                                                                               |
+|ensure       |element                   |single-select|is clickable                   |
+|check        |selected option in element|single-select|null                           |
+|select option|item 1                    |in element   |single-select                  |
+|check        |attribute                 |value        |of element|single-select|item 1|
+|select option|item                      |in element   |single-select                  |
+|check        |attribute                 |value        |of element|single-select|item  |
+|check        |selected option in element|single-select|item                           |
+
+!|script                                                                                        |
+|ensure         |element                    |multi-select|is clickable                          |
+|select option  |item 1                     |in element  |multi-select                          |
+|select option  |item 3                     |in element  |multi-select                          |
+|select option  |item 5                     |in element  |multi-select                          |
+|check          |selected options in element|multi-select|by|text|[item 1, item 3, item 5]      |
+|select option  |item                       |in element  |multi-select                          |
+|check          |selected options in element|multi-select|by|text|[item 1, item 3, item 5, item]|
+|deselect option|item 1                     |in element  |multi-select                          |
+|check          |selected options in element|multi-select|by|text|[item 3, item 5, item]        |
+
+!|script                                                                      |
+|ensure       |element                   |dropdown  |is clickable             |
+|select option|item 1                    |in element|dropdown                 |
+|check        |attribute                 |value     |of element|dropdown|item1|
+|select option|item                      |in element|dropdown                 |
+|check        |selected option in element|dropdown  |by | text   |item        |
+|check        |selected option in element|dropdown  |by | value  |item0       |

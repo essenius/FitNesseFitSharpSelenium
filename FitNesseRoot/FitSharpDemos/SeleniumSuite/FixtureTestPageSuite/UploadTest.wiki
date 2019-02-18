@@ -1,0 +1,7 @@
+test file is expected in the fixtures folder (=current directory).
+
+This test will fail in IE9 since IE9 does not support the !-FileReader-! API
+
+!|script                                                                                                          |
+|upload file|Selenium\SeleniumFixtureTest\uploadTestFile.txt|in element |name:fileToUpload                        |
+|check      |text in element                                |fileContent|=~/Small text file used for upload tests/|

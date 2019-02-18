@@ -1,0 +1,33 @@
+!|script                       |
+|reject       |Alert Is Present|
+|Click Element|id:alertButton  |
+|ensure       |Alert Is Present|
+|accept alert                  |
+|reject       |Alert Is Present|
+|Click Element|id:alertButton  |
+|ensure       |Alert Is Present|
+|dismiss alert                 |
+|reject       |Alert Is Present|
+
+!|script                                                |
+|Click Element|id:confirmButton                         |
+|ensure       |Alert Is Present                         |
+|accept alert                                           |
+|reject       |Alert Is Present                         |
+|check        |text in element|status|You pressed OK    |
+|Click Element|id:confirmButton                         |
+|ensure       |Alert Is Present                         |
+|dismiss alert                                          |
+|reject       |Alert Is Present                         |
+|check        |text in element|status|You pressed Cancel|
+
+!|script                                                |
+|Click Element|id:promptButton                          |
+|accept alert                                           |
+|check        |text in element|status|You returned: sure|
+|Click Element|id:promptButton                          |
+|dismiss alert                                          |
+|check        |text in element|status|You pressed Cancel|
+|Click Element|id:promptButton                          |
+|respond      |naah           |to alert                 |
+|check        |text in element|status|You returned: naah|

@@ -1,0 +1,8 @@
+This shows how you can simulate hovering over an element, to test that is handled appropriately 
+
+!|script                                                              |
+|wait until element        |imageLightbulb|is visible                 |
+|move to element           |imageLightbulb                            |
+|wait until text in element|status        |matches|Hovering over image|
+|move to element           |paragraphLightbulb                        |
+|wait until text in element|status        |matches|                   |

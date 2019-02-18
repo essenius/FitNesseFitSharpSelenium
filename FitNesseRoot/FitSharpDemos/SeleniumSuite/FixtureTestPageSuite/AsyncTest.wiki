@@ -1,0 +1,23 @@
+Reload the page to make it start the asynchronous loading.
+We take 1.1 seconds timeout since the load process takes 1 second (hard coded)
+After the page changes, the first Fibonacci numbers should show.
+
+TODO: this sometimes fails on Azure websites - Loading doesn't appear after reloading page. Figure out what's going wrong
+
+!|script                                                              |
+|set timeout|1.1            |seconds                                  |
+|reload page                                                          |
+|check      |text in element|divAsyncLoad|Loading...                  |
+|Wait for HTML source to change                                       |
+|check      |text in element|divAsyncLoad|0,1,1,2,3,5,8,13,21,34,55,89|
+
+Reload again, and wait in a different way. We now wait until the page size is larger than a threshold.
+If it is larger already, it won't wait.
+
+!|script                                                                             |
+|reload page                                                                         |
+|$initialLength=                      |length of HTML source                         |
+|check                                |text in element      |divAsyncLoad|Loading... |
+|wait until HTML source is larger than|$initialLength                                |
+|check                                |length of HTML source|>$initialLength         |
+|check                                |text in element      |divAsyncLoad|=~/0,1,1,2/|

@@ -1,0 +1,24 @@
+You can also use !-JavaScript-! in your test cases.
+
+Here we show that by checking the current date, and by checking whether images are broken or not
+Further we show how to pass parameters to !-JavaScript-!. If you pass an element locator, it will pass the actual element unless you use the 'with plain parameters' variant. 
+
+!define today {!today (d-MM-yyyy)}
+
+|script                                                                                                                                                      |
+|Check|execute script|var d=new Date();return d.getDate()+'-'+(((d.getMonth()) < 9 ? '0' + (d.getMonth()+1) : d.getMonth()+1)) +'-'+d.getFullYear();|${today}|
+
+!|script                                                                                                                                                   |
+|reject|execute script |return brokenImage.naturalWidth!="undefined" && brokenImage.naturalWidth>0;                                                        |
+|ensure|execute script |return dragSource.naturalWidth!="undefined" && dragSource.naturalWidth>0;                                                          |
+|ensure|execute script |return true;                                              |with parameters      |[]                                                |
+|ensure|execute script |arguments[0].innerHTML = arguments[1]; return true;       |with parameters      |[id:div, New div text]                            |
+|check |execute script |return arguments[0].tHead.firstChild.firstChild.innerText;|with parameters      |[xpath://table[@id='normalTable']]|header1        |
+|check |Text in element|div                                                       |New div text                                                            |
+|ensure|execute script |return arguments[0] > arguments[1];                       |with parameters      |[6, 5]                                            |
+|reject|execute script |return arguments[0] > arguments[1];                       |with plain parameters|[5, 6]                                            |
+|ensure|execute script |return arguments[0].indexOf(':') > 0;                     |with plain parameters|[id:div]                                          |
+|check |Execute Script |return arguments[0] + arguments[1];                       |With Plain Parameters|[id:123, xpath:456]               |id:123xpath:456|
+|check |execute script |return Number.NaN;                                        |null                                                                    |
+
+This last one fails with IE - seems the !-NaN-! is not returned well by IE.

@@ -1,0 +1,58 @@
+!*> Scenarios
+!|scenario    |open page via|linkId|into|windowName|
+|click element|id:@linkId                          |
+|$@windowName=|wait for new window name            |
+|select window|$@windowName                        |
+
+!|scenario    |back to main                    |
+|select window|$main                           |
+|check        |Title|Selenium Fixture Test Page|
+
+|scenario     |close page|pageName|expect|pagesLeft|pages left|
+|select window|@pageName                                      |
+|close page                                                   |
+|check        |page count|@pagesLeft                          |
+*!
+
+The main window is open; get its handle so we can switch back to it later
+
+!| script                  |
+|$main=|current window name|
+|check |page count    |1   |
+
+Open a second page in a new window, select it and check if we are at the right page now
+
+!|script                               |
+|open page via |linkWindow|into|window1|
+|check         |page count|2           |
+|check         |Title     |iFrame 1    |
+|element exists|id:iframe2             |
+
+Go back to the main page, and open a third page, but now in a new tab. 
+
+!|script                                     |
+|back to main                                |
+|open page via|linkTab      |into  |window2  |
+|check        |page count   |3               |
+|check        |Title        |Test Site       |
+|text exists  |Test site for Selenium Fixture|
+
+To move between tabs, we need to do two things: 1) switch the driver to the right window, and 2) make it active in the UI
+Number 2 we do via a !-SendKeys-! command, and number 1 in 'back to main'
+
+The order is not important, as long as both are done.
+
+!|script                                     |
+|Send Keys|^{TAB}|to element|CssSelector:body|
+|back to main                                |
+|check    |Title |Selenium Fixture Test Page |
+
+Now we close the two pages we opened and check if that worked
+
+!|script                                          |
+|close page   |$window2|expect   |2  |pages left  |
+|close page   |$window1|expect   |1  |pages left  |
+|select window|$main                              |
+|check        |Title   |Selenium Fixture Test Page|
+
+Note: the window switch will fail on Internet Explorer due to the different protected mode settings 

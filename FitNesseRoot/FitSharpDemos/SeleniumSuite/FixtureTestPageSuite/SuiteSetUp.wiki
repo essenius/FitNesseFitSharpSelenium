@@ -1,0 +1,22 @@
+!| import       |
+|SeleniumFixture|
+
+We define table types so that we don't need to specify these in the test pages
+
+!|define table type           |
+|extract table values|as Query|
+|JavaScript function |as ddt  |
+
+Open the test page that we use for all tests
+
+!|script    |Selenium                               |
+|check      |version info|  |SeleniumFixture 2.0.2  |
+|set browser|${BROWSER}                             |
+|set timeout|1           |seconds                   |
+|open       |${TESTPAGE}                            |
+|check      |title       |Selenium Fixture Test Page|
+
+We don't want to use deprecated functions, so if we unadvertedly do so, we want to get an exception. 
+
+|script                                    |
+|set exception on deprecated functions|true|

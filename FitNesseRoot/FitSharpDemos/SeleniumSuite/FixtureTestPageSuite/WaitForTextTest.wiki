@@ -1,0 +1,8 @@
+An alternative mechanism to wait for asynchronous updates of the HTML. 
+
+|script                                                                   |
+|set timeout                |1.1                      |seconds            |
+|reload page                                                              |
+|reject                     |text exists ignoring case|data load completed|
+|Wait for text ignoring case|data load completed                          |
+|wait for text              |0,1,1,2                                      |

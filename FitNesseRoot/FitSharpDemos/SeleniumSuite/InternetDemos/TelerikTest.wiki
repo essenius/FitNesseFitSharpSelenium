@@ -1,0 +1,40 @@
+!*> Defines and imports
+!define ContactNameHeader {LinkText : Contact Name}
+!define ContactTitleHeader {LinkText : Contact Title}
+!define CountryHeader {LinkText : Country}
+!define Table {XPath://table[@role="grid"]}
+!| import       |
+|SeleniumFixture|
+*!
+
+!|script           |selenium                                    |
+|set browser       |${BROWSER}                                  |
+|open              |http://demos.telerik.com/kendo-ui/grid/index|
+|click element     |ClassName:optanon-button-allow |if visible  |
+|wait until element|ClassName:optanon-button-allow |is invisible|
+|show              |screenshot                                  |
+
+|query:extract table values|${Table}            |2                                         |
+|Contact Name              |Contact Title       |Company Name                      |Country|
+|Maria Anders              |Sales Representative|Alfreds Futterkiste               |Germany|
+|Ana Trujillo              |Owner               |Ana Trujillo Emparedados y helados|Mexico |
+
+!|script                           |
+|click element|${ContactNameHeader}|
+
+|query:extract table values|${Table}           |2                             |
+|Contact Name              |Contact Title      |Company Name          |Country|
+|Alejandra Camino          |Accounting Manager |Romero y tomillo      |Spain  |
+|Alexander Feuer           |Marketing Assistant|Morgenstern Gesundkost|Germany|
+
+!|script                       |
+|click element|${CountryHeader}|
+
+|query:extract table values|${Table}     |1                     |
+|Contact Name              |Contact Title|Company Name|Country  |
+|Patricio Simpson          |             |            |Argentina|
+
+
+|script         |
+|show|screenshot|
+|close          |

@@ -1,0 +1,20 @@
+﻿#status { padding: 5px; color: #fff; background: #ccc;position: fixed;bottom: 0; right:0 }
+#status.fail { background: #c00; }
+#status.success { background: #0c0; }
+
+#divElements { width:250px; height:50px; padding:10px; border:1px solid #aaa; }
+#dropTarget { width:250px; height:200px; padding:10px; border:1px solid #aaa; vertical-align: middle; display: inline-block; }
+#dragSource { width: 209px;height: 190px; display: inline-block; vertical-align: middle; }
+
+#fileDropTarget { border: 10px dashed #ccc; width: 300px; height: 150px;margin: 20px; }
+#fileDropTarget.hover { border: 10px dashed #333; }
+#hiddenButton { display: none; }
+#imageLightbulb { width: 100px; height: 180px; }
+
+table { border: 1px solid #eee; }
+.align { vertical-align: top; display: inline-block; }
+
+iframe { width: 300px; }
+section { border: 1px solid #aee; }
+article { border: 1px dotted #f00; }
+#silverlightSimulator { visibility: hidden; }

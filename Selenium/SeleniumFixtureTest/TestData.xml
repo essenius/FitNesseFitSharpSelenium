@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<items>
+  <standardizebrowsername input="chrome" expected="CHROME" />
+  <standardizebrowsername input="Chrome" expected="CHROME" />
+  <standardizebrowsername input="chROMe" expected="CHROME" />
+  <standardizebrowsername input="Chrome   Headless" expected="CHROMEHEADLESS" />
+  <standardizebrowsername input="Google Chrome Headless" expected="CHROMEHEADLESS" />
+  <standardizebrowsername input="Google Chrome" expected="CHROME" />
+  <standardizebrowsername input="GoogleChrome" expected="CHROME" />
+  <standardizebrowsername input="internet explorer" expected="IE" />
+  <standardizebrowsername input="InternetExplorer" expected="IE" />
+  <standardizebrowsername input="ie" expected="IE" />
+  <standardizebrowsername input="firefox" expected="FIREFOX" />
+  <standardizebrowsername input="ff" expected="FIREFOX" />
+  <standardizebrowsername input="ffheadless" expected="FIREFOXHEADLESS" />
+  <standardizebrowsername input="unknown" expected="UNKNOWN" />
+
+  <!-- Order is important for setproxytype. The ones that return false do not set the proxy, so default to the one that was set (SYSTEM) -->
+  <!-- if you test these later, they will default to the one you used in the previous test (that's the drawback of static classes) -->
+  <!-- the last one is SYSTEM on purpose - this is the expected start value for other tests -->
+  <setproxytype input="unknown" expected="false" proxyKind="6" />
+  <setproxytype input="" expected="false" proxyKind="6" />
+  <setproxytype input="direct" expected="true" proxyKind="0" />
+  <setproxytype input="manual" expected="true" proxyKind="1" />
+  <setproxytype input="DIRECT" expected="true" proxyKind="0" />
+  <setproxytype input="MaNuAl" expected="true" proxyKind="1" />
+  <setproxytype input="proxyautoconfigure" expected="true" proxyKind="2" />
+  <setproxytype input="autodetect" expected="true" proxyKind="4" />
+  <setproxytype input="unspecified" expected="false" proxyKind="6" />
+  <setproxytype input="SYSTEM" expected="true" proxyKind="5" />
+
+  <rename currentName="e:\data\file1.jpg" timestamp="2014122413141516"
+          expectedName="e:\data\file1_2014122413141516.jpg" />
+  <rename currentName="e:\data\file1" timestamp="2014122413141516" expectedName="e:\data\file1_2014122413141516" />
+  <rename currentName="file1.jpg" timestamp="2014122413141516" expectedName="file1_2014122413141516.jpg" />
+  <rename currentName="..\file1.jpg" timestamp="2014122413141516" expectedName="..\file1_2014122413141516.jpg" />
+  <rename currentName="e:\data\file with spaces.jpg" timestamp="2014122413141516"
+          expectedName="e:\data\file with spaces_2014122413141516.jpg" />
+  <rename currentName="e:\file1.jpg" timestamp="2014122413141516" expectedName="e:\file1_2014122413141516.jpg" />
+  <!-- just to show the behavior when using a root path, this should not happen -->
+  <rename currentName="e:\" timestamp="2014122413141516" expectedName="_2014122413141516" />
+
+  <protectedmode testId="all off" zone1="false" zone2="false" zone3="false" zone4="false" expectedAllOn="false"
+                 expectedAllSame="true" />
+  <protectedmode testId="all on" zone1="true" zone2="true" zone3="true" zone4="true" expectedAllOn="true"
+                 expectedAllSame="true" />
+  <protectedmode testId="two on" zone1="false" zone2="true" zone3="false" zone4="true" expectedAllOn="false"
+                 expectedAllSame="false" />
+
+  <SearchParser.FindElement1 input="  abc  " expectedMethod="id" expectedLocator="abc" />
+  <SearchParser.FindElement1 input="abc:def" expectedMethod="abc" expectedLocator="def" />
+  <SearchParser.FindElement1 input="abc : def" expectedMethod="abc" expectedLocator="def" />
+  <SearchParser.FindElement1 input="abc:def:ghi" expectedMethod="abc" expectedLocator="def:ghi" />
+  <SearchParser.FindElement1 input="abc : def:ghi" expectedMethod="abc" expectedLocator="def:ghi" />
+  <SearchParser.FindElement1 input="abc : def : ghi" expectedMethod="abc" expectedLocator="def : ghi" />
+  <SearchParser.FindElement1 input=":abc" expectedMethod="" expectedLocator="abc" />
+  <SearchParser.FindElement1 input="abc:" expectedMethod="abc" expectedLocator="" />
+  <SearchParser.FindElement1 input=":" expectedMethod="" expectedLocator="" />
+  <SearchParser.FindElement1 input="" expectedMethod="id" expectedLocator="" />
+
+  <zonetest testId="both policies" hklmPolicies="0" hkcuPolicies="3" hkcu="" hklm="" expectedProtected="true" />
+  <zonetest testId="both hkcu" hklmPolicies="" hkcuPolicies="0" hkcu="3" hklm="" expectedProtected="true" />
+  <zonetest testId="hkcuPolicies/hklm" hklmPolicies="" hkcuPolicies="3" hkcu="" hklm="0" expectedProtected="false" />
+  <zonetest testId="hklmPolicies/hkcu" hklmPolicies="3" hkcuPolicies="" hkcu="0" hklm="" expectedProtected="false" />
+  <zonetest testId="hkcu/hklm" hklmPolicies="" hkcuPolicies="" hkcu="0" hklm="3" expectedProtected="true" />
+  <zonetest testId="hklm" hklmPolicies="" hkcuPolicies="" hkcu="" hklm="0" expectedProtected="true" />
+  <zonetest testId="both hklm" hklmPolicies="0" hkcuPolicies="" hkcu="" hklm="3" expectedProtected="true" />
+</items>

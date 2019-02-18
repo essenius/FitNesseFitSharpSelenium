@@ -1,0 +1,1 @@
+﻿Small text file used for upload tests.

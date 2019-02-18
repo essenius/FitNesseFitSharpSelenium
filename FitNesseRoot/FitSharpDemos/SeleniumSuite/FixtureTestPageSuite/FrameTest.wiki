@@ -1,0 +1,15 @@
+Many generated pages make intensive use of iframes, which are HTML pages inside another HTML page
+You need to switch to the iframe to allow Selenium access to that iframe's HTML (context switch).
+Doing this recursively also works. If you want to return to the top level page, you can switch to the default context.
+
+!| Script                                                                      |
+|switch to frame |iframe1                                                      |
+|wait for element|iframe2                                                      |
+|switch to frame |iframe2                                                      |
+|check           |Text In Element|CssSelector: a.link              |Test Link 1|
+|check           |text in element|CssSelector : a.link:nth-child(1)|Test Link 1|
+|check           |text in element|CssSelector : a.link:nth-child(2)|Test Link 2|
+|check           |text in element|CssSelector : a.link:nth-child(3)|Test Link 3|
+|switch to default context                                                     |
+|reject          |element        |CssSelector : a.link             |exists     |
+|text exists     |nested frames  |ignoring case                                |
