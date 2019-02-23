@@ -23,10 +23,7 @@ namespace SeleniumFixtureTest
         public List<IZone> CreateZoneList()
         {
             var zoneList = new List<IZone>();
-            for (var zone = Zone.MinValue; zone <= Zone.MaxValue; zone++)
-            {
-                zoneList.Add(Create(zone));
-            }
+            for (var zone = Zone.MinValue; zone <= Zone.MaxValue; zone++) zoneList.Add(Create(zone));
             return zoneList;
         }
 

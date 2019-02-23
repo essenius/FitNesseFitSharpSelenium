@@ -11,7 +11,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -36,7 +35,7 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(1, BrowserDriver.DriverCount, "One browser open");
             try
             {
-                // Safari should not be installed on this machine
+                // Safari should not be installed on this machine. Should not be an issue since it's no longer maintained
                 BrowserDriver.NewDriver("Safari");
                 Assert.Fail("No StopTestException raised");
             }
@@ -55,16 +54,10 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Could not start browser: Safari")]
-        public void BrowserDriverNonPresentDriverRaisesStopTestException()
-        {
-            BrowserDriver.NewDriver("Safari");
-        }
+        public void BrowserDriverNonPresentDriverRaisesStopTestException() => BrowserDriver.NewDriver("Safari");
 
         [TestMethod, TestCategory("Unit")]
-        public void BrowserDriverRemoveNonExistingDriverTest()
-        {
-            Assert.IsFalse(BrowserDriver.RemoveDriver("bogus"));
-        }
+        public void BrowserDriverRemoveNonExistingDriverTest() => Assert.IsFalse(BrowserDriver.RemoveDriver("bogus"));
 
         [DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml", "rename",
              DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml"), TestMethod, TestCategory("Unit")]
@@ -76,25 +69,6 @@ namespace SeleniumFixtureTest
             var expectedName = TestContext.DataRow["expectedName"].ToString();
             var actualName = privateTarget.InvokeStatic("CreateArchiveFileName", currentName, timestamp);
             Assert.AreEqual(expectedName, actualName);
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void BrowserDriverScreenshotPathTest()
-        {
-            Assert.AreEqual(@"c:\joop.jpeg", BrowserDriver.ScreenshotPath(@"c:\joop.jpeg", @"d:\not_relevant"), "test 1");
-            Assert.AreEqual(@"c:\joop.jpg", BrowserDriver.ScreenshotPath(@"c:\joop.jpg", @"d:\not_relevant"), "test 2");
-            Assert.AreEqual(@"C:\JOOP.JPEG", BrowserDriver.ScreenshotPath(@"C:\JOOP.JPEG", @"d:\not_relevant"), "test 1a");
-            Assert.AreEqual(@"C:\JOOP.JPG", BrowserDriver.ScreenshotPath(@"C:\JOOP.JPG", @"d:\not_relevant"), "test 2a");
-            Assert.AreEqual(@"c:\joop.jpg", BrowserDriver.ScreenshotPath(@"c:\joop", @"d:\not_relevant"), "test 3");
-            Assert.AreEqual(@"c:\temp\joop.jpg", BrowserDriver.ScreenshotPath(@"c:\temp\joop", @"d:\not_relevant"), "test 4");
-            Assert.AreEqual(@".\joop.jpg", BrowserDriver.ScreenshotPath(@"joop", ""), "test 5");
-            Assert.AreEqual(@"c:\relevant\joop.jpg", BrowserDriver.ScreenshotPath(@"joop", @"c:\relevant"), "test 6");
-            Assert.AreEqual(@"c:\relevant\test\joop.jpg", BrowserDriver.ScreenshotPath(@"test\joop", @"c:\relevant"), "test 7");
-            Assert.IsTrue(BrowserDriver.ScreenshotPath(".", @"c:\relevant").StartsWith(@"c:\relevant\"), "test 8");
-            var result = BrowserDriver.ScreenshotPath(".", "");
-            Debug.WriteLine(result);
-            Assert.IsTrue(result.StartsWith(@".\"), "test 9");
-            Assert.IsTrue(result.EndsWith(".jpg"), "test 10");
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -121,30 +95,20 @@ namespace SeleniumFixtureTest
         }
 
         [TestCleanup]
-        public void BrowserDriverTestCleanup()
-        {
-            BrowserDriver.CloseAllDrivers();
-        }
+        public void BrowserDriverTestCleanup() => BrowserDriver.CloseAllDrivers();
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              @"Can't run browser 'WrongBrowser' on Selenium server 'wrongaddress'")]
-        public void BrowserDriverWrongAddressRaisesStopTestException()
-        {
+        public void BrowserDriverWrongAddressRaisesStopTestException() => 
             BrowserDriver.NewRemoteDriver("WrongBrowser", @"wrongaddress", new Dictionary<string, object>());
-        }
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Unrecognized browser: WrongBrowser")]
-        public void BrowserDriverWrongDriverRaisesStopTestException()
-        {
-            BrowserDriver.NewDriver("WrongBrowser");
-        }
+        public void BrowserDriverWrongDriverRaisesStopTestException() => BrowserDriver.NewDriver("WrongBrowser");
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Can't run browser 'WrongDriver' on Selenium server 'http://localhost'")]
-        public void BrowserDriverWrongRemoteDriverRaisesStopTestException()
-        {
+        public void BrowserDriverWrongRemoteDriverRaisesStopTestException() => 
             BrowserDriver.NewRemoteDriver("WrongDriver", "http://localhost", new Dictionary<string, object>());
-        }
     }
 }

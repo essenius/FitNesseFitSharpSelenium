@@ -29,8 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\SeleniumFixture.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>FitNesseRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>
+    </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -75,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationInfo.cs" />
+    <Compile Include="DocumentationAttribute.cs" />
     <Compile Include="Model\BrowserDriver.cs" />
     <Compile Include="Model\BrowserDriverFactory.cs" />
     <Compile Include="Model\BrowserStorageFactory.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Model\ProtectedMode.cs" />
     <Compile Include="Model\SearchParser.cs" />
     <Compile Include="Model\ZoneListFactory.cs" />
-    <Compile Include="Selenium_Text.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Selenium_Deprecated.cs" />
     <Compile Include="Selenium_Element.cs" />
@@ -108,6 +109,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="FitNesseRules.ruleset" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

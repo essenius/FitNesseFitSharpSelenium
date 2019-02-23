@@ -12,6 +12,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using OpenQA.Selenium;
 using SeleniumFixture.Model;
 
 namespace SeleniumFixture
@@ -25,43 +26,42 @@ namespace SeleniumFixture
         private const string ApplicationNameObsoleteMessage =
             "use of Application Name is no longer supported since the W3C spec is enforced. Use New/Set Remote Browser At Address";
 
-        /// <summary>
-        ///     Throw an exception if a deprecated function is used.
-        /// </summary>
+        [Documentation("Check for using deprecated functions by throwing an exception if a deprecated function is used.")]
         public static bool ExceptionOnDeprecatedFunctions { get; set; }
 
         private static void HandleDeprecatedFunction(string fixtureName, string fixtureReplacement)
         {
             if (ExceptionOnDeprecatedFunctions)
             {
-                throw new WarningException("Use of deprecated function '" + fixtureName + "'. Replace by '" +
-                                           fixtureReplacement + "'");
+                throw new WarningException("Use of deprecated function '" + fixtureName + "'. Replace by '" + fixtureReplacement + "'");
             }
         }
 
-        /// <summary>
-        ///     Set remote browser with a name. No longer supported, so throwing an exception
-        /// </summary>
-        /// <param name="browserName">The browser to be used</param>
-        /// <param name="baseAddress">the address that the browser driver can be found at (including port)</param>
-        /// <param name="name">applicationName to be used</param>
-        /// <returns>Driver ID</returns>
         [Obsolete(ApplicationNameObsoleteMessage)]
         public static string NewRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string name) =>
             throw new NotSupportedException(ApplicationNameObsoleteMessage +
                                             " (" + browserName + "," + baseAddress + "," + name + ")");
 
-        /// <summary>
-        ///     Use Remote driver for browser on a certain address (including port) and specify an applicationName
-        ///     to be able to select a specific node if running on a hub.
-        /// </summary>
-        /// <param name="browserName">Unused</param>
-        /// <param name="baseAddress">Unused</param>
-        /// <param name="applicationName">Unused</param>
-        /// <returns>whether or not the operation succeeded</returns>
         [Obsolete(ApplicationNameObsoleteMessage)]
         public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string applicationName) =>
             throw new NotSupportedException(ApplicationNameObsoleteMessage +
                                             " (" + browserName + "," + baseAddress + "," + applicationName + ")");
+
+        [Obsolete("use WaitUntilElementDoesNotExist instead")]
+        public bool WaitForNoElement(string searchCriterion)
+        {
+            HandleDeprecatedFunction("Wait For No Element", "Wait Until Element Does Not Exist");
+            return WaitFor(drv =>
+            {
+                try
+                {
+                    return drv.FindElement(new SearchParser(searchCriterion).By) == null;
+                }
+                catch (NoSuchElementException)
+                {
+                    return true;
+                }
+            });
+        }
     }
 }

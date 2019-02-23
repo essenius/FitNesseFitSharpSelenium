@@ -54,10 +54,7 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException))]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
-        public void SearchParserFindElement1NullTest()
-        {
-            new SearchParser(null);
-        }
+        public void SearchParserFindElement1NullTest() => new SearchParser(null);
 
         [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
              "SearchParser.FindElement1", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
@@ -73,10 +70,7 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException))]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
-        public void SearchParserFindElement2NullTest()
-        {
-            new SearchParser(null, null);
-        }
+        public void SearchParserFindElement2NullTest() => new SearchParser(null, null);
 
         [TestMethod, TestCategory("Unit")]
         public void SearchParserFindElement2Test()

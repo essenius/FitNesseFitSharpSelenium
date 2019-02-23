@@ -96,10 +96,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestCleanup]
-        public void TestCleanup()
-        {
-            BrowserDriver.RemoveDriver(_driverHandle);
-        }
+        public void TestCleanup() => BrowserDriver.RemoveDriver(_driverHandle);
 
         [TestInitialize]
         public void TestInitialize()

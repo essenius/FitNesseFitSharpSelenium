@@ -26,8 +26,6 @@ namespace SeleniumFixtureTest
     {
         private Selenium _selenium;
 
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive"),
-         SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive")]
         public TestContext TestContext { get; set; }
 
         [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local", Justification = "test method")]
@@ -155,22 +153,13 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(StopTestException))]
-        public void SeleniumInvalidBrowserTest()
-        {
-            Assert.IsFalse(_selenium.SetBrowser("InvalidBrowser"));
-        }
+        public void SeleniumInvalidBrowserTest() => Assert.IsFalse(_selenium.SetBrowser("InvalidBrowser"));
 
         [TestMethod, TestCategory("Unit")]
-        public void SeleniumInvalidProxy()
-        {
-            Assert.IsFalse(Selenium.SetProxyTypeValue("Wrong Proxy Type", "irrelevant value"));
-        }
+        public void SeleniumInvalidProxy() => Assert.IsFalse(Selenium.SetProxyTypeValue("Wrong Proxy Type", "irrelevant value"));
 
         [TestMethod, TestCategory("Integration"), ExpectedException(typeof(StopTestException))]
-        public void SeleniumInvalidRemoteBrowserTest()
-        {
-            Assert.IsFalse(_selenium.SetRemoteBrowserAtAddress("InvalidBrowser", "http://localhost"));
-        }
+        public void SeleniumInvalidRemoteBrowserTest() => Assert.IsFalse(_selenium.SetRemoteBrowserAtAddress("InvalidBrowser", "http://localhost"));
 
         [TestMethod, TestCategory("Integration")]
         public void SeleniumLocalChromeGoogleTest()
@@ -196,16 +185,10 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod, TestCategory("Integration"), ExpectedException(typeof(StopTestException))]
-        public void SeleniumNonInstalledOperaTest()
-        {
-            _selenium.SetBrowser("Opera");
-        }
+        public void SeleniumNonInstalledOperaTest() => _selenium.SetBrowser("Opera");
 
         [TestMethod, TestCategory("Integration"), ExpectedException(typeof(StopTestException))]
-        public void SeleniumNonInstalledSafariTest()
-        {
-            _selenium.SetBrowser("Safari");
-        }
+        public void SeleniumNonInstalledSafariTest() => _selenium.SetBrowser("Safari");
 
         [TestMethod, TestCategory("Unit")]
         public void SeleniumSearchDelimiterTest()
@@ -217,10 +200,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void SeleniumSetNonExistingDriverTest()
-        {
-            Assert.IsFalse(_selenium.SetDriver(@"nonexisting"));
-        }
+        public void SeleniumSetNonExistingDriverTest() => Assert.IsFalse(_selenium.SetDriver(@"nonexisting"));
 
         [TestCleanup]
         public void SeleniumTestCleanup()
@@ -230,10 +210,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestInitialize]
-        public void SeleniumTestInit()
-        {
-            _selenium = new Selenium();
-        }
+        public void SeleniumTestInit() => _selenium = new Selenium();
 
         [TestMethod, TestCategory("Unit")]
         public void SeleniumVersionTest()

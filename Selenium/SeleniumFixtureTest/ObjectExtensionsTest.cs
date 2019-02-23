@@ -52,10 +52,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException))]
-        public void ObjectExtensionsToBoolExceptionTest()
-        {
-            Assert.IsTrue(ObjectExtensions.ToBool(null));
-        }
+        public void ObjectExtensionsToBoolExceptionTest() => Assert.IsTrue(ObjectExtensions.ToBool(null));
 
         [TestMethod, TestCategory("Unit")]
         public void ObjectExtensionsToBoolTest()

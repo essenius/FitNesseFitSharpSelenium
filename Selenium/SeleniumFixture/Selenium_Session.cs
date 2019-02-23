@@ -18,8 +18,6 @@ using System.Threading;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
 
-// Justification: FitNesse entry point
-
 namespace SeleniumFixture
 {
     /// <summary>
@@ -27,117 +25,57 @@ namespace SeleniumFixture
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp"),
      SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp")]
-    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp")]
+     SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp"),
+     SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp")]
     public sealed partial class Selenium
     {
+        private const string BrowserChoices = "Browser names can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera";
         private const int DefaultTimeoutInSeconds = 3;
+        private const string DocProtectedMode1 = "Check if Protected Mode for all security zones ";
+        private const string DocProtectedMode2 = ", and throw a StopTestException if not. " +
+                                                 "If you use Internet Explorer, it is important that all zones have the same protected mode setting";
 
-        /// <summary>
-        ///     The number of seconds for the command timeout (i.e. the one specified in the driver constructor)
-        ///     Only works for local drivers.
-        /// </summary>
+        private ProtectedMode _protectedMode;
+        private BrowserStorage _browserStorage;
+
+        private BrowserStorage BrowserStorage
+        {
+            get
+            {
+                if (_browserStorage == null) UseWebStorage(StorageType.Local);
+                return _browserStorage;
+            }
+        }
+
+        [Documentation("Command Timeout value in seconds (i.e. the one specified in the driver constructor). Only works for local drivers")]
         public static double CommandTimeoutSeconds
         {
             get => BrowserDriver.CommandTimeoutSeconds;
             set => BrowserDriver.CommandTimeoutSeconds = value;
         }
 
-        /// <summary>
-        ///     The number of seconds for implicit wait (0 = disable)
-        /// </summary>
+        [Documentation("Returns the current driver object")]
+        public IWebDriver Driver { get; private set; }
+
+        [Documentation("Returns the id of the current driver")]
+        public string DriverId { get; private set; }
+
+        [Documentation("Set the number of seconds for implicit wait (0 = disable)")]
         public static double ImplicitWaitSeconds { get; set; } = 0;
 
-        /// <summary>
-        ///     Configure domain where integrated authentication is to be used
-        /// </summary>
+        [Documentation("Domain where Integrated Authentication is to be used")]
         public static string IntegratedAuthenticationDomain
         {
             get => BrowserDriverFactory.IntegratedAuthenticationDomain;
             set => BrowserDriverFactory.IntegratedAuthenticationDomain = value;
         }
 
-        /// <summary>
-        ///     Set the proxy type. Default is System. If set to Manual or ProxyAutoConfigure, use SetProxyTypeValue instead.
-        ///     Only works before setting a browser.
-        /// </summary>
-        /// <param name="proxyType">string representation of proxy type: Manual, Direct, System, ProxyAutoConfigure, AutoDetect</param>
-        /// <returns>whether or not the operation succeeded</returns>
-        public static bool SetProxyType(string proxyType) => BrowserDriver.SetProxyType(proxyType);
-
-        /// <summary>
-        ///     Set proxy type and value. Use for types Manual and ProxyAutoConfigure.
-        ///     Can also be used for the other types, but then the value parameter is ignored.
-        ///     Only works before setting a browser.
-        /// </summary>
-        /// <param name="proxyType">string representation of proxy type: Manual or ProxyAutoConfigure</param>
-        /// <param name="proxyValue">example for Manual: hostname.com:8080; for ProxyAutoConfigure: http://hostname.com/pacfile </param>
-        /// <returns>whether or not the operation succeeded</returns>
-        public static bool SetProxyTypeValue(string proxyType, string proxyValue)
-        {
-            if (!BrowserDriver.SetProxyType(proxyType)) return false;
-            BrowserDriver.SetProxyValue(proxyValue);
-            return true;
-        }
-
-        /// <summary>
-        ///     Return the version info of the fixture
-        /// </summary>
-        /// <param name="qualifier">
-        ///     SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name,
-        ///     version
-        /// </param>
-        /// <returns></returns>
-        public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier);
-
-        /// <summary>
-        ///     Wait a specified number of seconds (can be fractions)
-        /// </summary>
-        /// <param name="seconds">the time to wait</param>
-        public static void WaitSeconds(double seconds)
-        {
-            Thread.Sleep(TimeSpan.FromSeconds(seconds));
-            //Note: this seems to impact the iframe context.....
-        }
-
-        private BrowserStorage _browserStorage;
-        private ProtectedMode _protectedMode;
-
-        private BrowserStorage BrowserStorage
-        {
-            get
-            {
-                if (_browserStorage == null)
-                {
-                    UseWebStorage(StorageType.Local);
-                }
-
-                return _browserStorage;
-            }
-        }
-
-        /// <summary>
-        ///     Returns the current web driver
-        /// </summary>
-        public IWebDriver Driver { get; private set; }
-
-        /// <summary>
-        ///     Return the ID of the current web driver
-        /// </summary>
-        public string DriverId { get; private set; }
-
         private ProtectedMode ProtectedMode => _protectedMode ?? (_protectedMode = new ProtectedMode(new ZoneListFactory()));
 
-        //for testing
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 
-        /// <summary>
-        ///     Get or set a dictionary of (local/session) storage items
-        ///     Set sets all the key-value pairs in the input, but doesn't delete existing content
-        /// </summary>
-        /// <returns>a dictionary containing the local storage item values</returns>
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly",
-            Justification = "API for FitNesse")]
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "API for FitNesse"),
+         Documentation("Get/set a Web Store. Sets all key-value pairs, but doesn't delete existing content. Clear any existing values beforehand")]
         public Dictionary<string, string> WebStorage
         {
             get { return BrowserStorage.KeySet.ToDictionary(key => key, key => BrowserStorage[key]); }
@@ -148,78 +86,47 @@ namespace SeleniumFixture
             }
         }
 
-        /// <summary>
-        ///     Add key/value pairs to web store (local or session)
-        /// </summary>
-        /// <param name="dictionaryToAdd">key/value pairs to be added</param>
+        [Documentation("Add a set of key/value pairs to a web store")]
         public void AddToWebStorage(Dictionary<string, string> dictionaryToAdd)
         {
             if (dictionaryToAdd == null) return;
-            foreach (var key in dictionaryToAdd.Keys)
-            {
-                BrowserStorage[key] = dictionaryToAdd[key];
-            }
+            foreach (var key in dictionaryToAdd.Keys) BrowserStorage[key] = dictionaryToAdd[key];
         }
 
-        // for testing only
         internal bool AreAllProtectedModes(bool mode) => ProtectedMode.AllAre(mode);
 
-        /// <summary>
-        ///     Clear a web storage repository (local or session)
-        /// </summary>
-        /// <returns>whether or not it succeeded (fails if no storage functionality)</returns>
+        [Documentation("Clear a web store (local or session)")]
         public bool ClearWebStorage() => BrowserStorage.Clear();
 
-        /// <summary>
-        ///     Closes this browser session.
-        /// </summary>
+        [Documentation("Closes this browser session")]
         public bool Close()
         {
             if (Driver == null) return false;
-
-            //Driver.Quit();
             BrowserDriver.RemoveDriver(DriverId);
             Driver = null;
             DriverId = string.Empty;
             return true;
         }
 
-        /// <summary>
-        ///     Execute an asynchronous piece of JavaScript
-        /// </summary>
-        /// <param name="script">the JavaScript to execute</param>
-        /// <returns>the result of the script</returns>
+        [Documentation("Execute JavaScript asynchronously (in the browser)")]
         public object ExecuteAsyncScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteAsyncScript(script);
         }
 
-        /// <summary>
-        ///     Execute a JavaScript
-        /// </summary>
-        /// <param name="script">the JavaScript to execute</param>
-        /// <returns>the result of the script</returns>
+        [Documentation("Execute JavaScript (in the browser)")]
         public object ExecuteScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteScript(script);
         }
 
-        /// <summary>
-        ///     Execute a JavaScript with element parameters
-        /// </summary>
-        /// <param name="script">the JavaScript to execute</param>
-        /// <param name="args">
-        ///     A list of element locators with explicit search method.
-        ///     If a parameter value contains the delimiter (colon), it is converted to an element
-        ///     If a parameter does not contain a colon, it is used as-is.
-        ///     You can refer to them via arguments[0-i] in the script
-        /// </param>
-        /// <returns>the return value of the script</returns>
+        [Documentation("Execute JavaScript using parameters. If a parameter has a locator format (with colon), " +
+                       "then it is substituted by the element. You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithParameters(string script, Collection<string> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             var argsToUse = new List<object>();
             foreach (var locator in args ?? new Collection<string>())
             {
@@ -236,38 +143,22 @@ namespace SeleniumFixture
             return scriptExecutor.ExecuteScript(script, argsToUse.ToArray());
         }
 
-        /// <summary>
-        ///     Execute a JavaScript with (simple) parameters
-        /// </summary>
-        /// <param name="script">the JavaScript to execute</param>
-        /// <param name="args">A list of arguments. You can refer to them via arguments[0-i] in the script</param>
-        /// <returns>the result of the script</returns>
-        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "FitSharp cannot parse IEnumerables")]
+        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "FitSharp cannot parse IEnumerables"), Documentation(
+             "Execute JavaScript using parameters. No substitution of elements is attempted. " +
+             "You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithPlainParameters(string script, Collection<object> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteScript(script, args.ToArray());
         }
 
-        /// <summary>
-        ///     Get an item from web storage
-        /// </summary>
-        /// <param name="key">The key of the item to be retrieved</param>
-        /// <returns>the value of the item, or null if not found</returns>
+        [Documentation("Get a value from a web store (local or session)")]
         public string GetFromWebStorage(string key) => BrowserStorage[BrowserStorage.FindFirstKeyLike(key)];
 
-        /// <summary>
-        ///     Find the first item matching a glob pattern (with *?)
-        /// </summary>
-        /// <param name="key">The pattern of the item to be matched</param>
-        /// <returns>the key of the item, or null if not found</returns>
+        [Documentation("Find the first item matching a glob pattern (with *?)")]
         public string GetKeyLikeFromWebStorage(string key) => BrowserStorage.FindFirstKeyLike(key);
 
-        /// <summary>
-        ///     Creates a new browser instance and makes it current
-        /// </summary>
-        /// <param name="browserName">The browser to be used</param>
-        /// <returns>Driver ID</returns>
+        [Documentation("Creates a new browser instance and makes it current. Returns an ID. " + BrowserChoices)]
         public string NewBrowser(string browserName)
         {
             DriverId = BrowserDriver.NewDriver(browserName);
@@ -276,23 +167,12 @@ namespace SeleniumFixture
             return DriverId;
         }
 
-        /// <summary>
-        ///     Just like SetRemoteBrowser, but returns the driver ID instead of a boolean. Uses default application name
-        ///     'FitNesSelenium'
-        /// </summary>
-        /// <param name="browserName">The browser to be used</param>
-        /// <param name="baseAddress">the address that the browser driver can be found at (including port)</param>
-        /// <returns>Driver ID</returns>
+        [Documentation("Specifies that the test will be run at a remote Selenium server. Just like SetRemoteBrowserAtAddress, " +
+                       "but returns the driver ID instead of a boolean." + BrowserChoices)]
         public string NewRemoteBrowserAtAddress(string browserName, string baseAddress) =>
             NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, object>());
 
-        /// <summary>
-        ///     Just like SetRemoteBrowser, but returns the driver ID instead of a boolean
-        /// </summary>
-        /// <param name="browserName">The browser to be used</param>
-        /// <param name="baseAddress">the address that the browser driver can be found at (including port)</param>
-        /// <param name="capabilities">Dictionary of capabilities desired</param>
-        /// <returns>Driver ID</returns>
+        [Documentation("Just like SetRemoteBrowserAtAddressWithCapabilities, but returns the driver ID instead of a boolean." + BrowserChoices)]
         public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
             Dictionary<string, object> capabilities)
         {
@@ -302,72 +182,41 @@ namespace SeleniumFixture
             return DriverId;
         }
 
-        /// <summary>
-        ///     Throw a StopTestException if not all protected modes are false
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="StopTestException"></exception>
+        [Documentation(DocProtectedMode1 + "is off" + DocProtectedMode2)]
         public bool ProtectedModeIsOff()
         {
             if (!ProtectedMode.AllAre(false)) throw new StopTestException("Protected mode is not off for all zones");
             return true;
         }
 
-        /// <summary>
-        ///     Throw a StopTestException if not all protected modes are true
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="StopTestException"></exception>
+        [Documentation(DocProtectedMode1 + "is on" + DocProtectedMode2)]
         public bool ProtectedModeIsOn()
         {
             if (!ProtectedMode.AllAre(true)) throw new StopTestException("Protected mode is not on for all zones");
             return true;
         }
 
-        /// <summary>
-        ///     Debug function to see what the current protected mode settings are and where they come from.
-        /// </summary>
-        /// <returns>List of protected mode settings per zone, each in a list [id, isProtected, where found]</returns>
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec")]
-        public Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec"),
+         Documentation("Debug function to see what the current protected mode settings are and what they come from")]
+        internal Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
 
-        /// <summary>
-        ///     Throw a StopTestException if not all protected modes are equal
-        /// </summary>
-        /// <returns></returns>
+        [Documentation(DocProtectedMode1 + "have the same value" + DocProtectedMode2)]
         public bool ProtectedModesAreEqual()
         {
             if (!ProtectedMode.AllAreSame()) throw new StopTestException("Protected modes are not all the same");
             return true;
         }
 
-        /// <summary>
-        ///     Remove an item from web storage (local or session)
-        /// </summary>
-        /// <param name="key">Key of item to be removed</param>
-        /// <returns>whether or not successful</returns>
+        [Documentation("Remove an item from web storage (local or session) via its key")]
         public bool RemoveFromWebStorage(string key) => _browserStorage.RemoveItem(key);
 
-        /// <summary>
-        ///     Resets the timeout to the default value
-        /// </summary>
-        public void ResetTimeout()
-        {
-            TimeoutInSeconds = DefaultTimeoutInSeconds;
-        }
+        [Documentation("Resets the timeout to the default value")]
+        public void ResetTimeout() => TimeoutInSeconds = DefaultTimeoutInSeconds;
 
-        /// <summary>
-        ///     Sets the browser to be used for the web tests
-        /// </summary>
-        /// <param name="browserName">Name of the browser. Can be IE, Chrome, Firefox</param>
-        /// <returns>whether or not the operation succeeded</returns>
+        [Documentation("Sets the browser to be used. " + BrowserChoices)]
         public bool SetBrowser(string browserName) => !string.IsNullOrEmpty(NewBrowser(browserName));
 
-        /// <summary>
-        ///     Set the current browser driver
-        /// </summary>
-        /// <param name="driverId">The driver ID (returned earlier in the NewBrowser command)</param>
-        /// <returns>whether or not the operation succeeded</returns>
+        [Documentation("Set the current browser driver using its ID (returned earlier by NewBrowser)")]
         public bool SetDriver(string driverId)
         {
             if (!BrowserDriver.SetCurrent(driverId)) return false;
@@ -378,55 +227,44 @@ namespace SeleniumFixture
             return true;
         }
 
-        /// <summary>
-        ///     Set the value of a (local/session) storage item
-        /// </summary>
-        /// <param name="key">The key of the item to be set</param>
-        /// <param name="value">the new value of the item</param>
-        /// <returns>true if successful, false if not</returns>
-        public void SetInWebStorageTo(string key, string value)
+        [Documentation("Set a key/value pair in a web store")]
+        public void SetInWebStorageTo(string key, string value) => BrowserStorage[key] = value;
+
+        [Documentation("Sets the http and SSL proxy for the test. Type can be Direct, System, AutoDetect. " +
+                       "This is a system wide setting, so coordinate carefully and revert to original values after the test")]
+        public static bool SetProxyType(string proxyType) => BrowserDriver.SetProxyType(proxyType);
+
+        [Documentation("Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile. " +
+                       "This is a system wide setting, so coordinate carefully and revert to original values after the test")]
+        public static bool SetProxyTypeValue(string proxyType, string proxyValue)
         {
-            BrowserStorage[key] = value;
+            if (!BrowserDriver.SetProxyType(proxyType)) return false;
+            BrowserDriver.SetProxyValue(proxyValue);
+            return true;
         }
 
-        /// <summary>
-        ///     Use Remote driver for browser on a certain address(including port)
-        /// </summary>
-        /// <param name="browserName">The browser to be used</param>
-        /// <param name="baseAddress">the address that the browser driver can be found at (including port)</param>
-        /// <returns>whether or not the operation succeeded</returns>
+        [Documentation("Use a remote Selenium server (address including port). " +
+                       "Raises a StopTestException if unable to connect. " + BrowserChoices)]
         public bool SetRemoteBrowserAtAddress(string browserName, string baseAddress) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddress(browserName, baseAddress));
 
-        /// <summary>
-        ///     Use Remote driver for browser on a certain address (including port) and specify desired capabilities.
-        /// </summary>
-        /// <param name="browserName"></param>
-        /// <param name="baseAddress"></param>
-        /// <param name="capabilities"></param>
-        /// <returns></returns>
+        [Documentation("Use a remote Selenium server (address including port) with a dictionary of desired capabilities. " +
+                       "Raises a StopTestException if unable to connect. " + BrowserChoices)]
         public bool SetRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
             Dictionary<string, object> capabilities) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, capabilities));
 
-        /// <summary>
-        ///     Set the default timeout for all Wait commands (except page loads)
-        /// </summary>
-        /// <param name="timeoutInSeconds">Timeout value in seconds</param>
-        public void SetTimeoutSeconds(double timeoutInSeconds)
-        {
-            TimeoutInSeconds = timeoutInSeconds;
-            // Made all waits explicit so no need for implicit waits, and better not mix the two
-            //browserDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(timeoutInSeconds));
-        }
+        [Documentation("Set the default timeout for all wait commands (except page loads). Default value is 3 seconds")]
+        public void SetTimeoutSeconds(double timeoutInSeconds) => TimeoutInSeconds = timeoutInSeconds;
 
-        /// <summary>
-        ///     Set which storage type (Local or Session) the storage functions use.
-        /// </summary>
-        /// <param name="storageType">The storage type to use</param>
-        public void UseWebStorage(StorageType storageType)
-        {
-            _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
-        }
+        [Documentation("Select either Local or Session storage (to work on other Web Storage functions)")]
+        public void UseWebStorage(StorageType storageType) => _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
+
+        [Documentation("Returns the version info of the fixture. " +
+                       "SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name, version")]
+        public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier);
+
+        [Documentation("Wait a specified number of seconds (can be fractions). Note: this seems to impact iframe context, so use with care.")]
+        public static void WaitSeconds(double seconds) => Thread.Sleep(TimeSpan.FromSeconds(seconds));
     }
 }

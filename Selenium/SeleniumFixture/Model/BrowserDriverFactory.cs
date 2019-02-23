@@ -287,7 +287,6 @@ namespace SeleniumFixture.Model
             return new DesiredCapabilities(browserName, string.Empty, platform);
 
 #pragma warning restore 618
-
         }
 
         internal ICapabilities GetDesiredCapabilities(string browserName, Dictionary<string, object> capabilities)

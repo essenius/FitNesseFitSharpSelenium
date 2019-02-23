@@ -10,13 +10,8 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
-using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest
 {
@@ -45,19 +40,8 @@ namespace SeleniumFixtureTest
         public void SeleniumDeprecatedTests()
         {
             Selenium.ExceptionOnDeprecatedFunctions = false;
-
+            _selenium.SetBrowser("Chrome Headless");
             Assert.IsTrue(_selenium.WaitForNoElement("NonExistingElement"));
-        }
-
-        private static int NumberOfFiles(string fileNameWithWildcard) => Directory.GetFiles(".", fileNameWithWildcard).Length;
-
-        private static void DeleteFiles(string fileNameWithWildcard)
-        {
-            foreach (var file in Directory.GetFiles(".", fileNameWithWildcard))
-            {
-                Debug.Print($"Deleting {file}");
-                File.Delete(file);
-            }
         }
 
         [TestMethod, TestCategory("Deprecated"), ExpectedException(typeof(NotSupportedException))]

@@ -11,9 +11,10 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly:
-    SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames",
-        Justification = "not supported in Selenium WebDriver")]
+    SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames", Justification = "not supported in Selenium WebDriver")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "SeleniumFixture",
     Justification = "logical distribution")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "SeleniumFixture.Model",
     Justification = "logical distribution")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1014:MarkAssembliesWithClsCompliant")]
+

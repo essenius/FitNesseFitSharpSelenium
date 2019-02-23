@@ -21,8 +21,7 @@ namespace SeleniumFixture.Model
         private readonly IJavaScriptExecutor _javaScriptExecutor;
         private readonly string _javaScriptStore;
 
-        public JavaScriptBrowserStorage(IWebDriver browserDriver, StorageType storageType)
-            : base(browserDriver)
+        public JavaScriptBrowserStorage(IWebDriver browserDriver, StorageType storageType) : base(browserDriver)
         {
             _javaScriptExecutor = (IJavaScriptExecutor)browserDriver;
             _javaScriptStore = storageType == StorageType.Local ? "window.localStorage" : "window.sessionStorage";
@@ -32,9 +31,7 @@ namespace SeleniumFixture.Model
         {
             get
             {
-                var count = Convert.ToInt32(
-                    CallViaJavascript("length"),
-                    CultureInfo.InvariantCulture);
+                var count = Convert.ToInt32(CallViaJavascript("length"), CultureInfo.InvariantCulture);
                 var result = new List<string>();
                 for (var i = 0; i < count; i++)
                 {

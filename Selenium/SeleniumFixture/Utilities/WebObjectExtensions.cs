@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Internal;
@@ -30,12 +31,10 @@ namespace SeleniumFixture.Utilities
                 returnValue = element.FindElements(by);
                 if (returnValue.Count > 0) break;
             }
-
             return returnValue;
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "driver",
-            Justification = "Enable use in extension method")]
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "driver", Justification = "Enable use in extension method")]
         public static double GetImplicitWait(this IWebDriver driver) => _lastSetImplicitWaitSeconds;
         // Currently this only works for firefox: (int)driver.Manage().Timeouts().ImplicitWait.TotalSeconds;
 
@@ -61,8 +60,6 @@ namespace SeleniumFixture.Utilities
 
         public static bool IsIe(this IWebDriver driver) => driver.IsBrowser("internet explorer");
 
-        //public static bool IsPhantomJs(this IWebDriver driver) => driver.IsBrowser("phantomjs");
-
         public static bool SetAttribute(this IWebElement element, string attributeName, string value)
         {
             var javascript = GetJavaScriptExecutor(element);
@@ -75,6 +72,7 @@ namespace SeleniumFixture.Utilities
         public static void SetImplicitWait(this IWebDriver driver, double seconds)
         {
             _lastSetImplicitWaitSeconds = seconds;
+            Debug.Assert(driver != null, "driver != null");
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(seconds);
         }
 

@@ -57,10 +57,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestInitialize]
-        public void KeyConverterTestInitialize()
-        {
-            _selenium = new Selenium();
-        }
+        public void KeyConverterTestInitialize() => _selenium = new Selenium();
 
         [TestMethod, TestCategory("Integration")]
         public void KeyConverterTestInSelenium()

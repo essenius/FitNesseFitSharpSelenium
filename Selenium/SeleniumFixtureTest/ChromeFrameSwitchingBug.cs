@@ -54,9 +54,6 @@ namespace SeleniumFixtureTest
         }
 
         [TestCleanup]
-        public void MyTestCleanup()
-        {
-            _browserDriver.Quit();
-        }
+        public void MyTestCleanup() => _browserDriver.Quit();
     }
 }

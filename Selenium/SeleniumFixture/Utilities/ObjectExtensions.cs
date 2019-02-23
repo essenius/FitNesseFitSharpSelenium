@@ -46,7 +46,7 @@ namespace SeleniumFixture.Utilities
         /// <param name="value">the value (expected to be something parseable to a boolean)</param>
         /// <returns>the boolean representation of the input value</returns>
         [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "bool",
-            Justification = "Conversion of JavaScript return values to boolean")]
+            Justification = "False positive. Conversion of JavaScript return values to Bool")]
         public static bool ToBool(this object value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));

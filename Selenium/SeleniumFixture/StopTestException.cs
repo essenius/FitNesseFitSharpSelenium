@@ -15,41 +15,21 @@ using System.Runtime.Serialization;
 
 namespace SeleniumFixture
 {
-    /// <summary>
-    ///     Stop Test Exception - raise when you want FitNesse to stop testing the current test case
-    /// </summary>
     [Serializable, SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Clashes with other static analysis findings")]
     public class StopTestException : Exception
     {
-        /// <summary>
-        ///     base constructor
-        /// </summary>
         public StopTestException()
         {
         }
 
-        /// <summary>
-        ///     constructor with message param
-        /// </summary>
-        /// <param name="message">the exception message</param>
         public StopTestException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        ///     Constructor with message and inner exception
-        /// </summary>
-        /// <param name="message">the message</param>
-        /// <param name="innerException">the inner exception</param>
         public StopTestException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
-        /// <summary>
-        ///     Constructor with serialization info and context
-        /// </summary>
-        /// <param name="info">Serialization info</param>
-        /// <param name="context">context</param>
         protected StopTestException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

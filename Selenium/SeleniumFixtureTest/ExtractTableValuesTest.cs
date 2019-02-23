@@ -47,16 +47,7 @@ namespace SeleniumFixtureTest
         private Selenium _selenium;
 
         [TestCleanup]
-        public void ExtractTableValuesCleanup()
-        {
-            _selenium.Close();
-        }
-
-        [TestMethod, TestCategory("Unit")]
-        public void ExtractTableValuesDocumentationTest()
-        {
-            Assert.IsTrue(ExtractTableValues.FixtureDocumentation.Count > 0);
-        }
+        public void ExtractTableValuesCleanup() => _selenium.Close();
 
         [TestMethod, TestCategory("Unit"),
          ExpectedExceptionWithMessage(typeof(NoNullAllowedException), "Browser Driver was not initialized")]
@@ -92,10 +83,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestInitialize]
-        public void ExtractTableValuesTestInitialize()
-        {
-            _selenium = new Selenium();
-        }
+        public void ExtractTableValuesTestInitialize() => _selenium = new Selenium();
 
         [TestMethod, TestCategory("Integration")]
         public void KendoTableTest()

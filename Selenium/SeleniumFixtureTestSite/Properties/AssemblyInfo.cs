@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 
@@ -13,4 +12,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("f446c164-66bb-46c7-a17e-a61370a3cfac")]
-[assembly: AssemblyVersion("2.0.2")]
+[assembly: AssemblyVersion("2.1.1")]

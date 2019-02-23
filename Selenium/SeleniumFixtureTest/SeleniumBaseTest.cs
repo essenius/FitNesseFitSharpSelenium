@@ -47,32 +47,7 @@ namespace SeleniumFixtureTest
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "False positive")]
         public TestContext TestContext { get; set; }
 
-        public static Uri CreateTestPageUri() => CreateUri(TestPage);
-
-        public static Uri CreateUri(string page) => new Uri(BaseUrl + page);
-
-        private static bool ExpectNoSuchElementExceptionFor<T>(Func<T> functionToExecute)
-        {
-            try
-            {
-                functionToExecute();
-                return false;
-            }
-            catch (NoSuchElementException)
-            {
-                return true;
-            }
-        }
-
-        private static bool IsRgb(string input, int r, int g, int b)
-        {
-            var rgba = $"rgba({r}, {g}, {b}, 1)";
-            var rgb = $"rgb({r}, {g}, {b})";
-            return input.Equals(rgba) || input.Equals(rgb);
-        }
-
-        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local", Justification =
-            "Precondition check is the whole point")]
+        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local", Justification = "Precondition check is the whole point")]
         private void AssertOptionValues(string locator, IReadOnlyCollection<string> expected, string message)
         {
             var allItems = _selenium.AllOptionsOfElementBy(locator, "text");
@@ -108,10 +83,26 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(1, _selenium.WebStorage.Count, $"{tag}: Item Count == 1 after removing an item");
         }
 
+        public static Uri CreateTestPageUri() => CreateUri(TestPage);
+
+        public static Uri CreateUri(string page) => new Uri(BaseUrl + page);
+
+        private static bool ExpectNoSuchElementExceptionFor<T>(Func<T> functionToExecute)
+        {
+            try
+            {
+                functionToExecute();
+                return false;
+            }
+            catch (NoSuchElementException)
+            {
+                return true;
+            }
+        }
+
         private void GetProtectedMode()
         {
             if (_activeProtectedMode != ProtectedModeEnum.Unknown) return;
-
             if (_selenium.AreAllProtectedModes(true))
             {
                 _activeProtectedMode = ProtectedModeEnum.On;
@@ -125,10 +116,14 @@ namespace SeleniumFixtureTest
             _activeProtectedMode = ProtectedModeEnum.Mixed;
         }
 
-        private void MarkSkipped(string key, string value)
+        private static bool IsRgb(string input, int r, int g, int b)
         {
-            _skippedTests.Add(new KeyValuePair<string, string>(key, value));
+            var rgba = $"rgba({r}, {g}, {b}, 1)";
+            var rgb = $"rgb({r}, {g}, {b})";
+            return input.Equals(rgba) || input.Equals(rgb);
         }
+
+        private void MarkSkipped(string key, string value) => _skippedTests.Add(new KeyValuePair<string, string>(key, value));
 
         private void SeleniumAlertTest()
         {
@@ -197,11 +192,9 @@ namespace SeleniumFixtureTest
 
         private void SeleniumCheckBrokenImageTest()
         {
-            Assert.IsFalse(_selenium.ExecuteScript(
-                    "return brokenImage.naturalWidth!=\"undefined\" && brokenImage.naturalWidth>0;").ToBool(),
+            Assert.IsFalse(_selenium.ExecuteScript("return brokenImage.naturalWidth!=\"undefined\" && brokenImage.naturalWidth>0;").ToBool(),
                 "Test broken image");
-            Assert.IsTrue(_selenium.ExecuteScript(
-                    "return dragSource.naturalWidth!=\"undefined\" && dragSource.naturalWidth>0;").ToBool(),
+            Assert.IsTrue(_selenium.ExecuteScript("return dragSource.naturalWidth!=\"undefined\" && dragSource.naturalWidth>0;").ToBool(),
                 "Test OK image");
         }
 
@@ -227,6 +220,13 @@ namespace SeleniumFixtureTest
             _selenium.SetElementTo("text1", originalValue);
         }
 
+        private void SeleniumClickElementIfVisibleTest()
+        {
+            var clickIfVisible = _selenium.ClickElementIfVisible("am");
+            Assert.IsTrue(clickIfVisible.HasValue && clickIfVisible.Value);
+            Assert.IsNull(_selenium.ClickElementIfVisible(@"nonexisting"));
+        }
+
         private void SeleniumClickElementTest()
         {
             Assert.IsTrue(_selenium.ClickElement("am"));
@@ -237,13 +237,6 @@ namespace SeleniumFixtureTest
             Assert.IsFalse(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is not checked");
             Assert.IsTrue(_selenium.ClickElement("checkbox"), "clicked checkbox 2");
             Assert.IsTrue(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is checked 2");
-        }
-
-        private void SeleniumClickElementIfVisibleTest()
-        {
-            var clickIfVisible = _selenium.ClickElementIfVisible("am");
-            Assert.IsTrue(clickIfVisible.HasValue && clickIfVisible.Value);
-            Assert.IsNull(_selenium.ClickElementIfVisible(@"nonexisting"));
         }
 
         private void SeleniumClickElementWithModifierTest()
@@ -352,9 +345,7 @@ namespace SeleniumFixtureTest
 
         private void SeleniumExecuteAsyncJavaScriptTest()
         {
-            Assert.IsTrue((bool) _selenium.ExecuteAsyncScript(
-                "var callback = arguments[arguments.length - 1];" +
-                "callback(true);"));
+            Assert.IsTrue((bool) _selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
         }
 
         private void SeleniumExtendedTests()
@@ -472,16 +463,11 @@ namespace SeleniumFixtureTest
 
         private void SeleniumNonExistingElementsTest()
         {
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.ClickElement("NonExistingElement")),
-                "ClickElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.MoveToElement("NonExistingElement")),
-                "MoveToElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.SubmitElement("NonExistingElement")),
-                "SubmitElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.TextInElement("NonExistingElement")),
-                "TextInElement");
-            Assert.IsTrue(
-                ExpectNoSuchElementExceptionFor(() => _selenium.UploadFileInElement("zip", "nonExistingElement")),
+            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.ClickElement("NonExistingElement")), "ClickElement");
+            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.MoveToElement("NonExistingElement")), "MoveToElement");
+            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.SubmitElement("NonExistingElement")), "SubmitElement");
+            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.TextInElement("NonExistingElement")), "TextInElement");
+            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.UploadFileInElement("zip", "nonExistingElement")),
                 "UploadFileInElement");
         }
 
@@ -563,8 +549,7 @@ namespace SeleniumFixtureTest
             }
             else
             {
-                _selenium.SendKeysToElement(
-                    new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
+                _selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
             }
             _selenium.SendKeysToElement("{DELETE}", textboxLocator);
             Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
@@ -585,8 +570,7 @@ namespace SeleniumFixtureTest
 
         private void SeleniumScriptWithNullParametersTest()
         {
-            Assert.IsTrue(_selenium.ExecuteScriptWithParameters("return true;", null).ToBool(),
-                "Execute script with null param");
+            Assert.IsTrue(_selenium.ExecuteScriptWithParameters("return true;", null).ToBool(), "Execute script with null param");
         }
 
         private void SeleniumScriptWithParametersTest()
@@ -601,15 +585,11 @@ namespace SeleniumFixtureTest
                 "Replaced paragraph text"
             };
             Assert.IsTrue(_selenium.ExecuteScriptWithParameters(
-                "arguments[0].innerHTML = arguments[1];" +
-                "arguments[2].innerHTML = arguments[3];" +
-                "return true;",
-                parameters).ToBool(), "Execute script");
+                "arguments[0].innerHTML = arguments[1];arguments[2].innerHTML = arguments[3];return true;", parameters).ToBool(), "Execute script");
             Assert.AreEqual("New div text", _selenium.TextInElement("id:div"), "Replace div text");
             Assert.AreEqual("Replaced paragraph text", _selenium.TextInElement("id:paragraph"), "Replace paragraph text");
             Assert.IsTrue(_selenium.SetTextInElementTo("id:div", originalDivText), "Set original div text back");
-            Assert.IsTrue(_selenium.SetTextInElementTo("id:paragraph", originalParagraphText),
-                "Set original paragraph text back");
+            Assert.IsTrue(_selenium.SetTextInElementTo("id:paragraph", originalParagraphText), "Set original paragraph text back");
         }
 
         private void SeleniumScriptWithPlainParametersTest()
@@ -617,8 +597,7 @@ namespace SeleniumFixtureTest
             var driver = _selenium.Driver;
             var parameters = new Collection<object> {driver.FindElement(By.Id("dragSource"))};
             Assert.IsTrue(_selenium.ExecuteScriptWithPlainParameters(
-                "return arguments[0].naturalWidth!=\"undefined\" && arguments[0].naturalWidth>0;",
-                parameters).ToBool(), "image is not broken");
+                "return arguments[0].naturalWidth!=\"undefined\" && arguments[0].naturalWidth>0;", parameters).ToBool(), "image is not broken");
         }
 
         private void SeleniumSelectDropDownElementTest()
@@ -637,10 +616,8 @@ namespace SeleniumFixtureTest
 
             var allSingleValueListboxOptions = _selenium.AllOptionsOfElementBy("id:dropdown", "value");
             var expected = new Collection<string> {"item1", "item2", "item3", "item4", "item5", "item0"};
-            Assert.IsTrue(allSingleValueListboxOptions.All(s => expected.Contains(s)),
-                "expected options contains all actual options - value");
-            Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)),
-                "actual options contains all expected options - value");
+            Assert.IsTrue(allSingleValueListboxOptions.All(s => expected.Contains(s)), "expected options contains all actual options - value");
+            Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)), "actual options contains all expected options - value");
         }
 
         private void SeleniumSelectMultiElementTest()
@@ -651,8 +628,7 @@ namespace SeleniumFixtureTest
             _selenium.SelectOptionInElement("item 5", "id:multi-select");
             AssertOptionValues("id:multi-select", new Collection<string> {"item 1", "item 3", "item 5"}, "first test");
             _selenium.SelectOptionInElement("item", "id:multi-select");
-            AssertOptionValues("id:multi-select", new Collection<string> {"item 1", "item 3", "item 5", "item"},
-                "second test");
+            AssertOptionValues("id:multi-select", new Collection<string> {"item 1", "item 3", "item 5", "item"}, "second test");
             _selenium.DeselectOptionInElement("item 1", "id:multi-select");
             AssertOptionValues("id:multi-select", new Collection<string> {"item 3", "item 5", "item"}, "third test");
             _selenium.DeselectOptionInElement("item 1", "id:multi-select");
@@ -673,10 +649,8 @@ namespace SeleniumFixtureTest
 
             var allSingleValueListboxOptions = _selenium.AllOptionsOfElementBy("id:single-select", "text");
             var expected = new Collection<string> {"item 1", "item 2", "item 3", "item 4", "item 5", "item"};
-            Assert.IsTrue(allSingleValueListboxOptions.All(s => expected.Contains(s)),
-                "expected options contains all actual options - text");
-            Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)),
-                "actual options contains all expected options - text");
+            Assert.IsTrue(allSingleValueListboxOptions.All(s => expected.Contains(s)), "expected options contains all actual options - text");
+            Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)), "actual options contains all expected options - text");
         }
 
         private void SeleniumSendKeysToElementTest()
@@ -710,8 +684,7 @@ namespace SeleniumFixtureTest
             }
             Assert.IsTrue(_selenium.SendKeysToElement("{END}+{LEFT}{LEFT}{LEFT}-+-^v", "text1"),
                 "Type _- over the last 3 characters in text 1 and paste");
-            Assert.AreEqual(@"ABCdef_-ABCdefGHI", _selenium.AttributeOfElement("value", "text1"),
-                "check final value of test1");
+            Assert.AreEqual(@"ABCdef_-ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "check final value of test1");
         }
 
         private void SeleniumSendPlainKeysTest()
@@ -755,8 +728,8 @@ namespace SeleniumFixtureTest
             VerifySetElementTo("fibonacci", "13");
             VerifySetElementTo("search", "_selenium");
 
-            Debug.WriteLine(_selenium.ExecuteScript(
-                "var i=document.createElement('input');i.setAttribute('type','month');return i.type !== 'text';"));
+            Debug.WriteLine(
+                _selenium.ExecuteScript("var i=document.createElement('input');i.setAttribute('type','month');return i.type !== 'text';"));
         }
 
         private void SeleniumSetNewInputTypesTest()
@@ -767,8 +740,7 @@ namespace SeleniumFixtureTest
             VerifySendKeysToElementWithFallback("472014", "week", "week", "2014-W47");
             VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
             VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
-            VerifySendKeysToElementWithFallback("2409{TAB}2014{TAB}0123", "datetime-local", "datetime-local",
-                "2014-09-24T01:23");
+            VerifySendKeysToElementWithFallback("2409{TAB}2014{TAB}0123", "datetime-local", "datetime-local", "2014-09-24T01:23");
 
             // The color picker is a pain since it opens a system dialog which Selenium can't get to
             // So we cheat here and directly set the value
@@ -804,8 +776,7 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(2, _selenium.WebStorage.Count, $"{browser}: Item Count == 2 after adding SetInWebStorageTo");
             dict.Add("testkey4", @"testvalue5");
             _selenium.AddToWebStorage(dict);
-            Assert.AreEqual(3, _selenium.WebStorage.Count,
-                $"{browser}: Item Count == 3 after AddToWebStorage, before switching to Session");
+            Assert.AreEqual(3, _selenium.WebStorage.Count, $"{browser}: Item Count == 3 after AddToWebStorage, before switching to Session");
             _selenium.UseWebStorage(StorageType.Session);
             CheckStorageFunctioning($"{browser}/Session");
             Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after adding one item to session storage");
@@ -828,12 +799,9 @@ namespace SeleniumFixtureTest
 
         private void SeleniumTextInElementMatchesTest()
         {
-            Assert.IsTrue(_selenium.TextInElementMatches("paragraph", "piece of text"),
-                "Search for 'piece of text' anywhere in element");
-            Assert.IsFalse(_selenium.TextInElementMatches("paragraph", "^piece of text$"),
-                "Search for exact 'piece of text'");
-            Assert.IsTrue(_selenium.TextInElementMatches("paragraph", "piece .* elements"),
-                "Search for 'piece' and later 'elements'");
+            Assert.IsTrue(_selenium.TextInElementMatches("paragraph", "piece of text"), "Search for 'piece of text' anywhere in element");
+            Assert.IsFalse(_selenium.TextInElementMatches("paragraph", "^piece of text$"), "Search for exact 'piece of text'");
+            Assert.IsTrue(_selenium.TextInElementMatches("paragraph", "piece .* elements"), "Search for 'piece' and later 'elements'");
         }
 
         private void SeleniumUploadTest()
@@ -855,8 +823,7 @@ namespace SeleniumFixtureTest
         private void SeleniumWaitForTextTest()
         {
             Assert.IsTrue(_selenium.ReloadPage());
-            Assert.IsFalse(_selenium.TextExistsIgnoringCase("data load completed"),
-                "data load completed does not exist yet");
+            Assert.IsFalse(_selenium.TextExistsIgnoringCase("data load completed"), "data load completed does not exist yet");
             Assert.IsTrue(_selenium.WaitForTextIgnoringCase("data load completed"), "Wait for data load completed");
             Assert.IsTrue(_selenium.WaitForText("0,1,1,2"), "Wait for 0,1,1,2");
         }
@@ -869,10 +836,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitUntilTitleMatches("Test Page"));
         }
 
-        private void SeleniumWaitUntilScriptReturnsTrueTest()
-        {
-            Assert.IsTrue(_selenium.WaitUntilScriptReturnsTrue("return true;").ToBool());
-        }
+        private void SeleniumWaitUntilScriptReturnsTrueTest() => Assert.IsTrue(_selenium.WaitUntilScriptReturnsTrue("return true;").ToBool());
 
         private void SeleniumWaitWithTimeout()
         {
@@ -974,15 +938,13 @@ namespace SeleniumFixtureTest
                 _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
                 _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
             }
-            Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element),
-                "SendKeys value is correct for '{0}'", element);
+            Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element), "SendKeys value is correct for '{0}'", element);
         }
 
         private void VerifySetElementTo(string element, string value)
         {
             Assert.IsTrue(_selenium.SetElementTo(element, value), "Set '{0}' to '{1}'", element, value);
-            Assert.AreEqual(value, _selenium.AttributeOfElement("value", element), "value of '{0}' is '{1}", element,
-                value);
+            Assert.AreEqual(value, _selenium.AttributeOfElement("value", element), "value of '{0}' is '{1}", element, value);
         }
 
         private enum ProtectedModeEnum

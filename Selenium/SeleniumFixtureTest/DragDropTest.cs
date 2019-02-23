@@ -28,8 +28,7 @@ namespace SeleniumFixtureTest
             var url = SeleniumBaseTest.CreateTestPageUri();
             _selenium.Open(url);
             Assert.IsTrue(_selenium.WaitForElement("dragSource"), "Wait for DragSource in browser 1");
-            Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
-                "Source not dropped in target in driver 1");
+            Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"), "Source not dropped in target in driver 1");
             var driver1 = _selenium.Driver;
             var target = driver1.FindElement(By.Id("dropTarget"));
 
@@ -41,8 +40,7 @@ namespace SeleniumFixtureTest
             Assert.AreNotEqual(driver1, driver2, "We have two different drivers");
 
             DragDrop.DragToWindow(driver2, source, driver1, target);
-            Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
-                "Source not dropped in target in driver 2");
+            Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"), "Source not dropped in target in driver 2");
 
             _selenium.SetDriver(driverHandle1);
             Assert.IsTrue(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"), "Source was dropped in target in driver 1");
@@ -81,9 +79,6 @@ namespace SeleniumFixtureTest
         }
 
         [TestInitialize]
-        public void SeleniumDragDropTestInitialize()
-        {
-            _selenium = new Selenium();
-        }
+        public void SeleniumDragDropTestInitialize() => _selenium = new Selenium();
     }
 }

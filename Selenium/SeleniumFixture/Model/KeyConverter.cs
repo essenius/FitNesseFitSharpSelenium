@@ -122,7 +122,6 @@ namespace SeleniumFixture.Model
                             break;
                     }
                 }
-
                 return result;
             }
         }

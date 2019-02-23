@@ -14,7 +14,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using ImageHandler;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
 
@@ -23,42 +22,19 @@ namespace SeleniumFixture
     /// <summary>
     ///     Page handling methods of the Selenium script table fixture for FitNesse
     /// </summary>
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "This is the interface class")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by Fitsharp"),
      SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by Fitsharp")]
     public sealed partial class Selenium
     {
-        /// <summary>
-        ///     Take a screenshot and return it rendered as an image
-        /// </summary>
-        /// <returns>the rendered image (html img)</returns>
-        public static string Screenshot()
-        {
-            var snap = BrowserDriver.TakeScreenshot();
-            return snap.Rendering;
-        }
-
-        /// <summary>
-        ///     Take a screenshot and return it as an object
-        /// </summary>
-        /// <returns>the image as an object</returns>
-        public static Snapshot ScreenshotObject() => BrowserDriver.TakeScreenshot();
-
-        /// <summary>
-        ///     Returns the number of open pages for this browser instance
-        /// </summary>
+        [Documentation("Returns the number of open pages (tabs, newly opened windows) for this browser instance")]
         public int PageCount => Driver.WindowHandles.Count;
 
-        /// <summary>
-        ///     Get the Url of the current page
-        /// </summary>
-        /// <returns>the URL of the current page</returns>
-        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "FitSharp needs it as a string")]
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "FitSharp needs it as a string"),
+         Documentation("Url of the current page")]
         public string Url => Driver.Url;
 
-        /// <summary>
-        ///     Close the current browser page (don't quit the browser if it's not the last page)
-        /// </summary>
-        /// <returns>whether or not it succeeded</returns>
+        [Documentation("Closes the current browser page. Does not close the browser itself if it's not the last page")]
         public bool ClosePage()
         {
             if (Driver == null) return false;
@@ -67,112 +43,85 @@ namespace SeleniumFixture
             return true;
         }
 
-        /// <summary>
-        ///     Return the current HTML page source
-        /// </summary>
-        /// <returns>html source of the current page in context (can also be just an iframe)</returns>
+        [Documentation("Return the HTML source of the current page in context")]
         public string HtmlSource() => Driver != null ? Driver.PageSource : string.Empty;
 
-        /// <summary>
-        ///     Return the length of the current HTML page source
-        /// </summary>
-        /// <returns>length of the page source string in characters</returns>
+        [Documentation("Return the length of the current HTML page source")]
         public int LengthOfHtmlSource() => HtmlSource().Length;
 
-        /// <summary>
-        ///     Opens the specified URL in the browser and wait for it to load.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns>true</returns>
+        [Documentation(
+            "Send keys using the .Net Framework Forms.SendKeys.SendWait function. Executes locally, so does not work on remote Selenium servers." +
+            "Can be useful for context menus, although the Chrome driver does not send keypresses there. " +
+            " The syntax of the keys is slightly different than the Selenium syntax used in Send Keys To Element. " +
+            "Primarily, control, alt and shift do not toggle, but only work on the following item. See MSDN SendKeys documentation")]
+        public static void NativeSendKeys(string keys) => System.Windows.Forms.SendKeys.SendWait(keys);
+
+        [Documentation("Opens the specified URL in the browser and wait for it to load.")]
         public bool Open(Uri url)
         {
             if (Driver == null) throw new StopTestException("Please set a browser before opening a page");
             Driver.SetImplicitWait(ImplicitWaitSeconds);
             Driver.Navigate().GoToUrl(url);
-            //BrowserDriver.ShimPageForBrowser(Driver);
-
             StoreWindowHandles();
             return true;
         }
 
-        /// <summary>
-        ///     Reload the current page
-        /// </summary>
-        /// <returns></returns>
+        [Documentation("Reload the current page")]
         public bool ReloadPage()
         {
             Driver.Navigate().Refresh();
             return true;
         }
 
-        /// <summary>
-        ///     Get the title of the current page.
-        /// </summary>
-        /// <returns>Title of the current page</returns>
-        public string Title() => Driver != null ? Driver.Title : string.Empty;
-
-        private T WaitFor<T>(Func<IWebDriver, T> conditionToWaitFor)
+        [Documentation("Take a screenshot and return it rendered as an image (html img). " +
+                       "Note: may return black if you run the browser driver from within a service")]
+        public static string Screenshot()
         {
-            // Do not mix implicit wait with explicit wait
-            var implicitWait = Driver.GetImplicitWait();
-            Driver.SetImplicitWait(0);
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(TimeoutInSeconds));
-            try
-            {
-                return wait.Until(conditionToWaitFor);
-            }
-            catch (WebDriverTimeoutException)
-            {
-                return default(T);
-            }
-            finally
-            {
-                Driver.SetImplicitWait(implicitWait);
-            }
+            var snap = BrowserDriver.TakeScreenshot();
+            return snap.Rendering;
         }
 
-        /// <summary>
-        ///     Wait for the HTML source to change
-        /// </summary>
-        /// <returns>true if source changed, false if it timed out before changing</returns>
+        [Documentation("Take a screenshot and return it as an object")]
+        public static Snapshot ScreenshotObject() => BrowserDriver.TakeScreenshot();
+
+        private bool TextExists(string textToSearch, bool caseInsensitive) => Regex.IsMatch(
+            Driver.FindElement(By.CssSelector("body")).Text,
+            "^[\\s\\S]*" + Regex.Escape(textToSearch) + "[\\s\\S]*$", caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
+
+        [Documentation("Check if a certain text exists on the page")]
+        public bool TextExists(string textToSearch) => TextExists(textToSearch, false);
+
+        [Documentation("Check if a certain text exists on the page (case insensitive search)")]
+        public bool TextExistsIgnoringCase(string textToSearch) => TextExists(textToSearch, true);
+
+        [Documentation("Get the title of the current page")]
+        public string Title() => Driver != null ? Driver.Title : string.Empty;
+
+        [Documentation("Wait for the HTML source to change. Can happen with dynamic pages")]
         public bool WaitForHtmlSourceToChange()
         {
             var currentSource = HtmlSource();
             return WaitFor(drv => HtmlSource() != currentSource);
         }
 
-        /// <summary>
-        ///     Waits for a page to load with default timeout.
-        /// </summary>
-        /// <returns>whether or not the page was loaded successfully (true/false)</returns>
+        [Documentation("Waits for a page to load, using default timeout")]
         public bool WaitForPageToLoad() => WaitUntilElementIsVisible("XPath://*[not (.='')]");
 
-        /// <summary>
-        ///     Wait until the length of the HTML source is more than the specified number of characters
-        /// </summary>
-        /// <param name="thresholdLength">the length used as threshold</param>
-        /// <returns>true if successful, false if timed out</returns>
-        public bool WaitUntilHtmlSourceIsLargerThan(int thresholdLength)
-        {
-            return WaitFor(drv => LengthOfHtmlSource() > thresholdLength);
-        }
+        private bool WaitForText(string textToSearch, bool caseInsensitive) => WaitFor(drv => TextExists(textToSearch, caseInsensitive));
 
-        /// <summary>
-        ///     Wait until the provided script returns a 'true' value
-        /// </summary>
-        public bool WaitUntilScriptReturnsTrue(string script)
-        {
-            return WaitFor(drv => ExecuteScript(script) is bool result && result);
-        }
+        [Documentation("Waits for a certain text to be present (case sensitive search)")]
+        public bool WaitForText(string textToSearch) => WaitForText(textToSearch, false);
 
-        /// <summary>
-        ///     Wait for a title to appear, using a regular expression to search.
-        /// </summary>
-        /// <param name="regexPattern">The regular expression to match the title with</param>
-        /// <returns>whether or no the pattern was matched before the timeout</returns>
-        public bool WaitUntilTitleMatches(string regexPattern)
-        {
-            return WaitFor(d => new Regex(regexPattern).IsMatch(d.Title));
-        }
+        [Documentation("Waits for a certain text to be present (case insensitive search)")]
+        public bool WaitForTextIgnoringCase(string textToSearch) => WaitForText(textToSearch, true);
+
+        [Documentation("Wait until the HTML source has the specified minimum length. Useful when pages are built dynamically and asynchronously")]
+        public bool WaitUntilHtmlSourceIsLargerThan(int thresholdLength) => WaitFor(drv => LengthOfHtmlSource() > thresholdLength);
+
+        [Documentation("Wait until a called JavaScript function returns a value that is not false or null")]
+        public bool WaitUntilScriptReturnsTrue(string script) => WaitFor(drv => ExecuteScript(script) is bool result && result);
+
+        [Documentation("Wait for a title to appear, using a regular expression to search")]
+        public bool WaitUntilTitleMatches(string regexPattern) => WaitFor(d => new Regex(regexPattern).IsMatch(d.Title));
     }
 }

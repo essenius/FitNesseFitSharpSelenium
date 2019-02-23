@@ -15,7 +15,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using ImageHandler;
@@ -45,10 +44,7 @@ namespace SeleniumFixture.Model
 
         internal static void CloseAllDrivers()
         {
-            foreach (var webDriver in Drivers)
-            {
-                webDriver.Value?.Quit();
-            }
+            foreach (var webDriver in Drivers) webDriver.Value?.Quit();
 
             Drivers.Clear();
             CurrentId = string.Empty;
@@ -60,11 +56,6 @@ namespace SeleniumFixture.Model
             get => _timeout.TotalSeconds;
             set => _timeout = TimeSpan.FromSeconds(value);
         }
-
-        private static string CreateArchiveFileName(string existingFileName, string timestamp) => Path.Combine(
-            Path.GetDirectoryName(existingFileName) ?? string.Empty,
-            Path.GetFileNameWithoutExtension(existingFileName) + "_" + timestamp +
-            Path.GetExtension(existingFileName));
 
         public static IWebDriver Current { get; set; }
 
@@ -129,32 +120,6 @@ namespace SeleniumFixture.Model
             return true;
         }
 
-        private static void RenameExistingFile(string existingFileName)
-        {
-            if (!File.Exists(existingFileName)) return;
-            var timestamp = File.GetLastWriteTime(existingFileName)
-                .ToString(@"yyyyMMddHHmmssffffff", CultureInfo.InvariantCulture);
-            File.Move(existingFileName, CreateArchiveFileName(existingFileName, timestamp));
-        }
-
-        internal static string ScreenshotPath(string fileName, string defaultPath)
-        {
-            defaultPath = string.IsNullOrEmpty(defaultPath) ? "." : defaultPath;
-            var file = Path.GetFileName(fileName);
-            if (string.IsNullOrEmpty(file) || file == ".")
-            {
-                fileName = Path.GetRandomFileName();
-            }
-
-            if (!fileName.EndsWith(".jpg", StringComparison.CurrentCultureIgnoreCase) &&
-                !fileName.EndsWith(".jpeg", StringComparison.CurrentCultureIgnoreCase))
-            {
-                fileName += ".jpg";
-            }
-
-            return Path.IsPathRooted(fileName) ? fileName : Path.Combine(defaultPath, fileName);
-        }
-
         public static bool SetCurrent(string driverId)
         {
             var driver = GetDriver(driverId);
@@ -169,8 +134,7 @@ namespace SeleniumFixture.Model
             const string unspecified = "Unspecified";
             // try and convert casing of the desired proxy to the proper CamelCase format
             var valueToUse =
-                Enum.GetNames(typeof(ProxyKind))
-                    .FirstOrDefault(enumName => enumName.Equals(proxyType, StringComparison.OrdinalIgnoreCase));
+                Enum.GetNames(typeof(ProxyKind)).FirstOrDefault(enumName => enumName.Equals(proxyType, StringComparison.OrdinalIgnoreCase));
             if (string.IsNullOrEmpty(valueToUse)) valueToUse = unspecified;
 
             // now we know we have a valid value. Set the corresponding proxy type.
@@ -199,24 +163,6 @@ namespace SeleniumFixture.Model
         {
             var screenshot = ((ITakesScreenshot)Current).GetScreenshot();
             return new Snapshot(screenshot.AsByteArray);
-        }
-
-        [Obsolete("Deprecated - use TakeScreenshot without parameter")]
-        public static string TakeScreenShot(string fileNameToSaveTo)
-        {
-            fileNameToSaveTo = ScreenshotPath(fileNameToSaveTo,
-                Environment.GetEnvironmentVariable("TestOutputDirectory") ?? string.Empty);
-            var folder = Path.GetDirectoryName(fileNameToSaveTo);
-
-            Debug.Assert(folder != null, "folder != null");
-            if (!Directory.Exists(folder))
-            {
-                throw new FileNotFoundException("Folder not found: " + folder);
-            }
-
-            var screenshot = TakeScreenshot();
-            RenameExistingFile(fileNameToSaveTo);
-            return screenshot.Save(fileNameToSaveTo);
         }
 
         private static string UniqueId => _idCounter++.ToString(CultureInfo.InvariantCulture);

@@ -161,7 +161,6 @@ namespace SeleniumFixtureTest
 
             var safariCapabilities = factory.GetDesiredCapabilities("safari", noAdditionalCapabilities);
             Assert.AreEqual("safari", safariCapabilities.GetCapability(CapabilityType.BrowserName));
-            //Assert.AreEqual("ANY", safariCapabilities.Platform.ProtocolPlatformType);
 
             var noCapabilities = factory.GetDesiredCapabilities("none", noAdditionalCapabilities);
             Assert.IsNull(noCapabilities);

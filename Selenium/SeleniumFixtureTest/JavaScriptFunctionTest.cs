@@ -20,12 +20,6 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class JavaScriptFunctionTest
     {
-        [TestMethod, TestCategory("Unit")]
-        public void JavaScriptFunctionDocumentationTest()
-        {
-            Assert.IsTrue(JavaScriptFunction.FixtureDocumentation.Count > 0);
-        }
-
         [TestMethod, TestCategory("Integration")]
         public void JavaScriptFunctionTestWithFibonacci()
         {

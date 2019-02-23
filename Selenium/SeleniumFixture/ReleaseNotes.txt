@@ -31,3 +31,4 @@
 2.0.2	 Made fixture more resilient against StaleElementReferenceExceptions and fixed issue with ToCapabilities method of ChromeDriver not returning a 
          DesiredCapabilities under the hood in newer versions
 2.1.0    Removed deprecated functions RestoreProtectedModes, SetProtectedModes, TakeScreenshot, TakeScreenshotTo, initial commit to GitHub
+2.1.1	 Introduced [Documentation] attributes to replace FixtureDocumentation dictionary. Cleaned up code; merged Selenium_Text with Selenium_Page

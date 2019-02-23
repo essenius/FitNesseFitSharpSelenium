@@ -12,7 +12,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
@@ -29,80 +28,53 @@ namespace SeleniumFixture
     {
         private string _mainWindowHandle;
 
-        /// <summary>
-        ///     Returns cached window handles (for debugging purposes).
-        /// </summary>
-        public ReadOnlyCollection<string> CachedWindowHandles { get; private set; }
+        [Documentation("Return the cached window handles (debugging purposes)")]
+        internal ReadOnlyCollection<string> CachedWindowHandles { get; private set; }
 
-        /// <summary>
-        ///     Return the current window handle (to be used in Select Window)
-        /// </summary>
+        [Documentation("Return the internal name (handle) of the current browser window. This can be used later in a Select Window command")]
         public string CurrentWindowName => Driver.CurrentWindowHandle;
 
-        /// <summary>
-        ///     Returns the window handles (for debugging purposes).
-        /// </summary>
-        /// <returns>String Collection of window handles </returns>
-        public ReadOnlyCollection<string> WindowHandles => Driver.WindowHandles;
+        [Documentation("Returns the window handles (debugging purposes)")]
+        internal ReadOnlyCollection<string> WindowHandles => Driver.WindowHandles;
 
-        /// <summary>
-        ///     Return the height of the browser window
-        /// </summary>
+        [Documentation("The height of the browser window")]
         public int WindowHeight => Driver.Manage().Window.Size.Height;
 
-        /// <summary>
-        ///     Return the width of the browser window
-        /// </summary>
+        [Documentation("The width of the browser window")]
         public int WindowWidth => Driver.Manage().Window.Size.Width;
 
-        /// <summary>
-        ///     Accept (OK) an alert
-        /// </summary>
+        [Documentation("Accept an alert, confirm or prompt dialog (press OK)")]
         public void AcceptAlert()
         {
             Driver.SwitchTo().Alert().Accept();
             WaitFor(drv => !AlertIsPresent());
         }
 
-        /// <summary>
-        ///     Check if an alert is shown.
-        /// </summary>
+        [Documentation("Check whether an alert, confirm or prompt box is active")]
         public bool AlertIsPresent()
         {
             try
             {
                 Driver.SwitchTo().Alert();
-                Debug.Print("Found alert");
                 return true;
             }
             catch (NoAlertPresentException)
             {
-                Debug.Print("No alert");
                 return false;
             }
         }
 
-        /// <summary>
-        ///     Dismiss (Cancel) an alert
-        /// </summary>
+        [Documentation("Dismiss an alert, confirm or prompt dialog (press Cancel)")]
         public void DismissAlert()
         {
             Driver.SwitchTo().Alert().Dismiss();
             WaitFor(drv => !AlertIsPresent());
         }
 
-        /// <summary>
-        ///     Maximize the browser window
-        /// </summary>
-        public void MaximizeWindow()
-        {
-            Driver.Manage().Window.Maximize();
-        }
+        [Documentation("Maximize browser window")]
+        public void MaximizeWindow() => Driver.Manage().Window.Maximize();
 
-        /// <summary>
-        ///     Respond to a prompt
-        /// </summary>
-        /// <param name="text">text to be provided to the prompt</param>
+        [Documentation("Provide a text response to a prompt and confirm (press OK)")]
         public void RespondToAlert(string text)
         {
             Driver.SwitchTo().Alert().SendKeys(text);
@@ -110,81 +82,47 @@ namespace SeleniumFixture
             WaitFor(drv => !AlertIsPresent());
         }
 
-        /// <summary>
-        ///     Selects a window using a window handle (which was returned using <see cref="WaitForNewWindowName" />).
-        /// </summary>
-        /// <param name="windowName">Name of the window.</param>
-        /// <exception cref="OpenQA.Selenium.NoSuchWindowException" />
-        /// <returns>true</returns>
+        [Documentation("Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name). " +
+                       "If no handle is specified, it will select the window that was used for the Open command.")]
         public bool SelectWindow(string windowName)
         {
-            if (string.IsNullOrEmpty(windowName))
-            {
-                windowName = _mainWindowHandle;
-            }
-
+            if (string.IsNullOrEmpty(windowName)) windowName = _mainWindowHandle;
             Driver.SwitchTo().Window(windowName);
             StoreWindowHandles(false);
             return true;
         }
 
-        /// <summary>
-        ///     Set the size of a browser window (width x height)
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns>whether the size was set exactly</returns>
+        [Documentation("Set the size of a browser window (width x height)")]
         public bool SetWindowSizeX(int width, int height)
         {
             var window = Driver.Manage().Window;
             window.Size = new Size(width, height);
             // ChromeDriver is off a bit sometimes. Working around that.
-            return Math.Abs(window.Size.Width - width) <=2 && 
+            return Math.Abs(window.Size.Width - width) <= 2 &&
                    Math.Abs(window.Size.Height - height) <= 2;
         }
 
-        /// <summary>
-        ///     Stores all the window handles that the browser driver handles, including the main window.
-        /// </summary>
-        public void StoreWindowHandles()
-        {
-            StoreWindowHandles(true);
-        }
+        [Documentation("Stores all the window handles that the browser driver handles, including the main window.")]
+        public void StoreWindowHandles() => StoreWindowHandles(true);
 
-        /// <summary>
-        ///     Stores all the window handles that the browser driver handles.
-        /// </summary>
+        [Documentation("Stores all the window handles that the browser driver handles")]
         public void StoreWindowHandles(bool setMain)
         {
             if (setMain || _mainWindowHandle == null) _mainWindowHandle = Driver.CurrentWindowHandle;
             CachedWindowHandles = Driver.WindowHandles;
         }
 
-        /// <summary>
-        ///     Switch back to the default page (after switching to another iframe)
-        /// </summary>
-        /// <returns>whether it succeeded</returns>
+        [Documentation("Switch to the root html context (i.e. leave frame context)")]
         public bool SwitchToDefaultContext() => Driver.SwitchTo().DefaultContent() != null;
 
-        /// <summary>
-        ///     Switch context to an iFrame
-        /// </summary>
-        /// <param name="searchCriterion">Criterion (method:locator)</param>
-        /// <returns>whether it succeeded</returns>
-        public bool SwitchToFrame(string searchCriterion)
+        [Documentation("Switch context to a frame in the current html page")]
+        public bool SwitchToFrame(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
         {
-            return DoOperationOnElement(searchCriterion, element =>
-            {
-                var frame = Driver.SwitchTo().Frame(element);
-                Debug.Print("Frame title:" + frame.Title);
-                return true;
-            });
-        }
+            Driver.SwitchTo().Frame(element);
+            return true;
+        });
 
-        /// <summary>
-        ///     After clicking a link that is known to open a new window, wait for that new window to appear
-        /// </summary>
-        /// <returns>the name of the new window</returns>
+        [Documentation("After clicking a link that is known to open a new window, wait for that new window to appear. Returns the window name")]
         public string WaitForNewWindowName()
         {
             var returnValue = WaitFor(drv =>

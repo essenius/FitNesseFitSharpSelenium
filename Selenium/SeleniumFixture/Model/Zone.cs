@@ -52,11 +52,7 @@ namespace SeleniumFixture.Model
         {
             get
             {
-                if (_foundIn == null)
-                {
-                    RetrieveProtectedValue();
-                }
-
+                if (_foundIn == null) RetrieveProtectedValue();
                 return _foundIn;
             }
         }
@@ -67,11 +63,7 @@ namespace SeleniumFixture.Model
         {
             get
             {
-                if (_isProtected == null)
-                {
-                    RetrieveProtectedValue();
-                }
-
+                if (_isProtected == null) RetrieveProtectedValue();
                 Debug.Assert(_isProtected != null, nameof(_isProtected) + " != null");
                 return (bool)_isProtected;
             }
@@ -90,7 +82,6 @@ namespace SeleniumFixture.Model
             {
                 throw new ArgumentException("Argument must be Machine Policies, Machine, User Policies, or User");
             }
-
             var subKey = string.Format(Culture, ZoneSubKey, Id);
             var keyString = string.Format(Culture, _baseKeys[registryLocation], subKey);
             var zoneValue = GetZoneValueFrom(keyString);
@@ -109,7 +100,6 @@ namespace SeleniumFixture.Model
                 _isProtected = (bool)isProtected;
                 return;
             }
-
             // no registry setting found; default is 'protected'
             _isProtected = true;
         }

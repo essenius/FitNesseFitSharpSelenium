@@ -17,19 +17,9 @@ using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
-    /// <summary>
-    ///     Storage Type: Local or Session
-    /// </summary>
     public enum StorageType
     {
-        /// <summary>
-        ///     Local storage
-        /// </summary>
         Local,
-
-        /// <summary>
-        ///     Session storage
-        /// </summary>
         Session
     }
 

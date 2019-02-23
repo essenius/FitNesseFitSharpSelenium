@@ -111,20 +111,17 @@ namespace SeleniumFixture.Model
         /// <param name="dragFromElement">The WebElement to drag from</param>
         /// <param name="dropToDriver">The WebDriver where the drag ends</param>
         /// <param name="dropToElement">The WebElement to drag to</param>
-        public static void DragToWindow(IWebDriver dragFromDriver, IWebElement dragFromElement, IWebDriver dropToDriver,
-            IWebElement dropToElement)
+        public static void DragToWindow(IWebDriver dragFromDriver, IWebElement dragFromElement, IWebDriver dropToDriver, IWebElement dropToElement)
         {
             // Drag start
             Html5SimulateEvent(dragFromDriver, dragFromElement, @"mousedown", Position.Center, null);
             var dragData = Html5SimulateEvent(dragFromDriver, dragFromElement, @"dragstart", Position.Center, null);
             dragData = Html5SimulateEvent(dragFromDriver, dragFromElement, @"dragenter", Position.Center, dragData);
             dragData = Html5SimulateEvent(dragFromDriver, dragFromElement, @"dragleave", Position.Left, dragData);
-            dragData = Html5SimulateEvent(dragFromDriver, dragFromDriver.FindElement(By.TagName("body")), @"dragleave",
-                Position.Left, dragData);
+            dragData = Html5SimulateEvent(dragFromDriver, dragFromDriver.FindElement(By.TagName("body")), @"dragleave", Position.Left, dragData);
 
             // Drag to other window
-            Html5SimulateEvent(dropToDriver, dropToDriver.FindElement(By.TagName("body")), "dragenter", Position.Right,
-                null);
+            Html5SimulateEvent(dropToDriver, dropToDriver.FindElement(By.TagName("body")), "dragenter", Position.Right, null);
             //var dropOverlay = dragToDriver.FindElement(By.ClassName("DropOverlay"));
             Html5SimulateEvent(dropToDriver, dropToElement, @"dragenter", Position.Right, null);
             Html5SimulateEvent(dropToDriver, dropToElement, @"dragover", Position.Center, null);
@@ -142,11 +139,11 @@ namespace SeleniumFixture.Model
         /// <param name="dragFromY">The Y position to click relative to the top-left-corner of the client</param>
         /// <param name="dragToX">The X position to release relative to the top-left-corner of the client</param>
         /// <param name="dragToY">The Y position to release relative to the top-left-corner of the client</param>
-        private static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, int dragFromX,
-            int dragFromY, int dragToX, int dragToY)
+        private static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, 
+            int dragFromX, int dragFromY, int dragToX, int dragToY)
         {
-            ((IJavaScriptExecutor)driver).ExecuteScript(SimulateHtml5DragAndDrop, dragFrom, dragTo, dragFromX,
-                dragFromY, dragToX, dragToY);
+            ((IJavaScriptExecutor) driver).ExecuteScript(SimulateHtml5DragAndDrop, dragFrom, dragTo, 
+                dragFromX, dragFromY, dragToX, dragToY);
         }
 
         /// <summary>
@@ -157,8 +154,7 @@ namespace SeleniumFixture.Model
         /// <param name="dragTo">The WebElement to drag to</param>
         /// <param name="dragFromPosition">The place to click on the dragFrom</param>
         /// <param name="dragToPosition">The place to release on the dragTo</param>
-        public static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo,
-            Position dragFromPosition, Position dragToPosition)
+        public static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, Position dragFromPosition, Position dragToPosition)
         {
             var fromLocation = dragFrom.Location;
             var toLocation = dragTo.Location;
@@ -184,9 +180,8 @@ namespace SeleniumFixture.Model
         /// <param name="clientY">The mouse click Y position on the screen</param>
         /// <param name="data">The data transfer data</param>
         /// <returns>The updated data transfer data</returns>
-        private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName, int clientX,
-            int clientY, object data) =>
-            ((IJavaScriptExecutor)driver).ExecuteScript(SimulateEvent, dragFrom, eventName, clientX, clientY, data);
+        private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName, int clientX, int clientY, object data) =>
+            ((IJavaScriptExecutor) driver).ExecuteScript(SimulateEvent, dragFrom, eventName, clientX, clientY, data);
 
         /// <summary>
         ///     Calls a drag event
@@ -197,15 +192,12 @@ namespace SeleniumFixture.Model
         /// <param name="mousePosition">The mouse click area in the element</param>
         /// <param name="data">The data transfer data</param>
         /// <returns>The updated data transfer data</returns>
-        private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName,
-            Position mousePosition, object data)
+        private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName, Position mousePosition, object data)
         {
             var fromLocation = dragFrom.Location;
             var fromSize = dragFrom.Size;
-
             var clientX = fromLocation.X + mousePosition.GetX(fromSize.Width);
             var clientY = fromLocation.Y + mousePosition.GetY(fromSize.Height);
-
             return Html5SimulateEvent(driver, dragFrom, eventName, clientX, clientY, data);
         }
 
@@ -256,21 +248,9 @@ namespace SeleniumFixture.Model
             /// <returns>the Y coordinate relative to the height</returns>
             public int GetY(int height)
             {
-                if (TopLeft.Equals(this) || Top.Equals(this) || TopRight.Equals(this))
-                {
-                    return 1;
-                }
-
-                if (Left.Equals(this) || Center.Equals(this) || Right.Equals(this))
-                {
-                    return height / 2;
-                }
-
-                if (BottomLeft.Equals(this) || Bottom.Equals(this) || BottomRight.Equals(this))
-                {
-                    return height - 1;
-                }
-
+                if (TopLeft.Equals(this) || Top.Equals(this) || TopRight.Equals(this)) return 1;
+                if (Left.Equals(this) || Center.Equals(this) || Right.Equals(this)) return height / 2;
+                if (BottomLeft.Equals(this) || Bottom.Equals(this) || BottomRight.Equals(this)) return height - 1;
                 return 0;
             }
         }

@@ -36,10 +36,7 @@ namespace SeleniumFixture.Model
             }
         }
 
-        public bool AllAre(bool state)
-        {
-            return _zones.All(zone => zone.IsProtected == state);
-        }
+        public bool AllAre(bool state) => _zones.All(zone => zone.IsProtected == state);
 
         public bool AllAreSame()
         {
