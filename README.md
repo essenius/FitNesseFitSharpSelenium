@@ -8,7 +8,7 @@ This repo contains a fixture to enable automated testing of web applications usi
 4. Update plugins.properties to point to the FitSharp folder (if you took other folders than suggested)
 5. Open the Seleniumfixture solution
 6. Configure App.config: 
-	a. If you want to execute the tests, publish the test site in the SeleniumFixtureTestSite project to an azure website, and configure the URL in key TestSite
+	a. If you want to execute the tests, publish the test site in the SeleniumFixtureTestSite project to an azure website, and configure the URL in key TestSite. Also update the TESTPAGE entry in plugins.properties.
 	b. If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.seleniumhq.org/download/ and configure the Selenium Server URL in key RemoteSelenium
 	c. If you are using Firefox and you want to use integrated authentication, set the key Firefox.IntegratedAuthenticationDomain to the desired domain
 7. Install the browser drivers for the browsers you need (see https://www.seleniumhq.org/download/ as well), and ensure that they can be found via the Path
