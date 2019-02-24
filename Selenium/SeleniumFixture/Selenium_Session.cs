@@ -265,6 +265,9 @@ namespace SeleniumFixture
         public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier);
 
         [Documentation("Wait a specified number of seconds (can be fractions). Note: this seems to impact iframe context, so use with care.")]
-        public static void WaitSeconds(double seconds) => Thread.Sleep(TimeSpan.FromSeconds(seconds));
+        public static void WaitSeconds(double seconds)
+        {
+            if (seconds > 0) Thread.Sleep(TimeSpan.FromSeconds(seconds));
+        }
     }
 }

@@ -60,6 +60,8 @@ namespace SeleniumFixture.Utilities
 
         public static bool IsIe(this IWebDriver driver) => driver.IsBrowser("internet explorer");
 
+        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("microsoftedge");
+
         public static bool SetAttribute(this IWebElement element, string attributeName, string value)
         {
             var javascript = GetJavaScriptExecutor(element);

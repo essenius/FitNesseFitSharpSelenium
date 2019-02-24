@@ -186,6 +186,9 @@ namespace SeleniumFixture
         [Documentation("Returns whether a certain element has the specified attribute")]
         public bool ElementHasAttribute(string searchCriterion, string attribute) => AttributeOfElement(attribute, searchCriterion) != null;
 
+        [Documentation("Returns whether the element is selected/checked")]
+        public bool ElementIsChecked(string searchCriterion) => DoOperationOnElement(searchCriterion, element => element.Selected);
+
         [Documentation("Returns whether a certain element can be clicked (i.e. is enabled and displayed)")]
         public bool ElementIsClickable(string searchCriterion) => DoOperationOnElement(searchCriterion, IsClickable);
 

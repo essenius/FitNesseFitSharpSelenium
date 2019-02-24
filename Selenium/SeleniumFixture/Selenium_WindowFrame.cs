@@ -44,10 +44,11 @@ namespace SeleniumFixture
         public int WindowWidth => Driver.Manage().Window.Size.Width;
 
         [Documentation("Accept an alert, confirm or prompt dialog (press OK)")]
-        public void AcceptAlert()
+        public bool AcceptAlert()
         {
+            if (!WaitForAlert()) return false;
             Driver.SwitchTo().Alert().Accept();
-            WaitFor(drv => !AlertIsPresent());
+            return WaitForAlertToClose();
         }
 
         [Documentation("Check whether an alert, confirm or prompt box is active")]
@@ -64,22 +65,28 @@ namespace SeleniumFixture
             }
         }
 
+        internal bool WaitForAlert() => WaitFor(drv => AlertIsPresent());
+
+        internal bool WaitForAlertToClose() => WaitFor(drv => !AlertIsPresent());
+
         [Documentation("Dismiss an alert, confirm or prompt dialog (press Cancel)")]
-        public void DismissAlert()
+        public bool DismissAlert()
         {
+            if (!WaitForAlert()) return false;
             Driver.SwitchTo().Alert().Dismiss();
-            WaitFor(drv => !AlertIsPresent());
+            return WaitForAlertToClose();
         }
 
         [Documentation("Maximize browser window")]
         public void MaximizeWindow() => Driver.Manage().Window.Maximize();
 
         [Documentation("Provide a text response to a prompt and confirm (press OK)")]
-        public void RespondToAlert(string text)
+        public bool RespondToAlert(string text)
         {
+            if (!WaitForAlert()) return false;
             Driver.SwitchTo().Alert().SendKeys(text);
-            AcceptAlert();
-            WaitFor(drv => !AlertIsPresent());
+            Driver.SwitchTo().Alert().Accept();
+            return WaitFor(drv => !AlertIsPresent());
         }
 
         [Documentation("Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name). " +

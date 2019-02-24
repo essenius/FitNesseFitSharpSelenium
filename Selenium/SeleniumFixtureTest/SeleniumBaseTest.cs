@@ -26,10 +26,6 @@ using SeleniumFixture.Utilities;
 
 namespace SeleniumFixtureTest
 {
-    /// <summary>
-    ///     This is a test class for SeleniumTest and is intended
-    ///     to contain all SeleniumTest Unit Tests
-    /// </summary>
     [TestClass]
     public class SeleniumBaseTest
     {
@@ -127,38 +123,49 @@ namespace SeleniumFixtureTest
 
         private void SeleniumAlertTest()
         {
+            // Strange issue with Edge: the first time to accept or dismiss works, but after that the only way to make it work
+            // is to wait half a second before accepting or dismissing.
+            // TODO: Still need to understand why that is and make a more structural fix.
+            var waitTime = _selenium.Driver.IsEdge() ? 0.5 : 0;
             Assert.IsTrue(_selenium.WaitForTextIgnoringCase("data load completed"), "Wait for data load completed");
             Assert.IsFalse(_selenium.AlertIsPresent());
             Assert.IsTrue(_selenium.ElementExists("id:alertButton"));
             _selenium.ClickElement("id:alertButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
-            _selenium.AcceptAlert();
+            Assert.IsTrue(_selenium.DismissAlert());
             Assert.IsFalse(_selenium.AlertIsPresent());
+
             _selenium.ClickElement("id:alertButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
-            _selenium.DismissAlert();
+            Selenium.WaitSeconds(waitTime);
+            Assert.IsTrue(_selenium.AcceptAlert());
             Assert.IsFalse(_selenium.AlertIsPresent());
             Assert.IsTrue(_selenium.ElementExists("id:alertButton"));
             _selenium.ClickElement("id:confirmButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
-            _selenium.AcceptAlert();
+            Selenium.WaitSeconds(waitTime);
+            Assert.IsTrue(_selenium.AcceptAlert());
             Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"));
 
             _selenium.ClickElement("id:confirmButton");
-            _selenium.DismissAlert();
+            Selenium.WaitSeconds(waitTime);
+            Assert.IsTrue(_selenium.DismissAlert());
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"));
 
             _selenium.ClickElement("id:promptButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
+            Selenium.WaitSeconds(waitTime);
             _selenium.AcceptAlert();
             Assert.AreEqual("You returned: sure", _selenium.TextInElement("status"));
 
             _selenium.ClickElement("id:promptButton");
+            Selenium.WaitSeconds(waitTime);
             _selenium.DismissAlert();
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"));
 
             _selenium.ClickElement("id:promptButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
+            Selenium.WaitSeconds(waitTime);
             _selenium.RespondToAlert(@"naah");
             Assert.AreEqual(@"You returned: naah", _selenium.TextInElement("status"));
         }
@@ -170,6 +177,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.ReloadPage(), "reload page");
             Assert.IsTrue(_selenium.WaitForPageToLoad(), "Waiting for page load");
             var source1 = _selenium.HtmlSource();
+            // yet another instability in Edge. Not clear why it sometimes fails here.
+
             Assert.IsTrue(source1.Contains("<div id=\"divAsyncLoad\">Loading...</div>"));
             Assert.IsTrue(_selenium.WaitForHtmlSourceToChange(), "wait for HTML source to change");
             var source2 = _selenium.HtmlSource();
@@ -196,6 +205,7 @@ namespace SeleniumFixtureTest
                 "Test broken image");
             Assert.IsTrue(_selenium.ExecuteScript("return dragSource.naturalWidth!=\"undefined\" && dragSource.naturalWidth>0;").ToBool(),
                 "Test OK image");
+            Assert.IsTrue(_selenium.ElementHasAttribute("id:brokenImage", "Alt"), "Alt attribute exists");
         }
 
         [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
@@ -230,30 +240,40 @@ namespace SeleniumFixtureTest
         private void SeleniumClickElementTest()
         {
             Assert.IsTrue(_selenium.ClickElement("am"));
-            Assert.IsTrue(_selenium.ElementHasAttribute("am", "checked"), "am is checked");
-            Assert.IsFalse(_selenium.ElementHasAttribute("fm", "checked"), "fm is not checked");
-            Assert.IsTrue(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is checked 1");
+            Assert.IsTrue(_selenium.ElementIsChecked("am"), "am is checked");
+            Assert.IsFalse(_selenium.ElementIsChecked("fm"), "fm is not checked");
+            Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked 1");
             Assert.IsTrue(_selenium.ClickElement("checkbox"), "clicked checkbox 1");
-            Assert.IsFalse(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is not checked");
+            Assert.IsFalse(_selenium.ElementIsChecked("checkbox"), "checkbox is not checked");
+            // yet another instability in Edge
+            Selenium.WaitSeconds(_selenium.Driver.IsEdge() ? 0.5 : 0);
             Assert.IsTrue(_selenium.ClickElement("checkbox"), "clicked checkbox 2");
-            Assert.IsTrue(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is checked 2");
+            Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked 2");
         }
 
         private void SeleniumClickElementWithModifierTest()
         {
             var driver = _selenium.Driver;
+            if (driver.IsEdge())
+            {
+                MarkSkipped(nameof(SeleniumClickElementWithModifierTest),
+                    "Bug in Edge. It looks like deselecting doesn't work");
+                return;
+            }
             if (driver.IsIe())
             {
                 MarkSkipped(nameof(SeleniumClickElementWithModifierTest),
                     "Bug in IE. See https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/3425");
                 return;
             }
+
             AssertOptionValues("id:multi-select", new Collection<string>(), "all deselected at start");
             Assert.IsTrue(_selenium.ClickElement("CssSelector:#multi-select option:nth-child(2)"), "click item 2");
             AssertOptionValues("id:multi-select", new Collection<string> {"item 2"}, "item 2 selected");
             Assert.IsTrue(_selenium.ClickElementWithModifier("CssSelector:#multi-select option:nth-child(3)", "+"), "Shift click item 3");
             AssertOptionValues("id:multi-select", new Collection<string> {"item 2", "item 3"}, "items 2 and 3 selected");
             _selenium.DeselectOptionInElement("item 2", "id:multi-select");
+            AssertOptionValues("id:multi-select", new Collection<string> {"item 3"}, "Only item 3 selected");
             _selenium.DeselectOptionInElement("item 3", "id:multi-select");
             AssertOptionValues("id:multi-select", new Collection<string>(), "all deselected at end");
         }
@@ -307,10 +327,16 @@ namespace SeleniumFixtureTest
                 "check if dragSource is no longer on section level");
         }
 
-        [TestMethod, TestCategory("LocalBrowserWin10"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        [TestMethod, TestCategory("Experiments"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
         public void SeleniumEdgeTests()
         {
-            // Support for Edge is quite flaky. Lots of issues with e.g. alerts and radio buttons
+            // Support for Edge is quite flaky. Lots of issues with e.g. alerts and radio buttons. So your mileage may vary
+            // Issues I found so far:
+            // * Alerts require a wait of >= 0.5 seconds after first call
+            // * Radio buttons don't get their checked attributes set (unlike all other browsers)
+            // * Deselect item doesn't work well - seems to select instead.
+            // For now I've put Edge in the experiments category. More work is needed.
+            // But since Microsoft is unclear about the future of Edge, not putting a lot of effort into it right now.
             try
             {
                 SetBrowser(false, "edge");
@@ -440,9 +466,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitForPageToLoad(), "Wait for page to load");
             // only needed for IE, but does not harm the others
             var initialLength = _selenium.LengthOfHtmlSource();
-            Debug.Print("initial length: " + initialLength);
             Assert.IsTrue(_selenium.WaitUntilHtmlSourceIsLargerThan(initialLength), "Wait until HTML became larger");
-            Debug.Print("new length: " + _selenium.LengthOfHtmlSource());
             Assert.IsTrue(_selenium.TextInElementMatches("divAsyncLoad", "0,1,1,2"), "Check if output contains 0,1,1,2");
         }
 
@@ -706,17 +730,18 @@ namespace SeleniumFixtureTest
         private void SeleniumSetElementCheckedTest()
         {
             Assert.IsTrue(_selenium.SetElementChecked("am"), "check am 1");
-            Assert.IsTrue(_selenium.ElementHasAttribute("am", "checked"), "am is checked");
-            Assert.IsFalse(_selenium.ElementHasAttribute("fm", "checked"), "fm is not checked");
+            // The original method of ElementHasAttribute("am", "checked") works with all browsers except Edge
+            Assert.IsTrue(_selenium.ElementIsChecked("am"), "am is checked");
+            Assert.IsFalse(_selenium.ElementIsChecked("fm"), "fm is not checked");
             Assert.IsTrue(_selenium.SetElementChecked("am", true), "check am 2");
-            Assert.IsTrue(_selenium.ElementHasAttribute("am", "checked"), "am is checked");
-            Assert.IsTrue(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is checked");
+            Assert.IsTrue(_selenium.ElementIsChecked("am"), "am is checked");
+            Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked");
             Assert.IsTrue(_selenium.SetElementChecked("checkbox"), "check checkbox 1");
-            Assert.IsTrue(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is checked");
-            Assert.IsTrue(_selenium.SetElementUnchecked("checkbox"), "check checkbox 2");
-            Assert.IsFalse(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is not checked");
+            Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked");
+            Assert.IsTrue(_selenium.SetElementUnchecked("checkbox"), "uncheck checkbox 2");
+            Assert.IsFalse(_selenium.ElementIsChecked("checkbox"), "checkbox is unchecked");
             Assert.IsTrue(_selenium.SetElementChecked("checkbox"), "check checkbox 3");
-            Assert.IsTrue(_selenium.ElementHasAttribute("checkbox", "checked"), "checkbox is checked");
+            Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked");
         }
 
         private void SeleniumSetInputTest()

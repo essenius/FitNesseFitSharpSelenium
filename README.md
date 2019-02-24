@@ -25,7 +25,9 @@ This repo contains a fixture to enable automated testing of web applications usi
 
 	c. Set BROWSER to the browser you want to run the test on (e.g. Chrome Headless)
 11. Start FitNesse with the root repo folder as the data folder as well as the current directory:
+
 	cd /D C:\Data\FitNesseDemo
+	
 	java -jar C:\Apps\FitNesse\fitnesse-standalone.jar -d .
 12. Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite?suite
 
