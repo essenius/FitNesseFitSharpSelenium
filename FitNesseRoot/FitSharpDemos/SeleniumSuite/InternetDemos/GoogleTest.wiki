@@ -7,6 +7,7 @@
 !|Script                 |selenium                                             |
 |set browser             |${BROWSER}                                           |
 |open                    |http://www.google.com?hl=en                          |
+|wait until title matches|Google                                               |
 |set element             |name:q         |to             |${SearchCriterion}   |
 |submit element          |name:q                                               |
 |wait until title matches|^(?i)(${SearchCriterion})                            |

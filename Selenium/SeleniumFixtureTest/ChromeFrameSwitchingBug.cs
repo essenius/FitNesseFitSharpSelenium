@@ -10,6 +10,7 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System.Diagnostics;
+using System;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -18,7 +19,7 @@ using OpenQA.Selenium.Chrome;
 namespace SeleniumFixtureTest
 {
     [TestClass]
-    public class ChromeFrameSwitchingBug
+    public sealed class ChromeFrameSwitchingBug : IDisposable
     {
         private IWebDriver _browserDriver;
 
@@ -28,7 +29,7 @@ namespace SeleniumFixtureTest
             const string deprecatedText = "DEPRECATED";
             const string contentFrameName = "classFrame";
             _browserDriver = new ChromeDriver();
-            _browserDriver.Navigate().GoToUrl("http://seleniumhq.github.io/selenium/docs/api/java/index.html");
+            _browserDriver.Navigate().GoToUrl(new Uri("http://seleniumhq.github.io/selenium/docs/api/java/index.html"));
 
             Thread.Sleep(2000);
             Debug.Print("___________________________________________________");
@@ -55,5 +56,10 @@ namespace SeleniumFixtureTest
 
         [TestCleanup]
         public void MyTestCleanup() => _browserDriver.Quit();
+
+        public void Dispose()
+        {
+            _browserDriver?.Dispose();
+        }
     }
 }

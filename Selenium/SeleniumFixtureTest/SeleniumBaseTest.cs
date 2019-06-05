@@ -377,6 +377,8 @@ namespace SeleniumFixtureTest
         private void SeleniumExtendedTests()
         {
             Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
+            // Since recently, the request is intercepted and an attempt to sign on is done. So we need to wait until the real page shows up
+            _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
             _selenium.ResetTimeout();
             SeleniumAlertTest();
             SeleniumAsyncTest();

@@ -3,18 +3,20 @@ Apparently that driver has not been written with co-existence in mind
 
 First open a couple of driver sessions
 
-|Script     |!-SeleniumFixture.Selenium-!                                   |
-|$chrome=   |new browser       |Chrome                                      |
-|$firefox=  |new browser       |Firefox                                     |
-|$remote=   |new remote browser|Chrome         |at address|${SeleniumServer}|
-|$headless= |new remote browser|Chrome Headless|at address|${SeleniumServer}|
-|open       |!-http://www.google.com?hl=en-!                                |
+|Script     |!-SeleniumFixture.Selenium-!                          |
+|$chrome=   |new browser       |Chrome                             |
+|$firefox=  |new browser       |Firefox                            |
+|$remote=   |new remote browser|Chrome|at address|${SeleniumServer}|
+|$headless= |new  browser      |Chrome Headless                    |
+|open       |!-http://www.google.com?hl=en-!                       |
+|wait until title matches      |Google                             |
 
 Do a Bing search on the Chrome driver
 
 !|script                                                    |
 |set driver              |$chrome                           |
 |open                    |http://www.bing.com               |
+|wait until title matches|Bing                              |
 |send keys               |Test Automation~|to element|name:q|
 |wait until title matches|^(?i)(Test Automation)            |
 |wait for element        |id:b_tween                        |
@@ -24,6 +26,7 @@ Do a Google search on the Firefox driver
 !|script                                                    |
 |set driver              |$firefox                          |
 |open                    |http://www.google.nl              |
+|wait until title matches|Google                            |
 |send keys               |Test Automation~|to element|name:q|
 |wait until title matches|^(?i)(Test Automation)            |
 |wait for element        |id:resultStats                    |
@@ -33,6 +36,7 @@ Do a Yahoo search on the remote driver
 !|script                                             |
 |set driver              |$remote                    |
 |open                    |https://search.yahoo.com   |
+|wait until title matches|Yahoo Search               |
 |click element if visible|ClassName:primary          |
 |send keys               |FitNesse~|to element|name:p|
 |wait until title matches|(?i)(FitNesse)             |

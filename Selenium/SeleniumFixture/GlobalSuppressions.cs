@@ -1,20 +1,9 @@
-﻿// This file is used by Code Analysis to maintain SuppressMessage 
+﻿
+// This file is used by Code Analysis to maintain SuppressMessage 
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
-//
-// To add a suppression to this file, right-click the message in the 
-// Error List, point to "Suppress Message(s)", and click 
-// "In Project Suppression File".
-// You do not need to add suppressions to this file manually.
 
-using System.Diagnostics.CodeAnalysis;
-
-[assembly:
-    SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames", Justification = "not supported in Selenium WebDriver")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "SeleniumFixture",
-    Justification = "logical distribution")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "SeleniumFixture.Model",
-    Justification = "logical distribution")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1014:MarkAssembliesWithClsCompliant")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "<Pending>", Scope = "member", Target = "~F:SeleniumFixture.Model.BrowserDriverFactory._nativeMethods")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>", Scope = "member", Target = "~M:SeleniumFixture.Utilities.WebObjectExtensions.GetImplicitWait(OpenQA.Selenium.IWebDriver)~System.Double")]
 

@@ -20,7 +20,7 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class ExtractTableValuesTest
     {
-        private static void TestTable(string xPathQuery, int max, string[,,] expectedValues)
+        private static void TestTable(string xPathQuery, int max, string[][][] expectedValues)
         {
             var etv = new ExtractTableValues(xPathQuery, max);
             var table = etv.Query();
@@ -31,15 +31,15 @@ namespace SeleniumFixtureTest
             {
                 var rowCollection = table[row] as Collection<object>;
                 Assert.IsNotNull(rowCollection);
-                Assert.AreEqual(expectedValues.GetLength(1), etv.ColumnCount, $"etv Column Count {xPathQuery}");
-                Assert.AreEqual(expectedValues.GetLength(1), rowCollection.Count, $"query Column Count {xPathQuery}");
+                Assert.AreEqual(expectedValues[0].GetLength(0), etv.ColumnCount, $"etv Column Count {xPathQuery}");
+                Assert.AreEqual(expectedValues[0].GetLength(0), rowCollection.Count, $"query Column Count {xPathQuery}");
                 for (var column = 0; column < rowCollection.Count; column++)
                 {
                     var columnCollection = rowCollection[column] as Collection<object>;
                     Assert.IsNotNull(columnCollection);
-                    Assert.AreEqual(2, expectedValues.GetLength(2), "Cell Count");
-                    Assert.AreEqual(expectedValues[row, column, 0], columnCollection[0], $"{xPathQuery}({row},{column},{0})");
-                    Assert.AreEqual(expectedValues[row, column, 1], columnCollection[1], $"{xPathQuery}({row},{column},{1})");
+                    Assert.AreEqual(2, expectedValues[0][0].GetLength(0), "Cell Count");
+                    Assert.AreEqual(expectedValues[row][column][0], columnCollection[0], $"{xPathQuery}({row},{column},{0})");
+                    Assert.AreEqual(expectedValues[row][column][1], columnCollection[1], $"{xPathQuery}({row},{column},{1})");
                 }
             }
         }
@@ -62,23 +62,25 @@ namespace SeleniumFixtureTest
         {
             _selenium.SetBrowser("chrome");
             _selenium.Open(SeleniumBaseTest.CreateTestPageUri());
-            TestTable("XPath://table[@id='normalTable']", 0, new[,,]
+            // Tricky stuff happening here - attempts to logon behind the scenes
+            _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
+            TestTable("XPath://table[@id='normalTable']", 0, new []
             {
-                {{"header1", "value 1"}, {"header2", "10"}},
-                {{"header1", "value 2"}, {"header2", "20"}},
-                {{"header1", "value 3"}, {"header2", "30"}}
+                new[] { new[] {"header1", "value 1"}, new[] {"header2", "10"}},
+                new[] { new[] {"header1", "value 2"}, new[] {"header2", "20"}},
+                new[] { new[] {"header1", "value 3"}, new[] {"header2", "30"}}
             });
 
-            TestTable("CssSelector: table#tableWithoutHeaders", 0, new[,,]
+            TestTable("CssSelector: table#tableWithoutHeaders", 0, new []
             {
-                {{"Column 1", "value 4"}, {"Column 2", "40"}},
-                {{"Column 1", "value 5"}, {"Column 2", "50"}}
+                new[] {new[] { "Column 1", "value 4"}, new[] { "Column 2", "40"}},
+                new[] {new[] { "Column 1", "value 5"}, new[] { "Column 2", "50"}}
             });
 
-            TestTable("id:tableWithEmptyHeaders", 0, new[,,]
+            TestTable("id:tableWithEmptyHeaders", 0, new []
             {
-                {{"Column 1", "value 6"}, {"Column 2", "60"}},
-                {{"Column 1", "value 7"}, {"Column 2", "70"}}
+                new[] {new[] { "Column 1", "value 6"}, new[] { "Column 2", "60"}},
+                new[] {new[] { "Column 1", "value 7"}, new[] { "Column 2", "70"}}
             });
         }
 
@@ -93,28 +95,28 @@ namespace SeleniumFixtureTest
 
             // tricky: the header and data rows are in different tables with the same role. The fixture can now handle that
 
-            TestTable("XPath://table[@role='grid']", 2, new[,,]
+            TestTable("XPath://table[@role='grid']", 2, new []
             {
-                {
-                    {"Contact Name", @"Maria Anders"}, {"Contact Title", "Sales Representative"},
-                    {"Company Name", @"Alfreds Futterkiste"}, {"Country", "Germany"}
+                new[] {
+                    new[] {"Contact Name", @"Maria Anders"}, new[] {"Contact Title", "Sales Representative"},
+                    new[] {"Company Name", @"Alfreds Futterkiste"}, new[] {"Country", "Germany"}
                 },
-                {
-                    {"Contact Name", "Ana Trujillo"}, {"Contact Title", "Owner"},
-                    {"Company Name", @"Ana Trujillo Emparedados y helados"}, {"Country", "Mexico"}
+                new[] {
+                    new[] {"Contact Name", "Ana Trujillo"}, new[] {"Contact Title", "Owner"},
+                    new[] {"Company Name", @"Ana Trujillo Emparedados y helados"}, new[] {"Country", "Mexico"}
                 }
             });
 
             _selenium.ClickElement("LinkText:Contact Name");
-            TestTable("XPath://table[@role='grid']", 2, new[,,]
+            TestTable("XPath://table[@role='grid']", 2, new []
             {
-                {
-                    {"Contact Name", @"Alejandra Camino"}, {"Contact Title", "Accounting Manager"},
-                    {"Company Name", @"Romero y tomillo"}, {"Country", "Spain"}
+                new[] {
+                    new[] {"Contact Name", @"Alejandra Camino"}, new[] {"Contact Title", "Accounting Manager"},
+                    new[] {"Company Name", @"Romero y tomillo"}, new[] {"Country", "Spain"}
                 },
-                {
-                    {"Contact Name", @"Alexander Feuer"}, {"Contact Title", "Marketing Assistant"},
-                    {"Company Name", @"Morgenstern Gesundkost"}, {"Country", "Germany"}
+                new[] {
+                    new[] {"Contact Name", @"Alexander Feuer"}, new[] {"Contact Title", "Marketing Assistant"},
+                    new[] {"Company Name", @"Morgenstern Gesundkost"}, new[] {"Country", "Germany"}
                 }
             });
         }

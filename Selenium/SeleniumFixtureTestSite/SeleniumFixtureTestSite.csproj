@@ -79,6 +79,7 @@
     <Content Include="index.html" />
     <Content Include="pic_bulboff.gif" />
     <Content Include="pic_bulbon.gif" />
+    <Content Include="SECoE.png" />
     <Content Include="TestNewWindow.html" />
     <Content Include="TestPage.css" />
     <Content Include="TestPage.html" />

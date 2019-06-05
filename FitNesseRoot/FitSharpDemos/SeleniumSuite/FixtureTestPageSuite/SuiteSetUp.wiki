@@ -9,12 +9,14 @@ We define table types so that we don't need to specify these in the test pages
 
 Open the test page that we use for all tests
 
-!|script    |Selenium                               |
-|check      |version info|  |SeleniumFixture 2.0.2  |
-|set browser|${BROWSER}                             |
-|set timeout|1           |seconds                   |
-|open       |${TESTPAGE}                            |
-|check      |title       |Selenium Fixture Test Page|
+!|script                 |Selenium                               |
+|check                   |version info|  |SeleniumFixture 2.1.1  |
+|set browser             |${BROWSER}                             |
+|maximize window                                                 |
+|set timeout             |10          |seconds                   |
+|open                    |${TESTPAGE}                            |
+|wait until title matches|Selenium Fixture Test Page             |
+|set timeout             |1           |seconds                   |
 
 We don't want to use deprecated functions, so if we unadvertedly do so, we want to get an exception. 
 

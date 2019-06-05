@@ -34,7 +34,7 @@ namespace SeleniumFixture.Utilities
             return returnValue;
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "driver", Justification = "Enable use in extension method")]
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Enable use in extension method")]
         public static double GetImplicitWait(this IWebDriver driver) => _lastSetImplicitWaitSeconds;
         // Currently this only works for firefox: (int)driver.Manage().Timeouts().ImplicitWait.TotalSeconds;
 

@@ -27,7 +27,7 @@ namespace SeleniumFixtureTest
         [SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing an exception")]
         public void SearchParserByFunctionNullTest()
         {
-            var by = new SearchParser("unknown", "abc").By;
+            _ = new SearchParser("unknown", "abc").By;
         }
 
         [TestMethod, TestCategory("Unit")]

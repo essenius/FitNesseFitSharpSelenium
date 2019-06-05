@@ -23,8 +23,8 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class ZoneTest
     {
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive"),
-         SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive")]
+        //[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive"),
+        // SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive")]
         public TestContext TestContext { get; set; }
 
         [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
@@ -54,7 +54,7 @@ namespace SeleniumFixtureTest
         public void ZoneIsProtectedInInvalidKeyTest()
         {
             var zone = new Zone(1, Registry.LocalMachine, Registry.CurrentUser);
-            var result = zone.IsProtectedIn("wrong key");
+            _ = zone.IsProtectedIn("wrong key");
         }
 
         [TestMethod, TestCategory("Unit")]

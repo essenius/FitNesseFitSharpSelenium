@@ -26,7 +26,8 @@ namespace SeleniumFixture
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp"),
      SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
      SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp")]
+     SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp"),
+    SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "Can't change the type name - would be a breaking change")]
     public sealed partial class Selenium
     {
         private const string BrowserChoices = "Browser names can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera";

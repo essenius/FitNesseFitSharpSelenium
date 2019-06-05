@@ -66,12 +66,14 @@ namespace SeleniumFixture.Model
                     return @"CHROME";
                 case @"GOOGLECHROMEHEADLESS":
                     return @"CHROMEHEADLESS";
-                case @"INTERNETEXPLORER":
-                    return @"IE";
+                case "MICROSOFTEDGE":
+                    return "EDGE";
                 case @"FF":
                     return @"FIREFOX";
                 case @"FFHEADLESS":
                     return @"FIREFOXHEADLESS";
+                case @"INTERNETEXPLORER":
+                    return @"IE";
                 default:
                     return browserInUpperCase;
             }
@@ -82,7 +84,7 @@ namespace SeleniumFixture.Model
         private readonly Dictionary<string, Func<DriverOptions>> _remoteOptions;
         private readonly TimeSpan _timeout;
 
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local", Justification = "Changed in tests")]
+        [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Changed in tests")]
         private NativeMethods _nativeMethods = new NativeMethods();
 
         public BrowserDriverFactory(Proxy proxy, TimeSpan timeout)
@@ -358,7 +360,7 @@ namespace SeleniumFixture.Model
 
         private OperaOptions GetOperaOptions() => new OperaOptions {Proxy = _proxy};
 
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local", Justification = "Consistency with other GetOptions methods")]
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Consistency with other GetOptions methods")]
         private SafariOptions GetSafariOptions()
         {
             // didn't find a way to enable proxies or integrated authentication on Safari

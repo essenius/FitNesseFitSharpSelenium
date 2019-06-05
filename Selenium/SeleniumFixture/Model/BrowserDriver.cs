@@ -84,6 +84,7 @@ namespace SeleniumFixture.Model
             }
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Desired behavior. Returning exception to FitSHarp")]
         public static string NewRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
             try
@@ -98,7 +99,6 @@ namespace SeleniumFixture.Model
                 var message = "Can't run " + browser + " on " + address;
                 throw new StopTestException(message, e);
             }
-
             ((RemoteWebDriver)Current).FileDetector = new LocalFileDetector();
 
             CurrentId = AddDriver(Current);

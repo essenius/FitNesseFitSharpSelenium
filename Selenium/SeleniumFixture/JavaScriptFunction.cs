@@ -11,6 +11,7 @@
 
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
@@ -39,11 +40,10 @@ namespace SeleniumFixture
             _paramList.Clear();
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "name", Justification = "FitSharp spec"),
-         SuppressMessage("ReSharper", "UnusedParameter.Global", Justification = "FitSharp spec")]
         [Documentation("Dynamic Decision Table Interface (set column value). Name is for clarity only - ignored")]
         public void Set(string name, object value)
         {
+            Debug.Assert(!string.IsNullOrEmpty(name));
             var delimiter = value is string ? "'" : string.Empty;
             _paramList.Add(delimiter + value + delimiter);
         }

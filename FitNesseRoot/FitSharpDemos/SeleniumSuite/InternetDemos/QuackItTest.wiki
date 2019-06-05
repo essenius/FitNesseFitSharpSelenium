@@ -1,20 +1,19 @@
 !| import       |
 |SeleniumFixture|
 
-!| Script       |selenium                                                          |
-|set proxy type |System                                                            |
-|set browser    |${BROWSER}                                                        |
-|open           |http://www.quackit.com/html/templates/frames/frames_example_6.html|
-|reject         |element      |PartialLinkText : Menu 1               |exists      |
-|switch to frame|name : topNav                                                     |
-|ensure         |element      |PartialLinkText : Menu 1               |exists      |
-|switch to default context                                                         |
-|reject         |element      |PartialLinkText : Menu 1               |exists      |
-|switch to frame|name : content                                                    |
-|ensure         |element      |PartialLinkText : Load white page      |exists      |
-|close                                                                             |
-
+!| Script                |selenium                                                          |
+|set proxy type          |System                                                            |
+|set browser             |${BROWSER}                                                        |
+|open                    |http://www.quackit.com/html/templates/frames/frames_example_6.html|
+|wait until title matches|Frameset .*                                                       |
+|reject                  |element      |PartialLinkText : Menu 1               |exists      |
+|switch to frame         |name : topNav                                                     |
+|wait for element        |PartialLinkText : Menu 1                                          |
+|switch to default context                                                                  |
+|wait for element        |name:topNav                                                       |
+|reject                  |element      |PartialLinkText : Menu 1               |exists      |
+|switch to frame         |name : content                                                    |
+|wait for element        |PartialLinkText : Load white page                                 |
+|close                                                                                      |
 
 http://www.quackit.com/html/templates/frames/frames_example_6.html
-
-there is still a random failure of the two ensure assertions. Probably timing related.
