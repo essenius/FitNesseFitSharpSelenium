@@ -12,6 +12,8 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SeleniumFixture.Utilities
@@ -51,6 +53,24 @@ namespace SeleniumFixture.Utilities
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
             return bool.Parse(value.ToString());
+        }
+
+        /// <summary>
+        ///     Convert a graceful name to the corresponding method (or property) name.
+        ///     If the name doesn't have spaces, it only capitalizes the first letter. Otherwise it capitalizes the first letter
+        ///     of each word and makes the rest lower case.
+        /// </summary>
+        /// <param name="gracefulName">the graceful name (can be with spaces)</param>
+        /// <returns>The method name (PascalCase)</returns>
+        public static string ToMethodName(this string gracefulName)
+        {
+            if (string.IsNullOrEmpty(gracefulName)) return gracefulName;
+            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CultureInfo.CurrentCulture) + gracefulName.Substring(1);
+            var textInfo = CultureInfo.CurrentCulture.TextInfo;
+            var result = string.Empty;
+            var sections = gracefulName.Split(' ');
+            return sections.Select(section => textInfo.ToTitleCase(textInfo.ToLower(section)))
+                .Aggregate(result, (current, capitalizedSection) => current + capitalizedSection);
         }
     }
 }

@@ -12,15 +12,12 @@
 using System;
 using System.Globalization;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
 
 namespace SeleniumFixture.Model
 {
     internal class SearchParser
     {
-        public static string DefaultMethod { get; set; } = "id";
-
-        public static string Delimiter { get; set; } = ":";
-
         public SearchParser(string searchCriterion)
         {
             if (searchCriterion == null)
@@ -31,7 +28,7 @@ namespace SeleniumFixture.Model
 
             if (searchCriterion.Contains(Delimiter))
             {
-                Method =  searchCriterion.Substring(0, searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal)).Trim();
+                Method = searchCriterion.Substring(0, searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal)).Trim();
                 Locator = searchCriterion.Substring(searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal) + Delimiter.Length).Trim();
             }
             else
@@ -55,12 +52,22 @@ namespace SeleniumFixture.Model
             {
                 switch (Method.ToUpper(CultureInfo.CurrentCulture))
                 {
+                    case @"ACCESSIBILITYID":
+                        return MobileBy.AccessibilityId;
+                    case @"ANDROIDUIAUTOMATOR":
+                        return MobileBy.AndroidUIAutomator;
                     case @"CLASSNAME":
                         return By.ClassName;
                     case @"CSSSELECTOR":
                         return By.CssSelector;
                     case @"ID":
                         return By.Id;
+                    case @"IOSCLASSCHAIN":
+                        return MobileBy.IosClassChain;
+                    case @"IOSNSPREDICATE":
+                        return MobileBy.IosNSPredicate;
+                    case @"IOSUIAUTOMATION":
+                        return MobileBy.IosUIAutomation;
                     case @"LINKTEXT":
                         return By.LinkText;
                     case @"NAME":
@@ -69,6 +76,10 @@ namespace SeleniumFixture.Model
                         return By.PartialLinkText;
                     case @"TAGNAME":
                         return By.TagName;
+                    case "TIZENAUTOMATION":
+                        return MobileBy.TizenAutomation;
+                    case "WINDOWSAUTOMATION":
+                        return MobileBy.WindowsAutomation;
                     case @"XPATH":
                         return By.XPath;
                     default:
@@ -76,6 +87,10 @@ namespace SeleniumFixture.Model
                 }
             }
         }
+
+        public static string DefaultMethod { get; set; } = "id";
+
+        public static string Delimiter { get; set; } = ":";
 
         public string Locator { get; }
         public string Method { get; }

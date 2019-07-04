@@ -13,7 +13,7 @@ using SeleniumFixture.Utilities;
 
 namespace SeleniumFixtureTest
 {
-    internal class NativeMethodsMock: NativeMethods
+    internal class NativeMethodsMock : NativeMethods
     {
         internal override bool ScreenScalingIs1() => false;
     }

@@ -27,17 +27,20 @@ namespace SeleniumFixture
      SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
      SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp"),
      SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp"),
-    SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification = "Can't change the type name - would be a breaking change")]
+     SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification =
+         "Can't change the type name - would be a breaking change")]
     public sealed partial class Selenium
     {
         private const string BrowserChoices = "Browser names can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera";
         private const int DefaultTimeoutInSeconds = 3;
         private const string DocProtectedMode1 = "Check if Protected Mode for all security zones ";
+
         private const string DocProtectedMode2 = ", and throw a StopTestException if not. " +
                                                  "If you use Internet Explorer, it is important that all zones have the same protected mode setting";
 
-        private ProtectedMode _protectedMode;
         private BrowserStorage _browserStorage;
+
+        private ProtectedMode _protectedMode;
 
         private BrowserStorage BrowserStorage
         {
@@ -112,14 +115,14 @@ namespace SeleniumFixture
         [Documentation("Execute JavaScript asynchronously (in the browser)")]
         public object ExecuteAsyncScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             return scriptExecutor.ExecuteAsyncScript(script);
         }
 
         [Documentation("Execute JavaScript (in the browser)")]
         public object ExecuteScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             return scriptExecutor.ExecuteScript(script);
         }
 
@@ -127,13 +130,13 @@ namespace SeleniumFixture
                        "then it is substituted by the element. You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithParameters(string script, Collection<string> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             var argsToUse = new List<object>();
             foreach (var locator in args ?? new Collection<string>())
             {
                 if (locator.Contains(SearchParser.Delimiter))
                 {
-                    argsToUse.Add(Driver.FindElement(new SearchParser(locator).By));
+                    argsToUse.Add(FindElement(locator));
                 }
                 else
                 {
@@ -149,7 +152,7 @@ namespace SeleniumFixture
              "You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithPlainParameters(string script, Collection<object> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             return scriptExecutor.ExecuteScript(script, args.ToArray());
         }
 
@@ -174,8 +177,7 @@ namespace SeleniumFixture
             NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, object>());
 
         [Documentation("Just like SetRemoteBrowserAtAddressWithCapabilities, but returns the driver ID instead of a boolean." + BrowserChoices)]
-        public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
-            Dictionary<string, object> capabilities)
+        public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
             DriverId = BrowserDriver.NewRemoteDriver(browserName, baseAddress, capabilities);
             Driver = BrowserDriver.Current;
@@ -231,18 +233,11 @@ namespace SeleniumFixture
         [Documentation("Set a key/value pair in a web store")]
         public void SetInWebStorageTo(string key, string value) => BrowserStorage[key] = value;
 
-        [Documentation("Sets the http and SSL proxy for the test. Type can be Direct, System, AutoDetect. " +
-                       "This is a system wide setting, so coordinate carefully and revert to original values after the test")]
+        [Documentation("Sets the http and SSL proxy for the test. Type can be Direct, System, AutoDetect.")]
         public static bool SetProxyType(string proxyType) => BrowserDriver.SetProxyType(proxyType);
 
-        [Documentation("Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile. " +
-                       "This is a system wide setting, so coordinate carefully and revert to original values after the test")]
-        public static bool SetProxyTypeValue(string proxyType, string proxyValue)
-        {
-            if (!BrowserDriver.SetProxyType(proxyType)) return false;
-            BrowserDriver.SetProxyValue(proxyValue);
-            return true;
-        }
+        [Documentation("Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile).")]
+        public static bool SetProxyTypeValue(string proxyType, string proxyValue) => BrowserDriver.SetProxyValue(proxyType, proxyValue);
 
         [Documentation("Use a remote Selenium server (address including port). " +
                        "Raises a StopTestException if unable to connect. " + BrowserChoices)]

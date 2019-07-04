@@ -12,7 +12,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -37,8 +36,8 @@ namespace SeleniumFixtureTest
         private bool _runningRemote;
 
         private Selenium _selenium;
-        private static string BaseUrl { get; } = ConfigurationManager.AppSettings.Get("TestSite");
-        public static string RemoteSelenium { get; } = ConfigurationManager.AppSettings.Get("RemoteSelenium");
+        private static string BaseUrl { get; } = AppConfig.Get("TestSite");
+        public static string RemoteSelenium { get; } = AppConfig.Get("RemoteSelenium");
 
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "False positive")]
         public TestContext TestContext { get; set; }
@@ -126,45 +125,48 @@ namespace SeleniumFixtureTest
             // Strange issue with Edge: the first time to accept or dismiss works, but after that the only way to make it work
             // is to wait half a second before accepting or dismissing.
             // TODO: Still need to understand why that is and make a more structural fix.
-            var waitTime = _selenium.Driver.IsEdge() ? 0.5 : 0;
-            Assert.IsTrue(_selenium.WaitForTextIgnoringCase("data load completed"), "Wait for data load completed");
+            var ok = _selenium.WaitForTextIgnoringCase("data load completed");
+            Debug.Print(Selenium.Screenshot());
+            Assert.IsTrue(ok, "Wait for data load completed");
+            var waitTime = _selenium.Driver.IsEdge() ? 1.0 : 0;
             Assert.IsFalse(_selenium.AlertIsPresent());
             Assert.IsTrue(_selenium.ElementExists("id:alertButton"));
             _selenium.ClickElement("id:alertButton");
-            Assert.IsTrue(_selenium.AlertIsPresent());
-            Assert.IsTrue(_selenium.DismissAlert());
-            Assert.IsFalse(_selenium.AlertIsPresent());
+            Assert.IsTrue(_selenium.AlertIsPresent(), "Alert present");
+            Assert.IsTrue(_selenium.DismissAlert(), "Dismissed alert");
+            Assert.IsFalse(_selenium.AlertIsPresent(), "Alert not present");
 
             _selenium.ClickElement("id:alertButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
             Selenium.WaitSeconds(waitTime);
-            Assert.IsTrue(_selenium.AcceptAlert());
-            Assert.IsFalse(_selenium.AlertIsPresent());
-            Assert.IsTrue(_selenium.ElementExists("id:alertButton"));
+            Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert");
+            Assert.IsFalse(_selenium.AlertIsPresent(), "Alert not present after accept");
+            Assert.IsTrue(_selenium.ElementExists("id:alertButton"), "Alert button exists");
             _selenium.ClickElement("id:confirmButton");
-            Assert.IsTrue(_selenium.AlertIsPresent());
+            Assert.IsTrue(_selenium.AlertIsPresent(), "Confirm alert present");
             Selenium.WaitSeconds(waitTime);
-            Assert.IsTrue(_selenium.AcceptAlert());
-            Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"));
+            Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert (2)");
+            Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"), "Pressed OK");
 
             _selenium.ClickElement("id:confirmButton");
             Selenium.WaitSeconds(waitTime);
-            Assert.IsTrue(_selenium.DismissAlert());
-            Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"));
+            Assert.IsTrue(_selenium.DismissAlert(), "Dismiss alert");
+            Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss succeeded");
 
             _selenium.ClickElement("id:promptButton");
-            Assert.IsTrue(_selenium.AlertIsPresent());
+            Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert present");
             Selenium.WaitSeconds(waitTime);
             _selenium.AcceptAlert();
-            Assert.AreEqual("You returned: sure", _selenium.TextInElement("status"));
+            Assert.AreEqual("You returned: sure", _selenium.TextInElement("status"), "Prompt alert accepted");
 
             _selenium.ClickElement("id:promptButton");
             Selenium.WaitSeconds(waitTime);
             _selenium.DismissAlert();
-            Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"));
+            Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss prompt alert succeeded");
 
             _selenium.ClickElement("id:promptButton");
-            Assert.IsTrue(_selenium.AlertIsPresent());
+            Selenium.WaitSeconds(0.5);
+            Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert is present (2)");
             Selenium.WaitSeconds(waitTime);
             _selenium.RespondToAlert(@"naah");
             Assert.AreEqual(@"You returned: naah", _selenium.TextInElement("status"));
@@ -176,12 +178,11 @@ namespace SeleniumFixtureTest
             _selenium.SetTimeoutSeconds(1.1);
             Assert.IsTrue(_selenium.ReloadPage(), "reload page");
             Assert.IsTrue(_selenium.WaitForPageToLoad(), "Waiting for page load");
-            var source1 = _selenium.HtmlSource();
-            // yet another instability in Edge. Not clear why it sometimes fails here.
+            var source1 = _selenium.PageSource;
 
-            Assert.IsTrue(source1.Contains("<div id=\"divAsyncLoad\">Loading...</div>"));
-            Assert.IsTrue(_selenium.WaitForHtmlSourceToChange(), "wait for HTML source to change");
-            var source2 = _selenium.HtmlSource();
+            Assert.IsTrue(source1.Contains("<div id=\"divAsyncLoad\">Loading...</div>"), "Loading...");
+            Assert.IsTrue(_selenium.WaitForPageSourceToChange(), "wait for page source to change");
+            var source2 = _selenium.PageSource;
             Assert.AreNotEqual(source1, source2, "Sources are not equal after wait for change");
             Assert.AreEqual("0,1,1,2,3,5,8,13,21,34,55,89", _selenium.TextInElement("divAsyncLoad"),
                 "output element has the expected values");
@@ -325,18 +326,30 @@ namespace SeleniumFixtureTest
                 "check if dragSource is now in dropTarget");
             Assert.IsFalse(_selenium.ElementExists("CssSelector: body >  section > #dragSource"),
                 "check if dragSource is no longer on section level");
+            Assert.IsTrue(_selenium.ReloadPage(), "Reload page");
+            Assert.IsTrue(_selenium.WaitForElement("CssSelector: body > section > #dragSource"),
+                "Wait for dragSource on section level");
+            try
+            {
+                _selenium.DragElementAndDropAt("dragSource", 150, 730);
+                Assert.Fail("No exception thrown");
+            }
+            catch (NotImplementedException)
+            {
+                // pass
+            }
         }
 
         [TestMethod, TestCategory("Experiments"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
         public void SeleniumEdgeTests()
         {
-            // Support for Edge is quite flaky. Lots of issues with e.g. alerts and radio buttons. So your mileage may vary
-            // Issues I found so far:
+            // WebDriver support for Edge is quite flaky. Lots of issues with e.g. alerts and radio buttons.
+            // So your mileage may vary. Issues I found so far:
             // * Alerts require a wait of >= 0.5 seconds after first call
             // * Radio buttons don't get their checked attributes set (unlike all other browsers)
             // * Deselect item doesn't work well - seems to select instead.
             // For now I've put Edge in the experiments category. More work is needed.
-            // But since Microsoft is unclear about the future of Edge, not putting a lot of effort into it right now.
+            // But since Microsoft is unclear about the future of Edge, I'm not putting a lot of effort into it right now.
             try
             {
                 SetBrowser(false, "edge");
@@ -371,7 +384,7 @@ namespace SeleniumFixtureTest
 
         private void SeleniumExecuteAsyncJavaScriptTest()
         {
-            Assert.IsTrue((bool) _selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
+            Assert.IsTrue((bool)_selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
         }
 
         private void SeleniumExtendedTests()
@@ -399,7 +412,7 @@ namespace SeleniumFixtureTest
             SeleniumElementIsClickableTest();
             SeleniumElementIsVisibleTest();
             SeleniumFrameTest();
-            SeleniumLengthOfHtmlSourceTest();
+            SeleniumLengthOfPageSourceTest();
             SeleniumMoveToElementTest();
             SeleniumNonExistingElementsTest();
             SeleniumNonExistingWindowTest();
@@ -462,13 +475,13 @@ namespace SeleniumFixtureTest
             SeleniumExtendedTests();
         }
 
-        private void SeleniumLengthOfHtmlSourceTest()
+        private void SeleniumLengthOfPageSourceTest()
         {
             Assert.IsTrue(_selenium.ReloadPage(), "Reload page");
             Assert.IsTrue(_selenium.WaitForPageToLoad(), "Wait for page to load");
             // only needed for IE, but does not harm the others
-            var initialLength = _selenium.LengthOfHtmlSource();
-            Assert.IsTrue(_selenium.WaitUntilHtmlSourceIsLargerThan(initialLength), "Wait until HTML became larger");
+            var initialLength = _selenium.LengthOfPageSource;
+            Assert.IsTrue(_selenium.WaitUntilPageSourceIsLargerThan(initialLength), "Wait until HTML became larger");
             Assert.IsTrue(_selenium.TextInElementMatches("divAsyncLoad", "0,1,1,2"), "Check if output contains 0,1,1,2");
         }
 
@@ -483,7 +496,7 @@ namespace SeleniumFixtureTest
             // usually status is 'Hovering..", but Chrome may be too fast
             var statusOk = status.Equals("Hovering over image") || status.Equals("OK");
             Assert.IsTrue(statusOk, "Status is 'Hovering' or 'OK'");
-            Assert.IsTrue(_selenium.MoveToElement(@"paragraphLightbulb"), "Move to paragraph");
+            Assert.IsTrue(_selenium.ScrollToElement("ignored", @"paragraphLightbulb"), "Scroll to paragraph (uses Move under the hood");
             Assert.IsTrue(_selenium.WaitUntilTextInElementMatches("status", ""), "Wait until text in status is empty");
         }
 
@@ -563,7 +576,7 @@ namespace SeleniumFixtureTest
             var originalValue = _selenium.AttributeOfElement("value", textboxLocator);
             Assert.IsFalse(string.IsNullOrEmpty(originalValue), "Original value not null");
             Assert.IsTrue(_selenium.RightClickElement(textboxLocator), "Show context menu");
-            Selenium.WaitSeconds(0.2); // allow dropdown to expand
+            Selenium.WaitSeconds(0.5); // allow dropdown to expand
 
             // Keystrokes are the same for native and Selenium
             const string selectAllInContextMenuSequence = "{DOWN}a";
@@ -572,10 +585,12 @@ namespace SeleniumFixtureTest
             if (driver.IsChrome() || driver.IsFirefox())
             {
                 Selenium.NativeSendKeys(selectAllInContextMenuSequence);
+                Debug.Print("NativeSendKeys");
             }
             else
             {
                 _selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
+                Debug.Print("SendKeysToElement");
             }
             _selenium.SendKeysToElement("{DELETE}", textboxLocator);
             Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
@@ -779,15 +794,17 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Experiments")]
         public void SeleniumShowChromeRightClickError()
         {
+            // This test fails, as Chrome cannot interact with context menus. Workaround is using native sendkeys (but note that doesn't work remotely)
             SetBrowser(false, "chrome");
+            _selenium.SetTimeoutSeconds(20);
             const string textboxLocator = "id:text1";
             Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
+            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Selenium Fixture Test Page"));
             Assert.IsTrue(_selenium.RightClickElement(textboxLocator), "Show context menu");
             Selenium.WaitSeconds(0.2); // allow dropdown to expand
             const string selectAllInContextMenuSequence = "{DOWN}a";
             _selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
             _selenium.SendKeysToElement("{DELETE}", textboxLocator);
-            Selenium.WaitSeconds(4);
             Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
         }
 
@@ -795,33 +812,39 @@ namespace SeleniumFixtureTest
         {
             SetBrowser(false, browser);
 
-            Assert.IsTrue(_selenium.Open(CreateTestPageUri()), $"{browser}: Open page");
-            // setting storage type to Local by default
-            CheckStorageFunctioning($"{browser}/Local");
-            _selenium.SetInWebStorageTo("testkey2", @"testvalue3");
-            var dict = new Dictionary<string, string>();
-            Assert.AreEqual(2, _selenium.WebStorage.Count, $"{browser}: Item Count == 2 after adding SetInWebStorageTo");
-            dict.Add("testkey4", @"testvalue5");
-            _selenium.AddToWebStorage(dict);
-            Assert.AreEqual(3, _selenium.WebStorage.Count, $"{browser}: Item Count == 3 after AddToWebStorage, before switching to Session");
-            _selenium.UseWebStorage(StorageType.Session);
-            CheckStorageFunctioning($"{browser}/Session");
-            Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after adding one item to session storage");
-            _selenium.UseWebStorage(StorageType.Local);
-            Assert.AreEqual(3, _selenium.WebStorage.Count, $"{browser}: Item Count after switching back to local storage");
-            Assert.IsTrue(_selenium.ClearWebStorage(), $"{browser}: Can clear local storage");
-            Assert.AreEqual(0, _selenium.WebStorage.Count, $"{browser}: Item Count after clearing local storage");
-            _selenium.UseWebStorage(StorageType.Session);
-            Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after switching back to session storage");
-            var backupStorage = _selenium.WebStorage;
-            Assert.IsTrue(_selenium.ClearWebStorage(), $"{browser}: Can clear session storage");
-            Assert.AreEqual(0, _selenium.WebStorage.Count, $"{browser}: Item Count after clearing session storage");
-            dict.Add("testkey6", @"testvalue7");
-            _selenium.AddToWebStorage(dict);
-            Assert.AreEqual(2, _selenium.WebStorage.Count, $"{browser}: Item Count after adding 2 items to cleared session storage");
-            _selenium.WebStorage = backupStorage;
-            Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after restoring session storage");
-            _selenium.Close();
+            try
+            {
+                Assert.IsTrue(_selenium.Open(CreateTestPageUri()), $"{browser}: Open page");
+                // setting storage type to Local by default
+                CheckStorageFunctioning($"{browser}/Local");
+                _selenium.SetInWebStorageTo("testkey2", @"testvalue3");
+                var dict = new Dictionary<string, string>();
+                Assert.AreEqual(2, _selenium.WebStorage.Count, $"{browser}: Item Count == 2 after adding SetInWebStorageTo");
+                dict.Add("testkey4", @"testvalue5");
+                _selenium.AddToWebStorage(dict);
+                Assert.AreEqual(3, _selenium.WebStorage.Count, $"{browser}: Item Count == 3 after AddToWebStorage, before switching to Session");
+                _selenium.UseWebStorage(StorageType.Session);
+                CheckStorageFunctioning($"{browser}/Session");
+                Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after adding one item to session storage");
+                _selenium.UseWebStorage(StorageType.Local);
+                Assert.AreEqual(3, _selenium.WebStorage.Count, $"{browser}: Item Count after switching back to local storage");
+                Assert.IsTrue(_selenium.ClearWebStorage(), $"{browser}: Can clear local storage");
+                Assert.AreEqual(0, _selenium.WebStorage.Count, $"{browser}: Item Count after clearing local storage");
+                _selenium.UseWebStorage(StorageType.Session);
+                Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after switching back to session storage");
+                var backupStorage = _selenium.WebStorage;
+                Assert.IsTrue(_selenium.ClearWebStorage(), $"{browser}: Can clear session storage");
+                Assert.AreEqual(0, _selenium.WebStorage.Count, $"{browser}: Item Count after clearing session storage");
+                dict.Add("testkey6", @"testvalue7");
+                _selenium.AddToWebStorage(dict);
+                Assert.AreEqual(2, _selenium.WebStorage.Count, $"{browser}: Item Count after adding 2 items to cleared session storage");
+                _selenium.WebStorage = backupStorage;
+                Assert.AreEqual(1, _selenium.WebStorage.Count, $"{browser}: Item Count after restoring session storage");
+            }
+            finally
+            {
+                _selenium.Close();
+            }
         }
 
         private void SeleniumTextInElementMatchesTest()
@@ -951,6 +974,7 @@ namespace SeleniumFixtureTest
             //For IE, protected mode needs to be off for this to work
             SetBrowser(true, "ie");
             Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
+            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Selenium Fixture Test Page"));
             SeleniumUploadTest();
         }
 

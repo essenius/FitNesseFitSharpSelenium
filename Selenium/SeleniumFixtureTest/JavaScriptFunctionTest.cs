@@ -25,16 +25,23 @@ namespace SeleniumFixtureTest
         {
             // protected mode must be off for this to work in IE
             var selenium = new Selenium();
-            Assert.IsTrue(selenium.SetBrowser("firefox"));
-            Assert.IsTrue(selenium.Open(SeleniumBaseTest.CreateTestPageUri()));
-            var javaScriptFunction = new JavaScriptFunction();
-            javaScriptFunction.Reset();
-            javaScriptFunction.Set("value", 10);
-            Assert.AreEqual(Convert.ToInt64(55), javaScriptFunction.Get("Fibonacci"));
-            javaScriptFunction.Reset();
-            javaScriptFunction.Set("value", "aq");
-            Assert.AreEqual("Input should be numerical", javaScriptFunction.Get("Fibonacci"));
-            Assert.IsTrue(selenium.Close());
+            try
+            {
+                Assert.IsTrue(selenium.SetBrowser("firefox"));
+                Assert.IsTrue(selenium.Open(SeleniumBaseTest.CreateTestPageUri()));
+                selenium.WaitForElement("id:sectionJavaScript");
+                var javaScriptFunction = new JavaScriptFunction();
+                javaScriptFunction.Reset();
+                javaScriptFunction.Set("value", 10);
+                Assert.AreEqual(Convert.ToInt64(55), javaScriptFunction.Get("Fibonacci"));
+                javaScriptFunction.Reset();
+                javaScriptFunction.Set("value", "aq");
+                Assert.AreEqual("Input should be numerical", javaScriptFunction.Get("Fibonacci"));
+            }
+            finally
+            {
+                Assert.IsTrue(selenium.Close());
+            }
         }
 
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(NoNullAllowedException))]

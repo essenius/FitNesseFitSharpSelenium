@@ -65,10 +65,6 @@ namespace SeleniumFixture
             }
         }
 
-        internal bool WaitForAlert() => WaitFor(drv => AlertIsPresent());
-
-        internal bool WaitForAlertToClose() => WaitFor(drv => !AlertIsPresent());
-
         [Documentation("Dismiss an alert, confirm or prompt dialog (press Cancel)")]
         public bool DismissAlert()
         {
@@ -128,6 +124,10 @@ namespace SeleniumFixture
             Driver.SwitchTo().Frame(element);
             return true;
         });
+
+        internal bool WaitForAlert() => WaitFor(drv => AlertIsPresent());
+
+        internal bool WaitForAlertToClose() => WaitFor(drv => !AlertIsPresent());
 
         [Documentation("After clicking a link that is known to open a new window, wait for that new window to appear. Returns the window name")]
         public string WaitForNewWindowName()

@@ -10,11 +10,11 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
@@ -129,11 +129,12 @@ namespace SeleniumFixtureTest
         public void SeleniumGracefulMissingBrowserHandling()
         {
             _selenium.SetBrowser("none");
-            Assert.IsTrue(string.IsNullOrEmpty(_selenium.HtmlSource()), "HtmlSource without browser");
+            Assert.IsTrue(string.IsNullOrEmpty(_selenium.PageSource), "PageSource without browser");
             Assert.IsTrue(string.IsNullOrEmpty(_selenium.Title()), "Title without browser");
             Assert.IsFalse(_selenium.Close(), "closing without browser");
             Assert.IsFalse(_selenium.ClosePage(), "close page without browser");
             Assert.IsFalse(_selenium.ElementExists("any"), "Element Exists without browser");
+            Assert.AreEqual(0, _selenium.CountOfElements("any"), "Count Of Elements without browser");
             Assert.IsTrue(string.IsNullOrEmpty(_selenium.Title()), "Title without browser");
             try
             {
@@ -155,11 +156,18 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(StopTestException))]
         public void SeleniumInvalidBrowserTest() => Assert.IsFalse(_selenium.SetBrowser("InvalidBrowser"));
 
-        [TestMethod, TestCategory("Unit")]
-        public void SeleniumInvalidProxy() => Assert.IsFalse(Selenium.SetProxyTypeValue("Wrong Proxy Type", "irrelevant value"));
-
         [TestMethod, TestCategory("Integration"), ExpectedException(typeof(StopTestException))]
         public void SeleniumInvalidRemoteBrowserTest() => Assert.IsFalse(_selenium.SetRemoteBrowserAtAddress("InvalidBrowser", "http://localhost"));
+
+        [TestMethod, TestCategory("Unit")]
+        public void SeleniumKeyCodeTest()
+        {
+            var obj = new PrivateType(typeof(Selenium));
+
+            Assert.AreEqual(66, (int)obj.InvokeStatic("KeyCode", "Enter"));
+            Assert.AreEqual(4, (int)obj.InvokeStatic("KeyCode", "4"));
+            Assert.IsNull(obj.InvokeStatic("KeyCode", "NonExistingKeyCode"));
+        }
 
         [TestMethod, TestCategory("Integration")]
         public void SeleniumLocalChromeGoogleTest()
@@ -167,6 +175,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Selenium.SetProxyType("System"), "Set Proxy System");
             Assert.IsTrue(_selenium.SetBrowser("Chrome"), "Set Browser Chrome");
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")), "Open Uri");
+            Assert.IsTrue(_selenium.WaitForElement("name:q"));
+            Assert.IsTrue(_selenium.Url.Contains("google."), "URL contains google");
             Assert.IsTrue(_selenium.SetElementTo("name:q", "Cheese"), "Set q to Cheese");
             Assert.IsTrue(_selenium.SubmitElement("name:q"), "Submit");
         }
@@ -174,14 +184,26 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Integration")]
         public void SeleniumLocalFirefoxGoogleTest()
         {
-            var proxy = ConfigurationManager.AppSettings.Get("Proxy");
+            _selenium.SetTimeoutSeconds(30);
+            var proxy = AppConfig.Get("Proxy");
+            Debug.Print("Proxy:" + proxy);
             Assert.IsTrue(Selenium.SetProxyTypeValue("Manual", proxy));
             Assert.IsTrue(Selenium.SetProxyType("System"));
             Assert.IsTrue(_selenium.SetBrowser("Firefox"));
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")));
+            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Google"));
+            Assert.IsTrue(_selenium.WaitForElement("name:q"));
             Assert.IsTrue(_selenium.Url.Contains("www.google."), "url is something like www.google.");
             Assert.IsTrue(_selenium.SetElementTo("name:q", "Cheese"));
             Assert.IsTrue(_selenium.SubmitElement("name:q"));
+        }
+
+        [TestMethod, TestCategory("Unit")]
+        public void SeleniumLongPressElementUnsupportedTest()
+        {
+            _selenium.SetBrowser("Chrome");
+            Assert.IsFalse(_selenium.PressKeyCode("a"));
+            Assert.IsFalse(_selenium.LongPressKeyCode("a"));
         }
 
         [TestMethod, TestCategory("Integration"), ExpectedException(typeof(StopTestException))]
@@ -201,6 +223,35 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit")]
         public void SeleniumSetNonExistingDriverTest() => Assert.IsFalse(_selenium.SetDriver(@"nonexisting"));
+
+        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(ArgumentException), "No value specified for proxy type 'Manual'")]
+        public void SeleniumSetProxyTypeMissingValueTest() => Selenium.SetProxyTypeValue("Manual", string.Empty);
+
+        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(ArgumentException), "No value expected for proxy type 'System'")]
+        public void SeleniumSetProxyTypeSurplusValueTest() => Selenium.SetProxyTypeValue("System", "localhost:8088");
+
+        [TestMethod, TestCategory("Unit")]
+        public void SeleniumSetProxyTypeValueTest()
+        {
+            Assert.IsTrue(Selenium.SetProxyTypeValue("ProxyAutoConfigure", "http://localhost/my.pac"));
+            var proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            Assert.IsNotNull(proxy);
+            Assert.AreEqual(ProxyKind.ProxyAutoConfigure, proxy.Kind);
+            Assert.AreEqual("http://localhost/my.pac", proxy.ProxyAutoConfigUrl);
+            Assert.IsTrue(Selenium.SetProxyTypeValue("Manual", "localhost:8080"));
+            proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            Assert.IsNotNull(proxy);
+            Assert.AreEqual(ProxyKind.Manual, proxy.Kind);
+            Assert.AreEqual("localhost:8080", proxy.HttpProxy);
+            Assert.AreEqual("localhost:8080", proxy.SslProxy);
+            Assert.IsFalse(Selenium.SetProxyType("Unspecified"));
+            proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            Assert.IsNotNull(proxy);
+            Assert.AreEqual(ProxyKind.Unspecified, proxy.Kind);
+        }
+
+        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(ArgumentException), "Unrecognized proxy type 'Bogus'")]
+        public void SeleniumSetProxyWrongTypeTest() => Selenium.SetProxyType("Bogus");
 
         [TestCleanup]
         public void SeleniumTestCleanup()

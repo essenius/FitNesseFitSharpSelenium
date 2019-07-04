@@ -37,6 +37,20 @@ namespace SeleniumFixture
             }
         }
 
+        [Obsolete("Use PageSource instead"), Documentation("Return the HTML source of the current page in context")]
+        public string HtmlSource()
+        {
+            HandleDeprecatedFunction("HTML Source", "Page Source");
+            return PageSource;
+        }
+
+        [Obsolete("Use LengthOfPageSource instead"), Documentation("Return the length of the current HTML page source")]
+        public int LengthOfHtmlSource()
+        {
+            HandleDeprecatedFunction("Length Of HTML Source", "Length Of Page Source");
+            return LengthOfPageSource;
+        }
+
         [Obsolete(ApplicationNameObsoleteMessage)]
         public static string NewRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string name) =>
             throw new NotSupportedException(ApplicationNameObsoleteMessage +
@@ -46,6 +60,14 @@ namespace SeleniumFixture
         public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string applicationName) =>
             throw new NotSupportedException(ApplicationNameObsoleteMessage +
                                             " (" + browserName + "," + baseAddress + "," + applicationName + ")");
+
+        [Obsolete("Use WaitForPageSourceToChange"),
+         Documentation("Wait for the HTML source to change. Can happen with dynamic pages")]
+        public bool WaitForHtmlSourceToChange()
+        {
+            HandleDeprecatedFunction("Wait For HTML Source To Change", "Wait For Page Source To Change");
+            return WaitForPageSourceToChange();
+        }
 
         [Obsolete("use WaitUntilElementDoesNotExist instead")]
         public bool WaitForNoElement(string searchCriterion)
@@ -62,6 +84,14 @@ namespace SeleniumFixture
                     return true;
                 }
             });
+        }
+
+        [Obsolete("Use WaitUntilPageSourceIsLargerThan"),
+         Documentation("Wait until the HTML source has the specified minimum length. Useful when pages are built dynamically and asynchronously")]
+        public bool WaitUntilHtmlSourceIsLargerThan(int thresholdLength)
+        {
+            HandleDeprecatedFunction("Wait Until HTML Source Is Larger Than", "Wait Until Page Source Is Larger Than");
+            return WaitUntilPageSourceIsLargerThan(thresholdLength);
         }
     }
 }

@@ -50,17 +50,25 @@ namespace SeleniumFixture.Utilities
                 ? element.GetAttribute("value")
                 : element.Text;
 
+        public static bool IsAndroid(this IWebDriver driver) => driver.IsPlatform("android");
+
         private static bool IsBrowser(this IWebDriver driver, string browserName) =>
             driver is IHasCapabilities driverWithCapabilities &&
             browserName.Equals(driverWithCapabilities.Capabilities.GetCapability("browserName").ToString(), StringComparison.OrdinalIgnoreCase);
 
         public static bool IsChrome(this IWebDriver driver) => driver.IsBrowser("chrome");
 
+        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("microsoftedge");
+
         public static bool IsFirefox(this IWebDriver driver) => driver.IsBrowser("firefox");
 
         public static bool IsIe(this IWebDriver driver) => driver.IsBrowser("internet explorer");
 
-        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("microsoftedge");
+        public static bool IsIos(this IWebDriver driver) => driver.IsPlatform("ios");
+
+        private static bool IsPlatform(this IWebDriver driver, string platformName) =>
+            driver is IHasCapabilities driverWithCapabilities &&
+            platformName.Equals(driverWithCapabilities.Capabilities.GetCapability("platformName")?.ToString(), StringComparison.OrdinalIgnoreCase);
 
         public static bool SetAttribute(this IWebElement element, string attributeName, string value)
         {

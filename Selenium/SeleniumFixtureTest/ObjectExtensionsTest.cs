@@ -18,6 +18,8 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class ObjectExtensionsTest
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod, TestCategory("Unit")]
         public void ObjectExtensionsIsGlobTest()
         {
@@ -59,6 +61,18 @@ namespace SeleniumFixtureTest
         {
             Assert.IsTrue("true".ToBool());
             Assert.IsFalse("false".ToBool());
+        }
+
+        [TestMethod, TestCategory("Unit"), DeploymentItem("WebDriverBackedSeleniumTestTest\\TestData.xml"),
+         DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML",
+             "|DataDirectory|\\TestData.xml", "GracefulNames", DataAccessMethod.Sequential)
+        ]
+        public void ObjectExtensionsToMethodNameTest()
+        {
+            var input = TestContext.DataRow["input"].ToString();
+            var expected = TestContext.DataRow["expected"].ToString();
+            var actual = input.ToMethodName();
+            Assert.AreEqual(expected, actual, "input: " + input);
         }
     }
 }

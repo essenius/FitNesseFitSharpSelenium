@@ -22,8 +22,8 @@ namespace SeleniumFixtureTest
     {
         private Selenium _selenium;
 
-        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(ArgumentException), "Could not find end delimiter '}'")]
-        [SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing exception")]
+        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(ArgumentException), "Could not find end delimiter '}'"),
+         SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing exception")]
         public void KeyConverterExceptionTest()
         {
             _ = new KeyConverter("{wrong").ToSeleniumFormat;
@@ -64,8 +64,10 @@ namespace SeleniumFixtureTest
         {
             try
             {
+                _selenium.SetTimeoutSeconds(20);
                 Assert.IsTrue(_selenium.SetBrowser("chrome"));
                 Assert.IsTrue(_selenium.Open(SeleniumBaseTest.CreateTestPageUri()));
+                Assert.IsTrue(_selenium.WaitForElement("text1"));
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("^a").ToSeleniumFormat), "Text 1");
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("^c").ToSeleniumFormat), "Text 1");
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("{DEL}").ToSeleniumFormat), "Text 1");

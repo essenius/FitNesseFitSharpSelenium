@@ -13,6 +13,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
 using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest
@@ -20,11 +21,10 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class SearchParserTest
     {
-
         public TestContext TestContext { get; set; }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentException))]
-        [SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing an exception")]
+        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentException)),
+         SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing an exception")]
         public void SearchParserByFunctionNullTest()
         {
             _ = new SearchParser("unknown", "abc").By;
@@ -34,12 +34,20 @@ namespace SeleniumFixtureTest
         public void SearchParserByFunctionTest()
         {
             const string locator = "abc";
-            var searchParser = new SearchParser("classname", locator);
+            var searchParser = new SearchParser("AccessibilityID", locator);
+            Assert.AreEqual(searchParser.By, MobileBy.AccessibilityId(locator));
+            searchParser = new SearchParser("classname", locator);
             Assert.AreEqual(searchParser.By, By.ClassName(locator));
             searchParser = new SearchParser("CssSelector", locator);
             Assert.AreEqual(searchParser.By, By.CssSelector(locator));
             searchParser = new SearchParser("id", locator);
             Assert.AreEqual(searchParser.By, By.Id(locator));
+            searchParser = new SearchParser("IOSCLASSCHAIN", locator);
+            Assert.AreEqual(searchParser.By, MobileBy.IosClassChain(locator));
+            searchParser = new SearchParser("iosNSpredicate", locator);
+            Assert.AreEqual(searchParser.By, MobileBy.IosNSPredicate(locator));
+            searchParser = new SearchParser("IOSUIAutomation", locator);
+            Assert.AreEqual(searchParser.By, MobileBy.IosUIAutomation(locator));
             searchParser = new SearchParser("LINKTEXT", locator);
             Assert.AreEqual(searchParser.By, By.LinkText(locator));
             searchParser = new SearchParser("NaMe", locator);
@@ -48,12 +56,16 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(searchParser.By, By.PartialLinkText(locator));
             searchParser = new SearchParser("Tagname", locator);
             Assert.AreEqual(searchParser.By, By.TagName(locator));
+            searchParser = new SearchParser("TizenAutomation", locator);
+            Assert.AreEqual(searchParser.By, MobileBy.TizenAutomation(locator));
+            searchParser = new SearchParser("WindowsAutomation", locator);
+            Assert.AreEqual(searchParser.By, MobileBy.WindowsAutomation(locator));
             searchParser = new SearchParser("XPath", locator);
             Assert.AreEqual(searchParser.By, By.XPath(locator));
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException))]
-        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
+        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException)),
+         SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
         public void SearchParserFindElement1NullTest() => new SearchParser(null);
 
         [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
@@ -68,8 +80,8 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(expectedLocator, searchParser.Locator, "Locator OK");
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException))]
-        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
+        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException)),
+         SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
         public void SearchParserFindElement2NullTest() => new SearchParser(null, null);
 
         [TestMethod, TestCategory("Unit")]

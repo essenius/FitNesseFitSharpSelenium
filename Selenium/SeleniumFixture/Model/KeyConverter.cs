@@ -61,28 +61,6 @@ namespace SeleniumFixture.Model
             {"F12", Keys.F12}
         };
 
-        private static string EscapedContent(string escapedString)
-        {
-            // check if we have a repeater, i.e. a space followed by an integer just prior to the closing curly brace
-            var spacePosition = escapedString.IndexOf(" ", StringComparison.Ordinal);
-            string finalKey;
-            if (spacePosition != -1 && int.TryParse(escapedString.Substring(spacePosition + 1), out var repeater))
-            {
-                // chop off the space and the repeater from the content, we don't want that in the result
-                finalKey = escapedString.Substring(0, spacePosition);
-            }
-            else
-            {
-                // no repeater found, so default to single occurrence, and nothing to chop off.
-                repeater = 1;
-                finalKey = escapedString;
-            }
-
-            //Replace content if it is a special key; otherwise just leave as is
-            var singleResult = KeyDictionary.ContainsKey(finalKey) ? KeyDictionary[finalKey] : finalKey;
-            return string.Concat(Enumerable.Repeat(singleResult, repeater));
-        }
-
         private readonly string _keys;
 
         public KeyConverter(string keys) => _keys = keys;
@@ -124,6 +102,28 @@ namespace SeleniumFixture.Model
                 }
                 return result;
             }
+        }
+
+        private static string EscapedContent(string escapedString)
+        {
+            // check if we have a repeater, i.e. a space followed by an integer just prior to the closing curly brace
+            var spacePosition = escapedString.IndexOf(" ", StringComparison.Ordinal);
+            string finalKey;
+            if (spacePosition != -1 && int.TryParse(escapedString.Substring(spacePosition + 1), out var repeater))
+            {
+                // chop off the space and the repeater from the content, we don't want that in the result
+                finalKey = escapedString.Substring(0, spacePosition);
+            }
+            else
+            {
+                // no repeater found, so default to single occurrence, and nothing to chop off.
+                repeater = 1;
+                finalKey = escapedString;
+            }
+
+            //Replace content if it is a special key; otherwise just leave as is
+            var singleResult = KeyDictionary.ContainsKey(finalKey) ? KeyDictionary[finalKey] : finalKey;
+            return string.Concat(Enumerable.Repeat(singleResult, repeater));
         }
 
         private int FindEndDelimiterPosition(int startDelimiterPosition)

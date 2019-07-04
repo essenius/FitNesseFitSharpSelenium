@@ -18,8 +18,8 @@ using SeleniumFixture.Model;
 
 namespace SeleniumFixture
 {
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
-    [Documentation("Dynamic Decision Table Fixture to test JavaScript functions")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp"),
+     Documentation("Dynamic Decision Table Fixture to test JavaScript functions")]
     public class JavaScriptFunction
     {
         private readonly ArrayList _paramList = new ArrayList();
