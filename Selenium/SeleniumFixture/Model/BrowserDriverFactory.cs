@@ -11,10 +11,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
+using OpenQA.Selenium.Appium.Android;
+using OpenQA.Selenium.Appium.iOS;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -28,64 +30,14 @@ namespace SeleniumFixture.Model
 {
     internal class BrowserDriverFactory
     {
-        // This is a workaround for the absence of an IDriverService interface
-        // T is the driver service to be instantiated (e.g. ChromeDriverService)
-        internal static T GetDefaultService<T>(string driverFolder = null)
-        {
-            var serviceType = typeof(T);
-            var typeList = new List<Type>();
-            var parameterList = new List<object>();
-            if (!string.IsNullOrEmpty(driverFolder))
-            {
-                typeList.Add(typeof(string));
-                parameterList.Add(driverFolder);
-            }
-
-            var methodInfo = serviceType.GetMethod("CreateDefaultService", typeList.ToArray());
-            Debug.Assert(methodInfo != null, nameof(methodInfo) + " != null");
-            return (T)methodInfo.Invoke(serviceType, parameterList.ToArray());
-        }
-
-        public static string IntegratedAuthenticationDomain { get; set; } =
-            ConfigurationManager.AppSettings.Get("Firefox.IntegratedAuthenticationDomain");
-
-        private static bool InternetExplorerIgnoreProtectedModeSetting()
-        {
-            var ignoreProtectedModeSettingsString =
-                ConfigurationManager.AppSettings.Get("InternetExplorer.IgnoreProtectedModeSettings");
-            return !string.IsNullOrEmpty(ignoreProtectedModeSettingsString) &&
-                   bool.Parse(ignoreProtectedModeSettingsString);
-        }
-
-        private static string StandardizeBrowserName(string browserName)
-        {
-            var browserInUpperCase = browserName.Replace(" ", string.Empty).ToUpperInvariant();
-            switch (browserInUpperCase)
-            {
-                case @"GOOGLECHROME":
-                    return @"CHROME";
-                case @"GOOGLECHROMEHEADLESS":
-                    return @"CHROMEHEADLESS";
-                case "MICROSOFTEDGE":
-                    return "EDGE";
-                case @"FF":
-                    return @"FIREFOX";
-                case @"FFHEADLESS":
-                    return @"FIREFOXHEADLESS";
-                case @"INTERNETEXPLORER":
-                    return @"IE";
-                default:
-                    return browserInUpperCase;
-            }
-        }
-
         private readonly Dictionary<string, Func<IWebDriver>> _localDrivers;
+
+        [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Changed in tests")]
+        private readonly NativeMethods _nativeMethods = new NativeMethods();
+
         private readonly Proxy _proxy;
         private readonly Dictionary<string, Func<DriverOptions>> _remoteOptions;
         private readonly TimeSpan _timeout;
-
-        [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Changed in tests")]
-        private NativeMethods _nativeMethods = new NativeMethods();
 
         public BrowserDriverFactory(Proxy proxy, TimeSpan timeout)
         {
@@ -107,34 +59,39 @@ namespace SeleniumFixture.Model
 
             _remoteOptions = new Dictionary<string, Func<DriverOptions>>
             {
+                {@"ANDROID", () => new AppiumOptions {PlatformName = "Android"}},
                 {@"CHROME", () => GetChromeOptions(false)},
                 {@"CHROMEHEADLESS", () => GetChromeOptions(true)},
                 {@"EDGE", GetEdgeOptions},
                 {@"FIREFOX", () => GetFirefoxOptions(false)},
                 {@"FIREFOXHEADLESS", () => GetFirefoxOptions(true)},
                 {@"IE", GetInternetExplorerOptions},
-                {@"OPERA", () => new OperaOptions {Proxy = _proxy}},
+                {@"IOS", () => new AppiumOptions {PlatformName = "iOS"}},
+                {@"OPERA", GetOperaOptions},
                 {@"SAFARI", GetSafariOptions}, // remote still possible
                 {@"NONE", () => null}
             };
         }
 
-        // I tried to make these methods smarter (eliminate redundancy) but that is not easy
-        // with all the hard dependencies that browser drivers have on their services and options 
+        public static string IntegratedAuthenticationDomain { get; set; } = AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
+
+        // I tried to make these methods smarter (eliminate redundancy) e.g. via generics, but that is not easy with all the hard dependencies
+        // that browser drivers have on their services and options. So I decided to live with the redundancy for now.
 
         private IWebDriver CreateLocalChromeDriver(bool headless)
         {
             var driverFolder = Environment.GetEnvironmentVariable("ChromeWebDriver");
-            var driverService = GetDefaultService<ChromeDriverService>(driverFolder);
+            ChromeDriverService driverService = null;
             IWebDriver driver;
             try
             {
+                driverService = GetDefaultService<ChromeDriverService>(driverFolder);
                 driver = new ChromeDriver(driverService, GetChromeOptions(headless), _timeout);
             }
             catch
             {
                 // creating the driver failed. We need to dispose the service ourselves.
-                driverService.Dispose();
+                driverService?.Dispose();
                 throw;
             }
             return driver;
@@ -152,15 +109,16 @@ namespace SeleniumFixture.Model
 
         private IWebDriver CreateLocalEdgeDriver()
         {
-            var driverService = GetDefaultService<EdgeDriverService>();
+            EdgeDriverService driverService = null;
             IWebDriver driver;
             try
             {
+                driverService = GetDefaultService<EdgeDriverService>();
                 driver = new EdgeDriver(driverService, GetEdgeOptions(), _timeout);
             }
             catch
             {
-                driverService.Dispose();
+                driverService?.Dispose();
                 throw;
             }
             return driver;
@@ -169,15 +127,16 @@ namespace SeleniumFixture.Model
         private IWebDriver CreateLocalFirefoxDriver(bool headless)
         {
             var driverFolder = Environment.GetEnvironmentVariable("GeckoWebDriver");
-            var driverService = GetDefaultService<FirefoxDriverService>(driverFolder);
+            FirefoxDriverService driverService = null;
             IWebDriver driver;
             try
             {
+                driverService = GetDefaultService<FirefoxDriverService>(driverFolder);
                 driver = new FirefoxDriver(driverService, GetFirefoxOptions(headless), _timeout);
             }
             catch
             {
-                driverService.Dispose();
+                driverService?.Dispose();
                 throw;
             }
             return driver;
@@ -191,15 +150,16 @@ namespace SeleniumFixture.Model
             }
 
             var driverFolder = Environment.GetEnvironmentVariable("IEWebDriver");
-            var driverService = GetDefaultService<InternetExplorerDriverService>(driverFolder);
+            InternetExplorerDriverService driverService = null;
             IWebDriver driver;
             try
             {
+                driverService = GetDefaultService<InternetExplorerDriverService>(driverFolder);
                 driver = new InternetExplorerDriver(driverService, GetInternetExplorerOptions(), _timeout);
             }
             catch
             {
-                driverService.Dispose();
+                driverService?.Dispose();
                 throw;
             }
             return driver;
@@ -207,15 +167,16 @@ namespace SeleniumFixture.Model
 
         private IWebDriver CreateLocalOperaDriver()
         {
-            var driverService = GetDefaultService<OperaDriverService>();
+            OperaDriverService driverService = null;
             IWebDriver driver;
             try
             {
+                driverService = GetDefaultService<OperaDriverService>();
                 driver = new OperaDriver(driverService, GetOperaOptions(), _timeout);
             }
             catch
             {
-                driverService.Dispose();
+                driverService?.Dispose();
                 throw;
             }
             return driver;
@@ -223,15 +184,16 @@ namespace SeleniumFixture.Model
 
         private IWebDriver CreateLocalSafariDriver()
         {
-            var driverService = GetDefaultService<SafariDriverService>();
+            SafariDriverService driverService = null;
             IWebDriver driver;
             try
             {
+                driverService = GetDefaultService<SafariDriverService>();
                 driver = new SafariDriver(driverService, GetSafariOptions(), _timeout);
             }
             catch
             {
-                driverService.Dispose();
+                driverService?.Dispose();
                 throw;
             }
             return driver;
@@ -239,27 +201,19 @@ namespace SeleniumFixture.Model
 
         public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
-            //var driverOptions = GetRemoteOptions(browserName, capabilities);
-            var desiredCapabilities = GetDesiredCapabilities(browserName, capabilities);
+            var standardBrowserName = StandardizeBrowserName(browserName);
             var uri = new Uri(baseAddress + "/wd/hub");
-            var result = new RemoteWebDriver(uri, desiredCapabilities, _timeout);
-            return result;
-        }
-
-        private ChromeOptions GetChromeOptions(bool headless)
-        {
-            var options = new ChromeOptions {Proxy = _proxy};
-
-            // Get rid of the warning bar "You are using an unsupported command-line flag" 
-            options.AddArgument("test-type");
-            options.AddArgument("enable-automation");
-            if (headless)
+            if (standardBrowserName == "ANDROID" || standardBrowserName == "IOS")
             {
-                // see https://bugs.chromium.org/p/chromium/issues/detail?id=737678 for why disable-gpu
-                options.AddArguments("headless", "disable-gpu");
+                var options = GetRemoteOptions(standardBrowserName, capabilities);
+                return standardBrowserName == "IOS"
+                    ? (IWebDriver)new IOSDriver<AppiumWebElement>(uri, options, TimeSpan.FromMinutes(3))
+                    : new AndroidDriver<AppiumWebElement>(uri, options, TimeSpan.FromMinutes(3));
             }
 
-            return options;
+            var desiredCapabilities = GetDesiredCapabilities(standardBrowserName, capabilities);
+            var result = new RemoteWebDriver(uri, desiredCapabilities, _timeout);
+            return result;
         }
 
         // We cannot stop using the deprecated DesiredCapabilities at this point (hence the pragma disable 618) because
@@ -284,11 +238,45 @@ namespace SeleniumFixture.Model
                 }
                 return desiredCapabilities;
             }
-            // If we didn't find an entry in the options, revert to 
+            // If we didn't find an entry in the options, provide a default 
             var platform = new Platform(PlatformType.Any);
             return new DesiredCapabilities(browserName, string.Empty, platform);
 
 #pragma warning restore 618
+        }
+
+        private ChromeOptions GetChromeOptions(bool headless)
+        {
+            var options = new ChromeOptions {Proxy = _proxy};
+
+            // Get rid of the warning bar "You are using an unsupported command-line flag" 
+            options.AddArgument("test-type");
+            options.AddArgument("enable-automation");
+            if (headless)
+            {
+                // see https://bugs.chromium.org/p/chromium/issues/detail?id=737678 for why disable-gpu
+                options.AddArguments("headless", "disable-gpu");
+            }
+
+            return options;
+        }
+
+        // This is a workaround for the absence of an IDriverService interface
+        // T is the driver service to be instantiated (e.g. ChromeDriverService)
+        internal static T GetDefaultService<T>(string driverFolder = null)
+        {
+            var serviceType = typeof(T);
+            var typeList = new List<Type>();
+            var parameterList = new List<object>();
+            if (!string.IsNullOrEmpty(driverFolder))
+            {
+                typeList.Add(typeof(string));
+                parameterList.Add(driverFolder);
+            }
+
+            var methodInfo = serviceType.GetMethod("CreateDefaultService", typeList.ToArray());
+            Debug.Assert(methodInfo != null, nameof(methodInfo) + " != null");
+            return (T)methodInfo.Invoke(serviceType, parameterList.ToArray());
         }
 
         internal ICapabilities GetDesiredCapabilities(string browserName, Dictionary<string, object> capabilities)
@@ -330,8 +318,6 @@ namespace SeleniumFixture.Model
             // For more details see https://bugzilla.mozilla.org/show_bug.cgi?id=1314010
             options.SetPreference("security.enterprise_roots.enabled", true);
 
-            //var wiaDomain = ConfigurationManager.AppSettings.Get("Firefox.IntegratedAuthenticationDomain");
-
             if (!string.IsNullOrEmpty(IntegratedAuthenticationDomain))
             {
                 options.SetPreference(@"network.automatic-ntlm-auth.trusted-uris", IntegratedAuthenticationDomain);
@@ -360,18 +346,10 @@ namespace SeleniumFixture.Model
 
         private OperaOptions GetOperaOptions() => new OperaOptions {Proxy = _proxy};
 
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Consistency with other GetOptions methods")]
-        private SafariOptions GetSafariOptions()
-        {
-            // didn't find a way to enable proxies or integrated authentication on Safari
-            var options = new SafariOptions();
-            options.AddAdditionalCapability("safari.options", "skipExtensionInstallation");
-            return options;
-        }
-
-        // does not work right - AddAdditionalCapabilities adds to the goog:ChromeOptions structure rather
-        // than creating its own capability. For now we revert to using the deprecated DesiredCapabilities
-        /* internal DriverOptions GetRemoteOptions(string browserName, Dictionary<string, object> capabilities)
+        // AddAdditionalCapabilities adds to the goog:ChromeOptions (etc.) structure rather than creating its own capability.
+        // This is aligned with W3C, but too many services don't adhere to that yet.
+        // For now we only use it for Appium, and for remote Selenium we use the (deprecated) DesiredCapabilities
+        internal DriverOptions GetRemoteOptions(string browserName, Dictionary<string, object> capabilities)
         {
             var standardBrowserName = StandardizeBrowserName(browserName);
             if (!_remoteOptions.ContainsKey(standardBrowserName)) return null;
@@ -385,6 +363,44 @@ namespace SeleniumFixture.Model
                 }
             }
             return driverOptions;
-        } */
+        }
+
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Consistency with other GetOptions methods")]
+        private SafariOptions GetSafariOptions()
+        {
+            // didn't find a way to enable proxies or integrated authentication on Safari
+            var options = new SafariOptions();
+            options.AddAdditionalCapability("safari.options", "skipExtensionInstallation");
+            return options;
+        }
+
+        private static bool InternetExplorerIgnoreProtectedModeSetting()
+        {
+            var ignoreProtectedModeSettingsString = AppConfig.Get("InternetExplorer.IgnoreProtectedModeSettings");
+            return !string.IsNullOrEmpty(ignoreProtectedModeSettingsString) &&
+                   bool.Parse(ignoreProtectedModeSettingsString);
+        }
+
+        private static string StandardizeBrowserName(string browserName)
+        {
+            var browserInUpperCase = browserName.Replace(" ", string.Empty).ToUpperInvariant();
+            switch (browserInUpperCase)
+            {
+                case @"GOOGLECHROME":
+                    return @"CHROME";
+                case @"GOOGLECHROMEHEADLESS":
+                    return @"CHROMEHEADLESS";
+                case "MICROSOFTEDGE":
+                    return "EDGE";
+                case @"FF":
+                    return @"FIREFOX";
+                case @"FFHEADLESS":
+                    return @"FIREFOXHEADLESS";
+                case @"INTERNETEXPLORER":
+                    return @"IE";
+                default:
+                    return browserInUpperCase;
+            }
+        }
     }
 }

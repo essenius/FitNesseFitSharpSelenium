@@ -139,10 +139,10 @@ namespace SeleniumFixture.Model
         /// <param name="dragFromY">The Y position to click relative to the top-left-corner of the client</param>
         /// <param name="dragToX">The X position to release relative to the top-left-corner of the client</param>
         /// <param name="dragToY">The Y position to release relative to the top-left-corner of the client</param>
-        private static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, 
+        private static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo,
             int dragFromX, int dragFromY, int dragToX, int dragToY)
         {
-            ((IJavaScriptExecutor) driver).ExecuteScript(SimulateHtml5DragAndDrop, dragFrom, dragTo, 
+            ((IJavaScriptExecutor)driver).ExecuteScript(SimulateHtml5DragAndDrop, dragFrom, dragTo,
                 dragFromX, dragFromY, dragToX, dragToY);
         }
 
@@ -154,7 +154,8 @@ namespace SeleniumFixture.Model
         /// <param name="dragTo">The WebElement to drag to</param>
         /// <param name="dragFromPosition">The place to click on the dragFrom</param>
         /// <param name="dragToPosition">The place to release on the dragTo</param>
-        public static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, Position dragFromPosition, Position dragToPosition)
+        public static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, Position dragFromPosition,
+            Position dragToPosition)
         {
             var fromLocation = dragFrom.Location;
             var toLocation = dragTo.Location;
@@ -181,7 +182,7 @@ namespace SeleniumFixture.Model
         /// <param name="data">The data transfer data</param>
         /// <returns>The updated data transfer data</returns>
         private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName, int clientX, int clientY, object data) =>
-            ((IJavaScriptExecutor) driver).ExecuteScript(SimulateEvent, dragFrom, eventName, clientX, clientY, data);
+            ((IJavaScriptExecutor)driver).ExecuteScript(SimulateEvent, dragFrom, eventName, clientX, clientY, data);
 
         /// <summary>
         ///     Calls a drag event
@@ -223,21 +224,9 @@ namespace SeleniumFixture.Model
             /// <returns>the X coordinate relative to the width</returns>
             public int GetX(int width)
             {
-                if (TopLeft.Equals(this) || Left.Equals(this) || BottomLeft.Equals(this))
-                {
-                    return 1;
-                }
-
-                if (Top.Equals(this) || Center.Equals(this) || Bottom.Equals(this))
-                {
-                    return width / 2;
-                }
-
-                if (TopRight.Equals(this) || Right.Equals(this) || BottomRight.Equals(this))
-                {
-                    return width - 1;
-                }
-
+                if (TopLeft.Equals(this) || Left.Equals(this) || BottomLeft.Equals(this)) return 1;
+                if (Top.Equals(this) || Center.Equals(this) || Bottom.Equals(this)) return width / 2;
+                if (TopRight.Equals(this) || Right.Equals(this) || BottomRight.Equals(this)) return width - 1;
                 return 0;
             }
 

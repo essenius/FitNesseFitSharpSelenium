@@ -21,8 +21,8 @@ namespace SeleniumFixtureTest
     public class BrowserStorageTest
     {
         // todo: fix issue of ChromeDriver not closing down
-        private  IWebDriver _driver; // was static
-        private  string _driverHandle; // was static
+        private IWebDriver _driver; // was static
+        private string _driverHandle; // was static
 
         private void BrowserStorageJavaScriptFindFirstOnLocalTest()
         {

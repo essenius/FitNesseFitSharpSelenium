@@ -29,38 +29,19 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class BrowserDriverFactoryTest
     {
-        private static object GetArgList(ICapabilities cap, string keyName)
-        {
-            var options = cap.GetCapability(keyName) as Dictionary<string, object>;
-            Assert.IsNotNull(options);
-            var argList = options.Values.ToList()[0];
-            Assert.IsNotNull(argList, "ArgList is empty");
-            return argList;
-        }
-
-        private static void ValidateChromeCapabilities(ICapabilities cap, bool headless)
-        {
-            Assert.AreEqual(@"chrome", cap.GetCapability(CapabilityType.BrowserName));
-            var argList = GetArgList(cap, @"goog:chromeOptions") as IReadOnlyCollection<object>;
-            Assert.IsNotNull(argList, "argList cannot be mapped to IReadOnlyCollection ");
-            Assert.IsTrue(argList.Count >= (headless ? 2 : 1), "arg count ok");
-            Assert.IsTrue(argList.Contains(@"test-type"), "test-type specified");
-            Assert.AreEqual(headless, argList.Contains(@"headless"), "headless ok");
-        }
-
-        private static void ValidateFirefoxCapabilities(ICapabilities cap)
-        {
-            Assert.AreEqual("firefox", cap.GetCapability(CapabilityType.BrowserName));
-            var argList = GetArgList(cap, "moz:firefoxOptions") as Dictionary<string, object>;
-            Assert.IsNotNull(argList, "ArgList cannot be mapped to Dictionary");
-            Assert.IsTrue(argList.Count >= 4, "ff arg count ok");
-            Assert.IsTrue(argList.ContainsKey(@"plugin.state.npctrl"), "ff silverlight enabled");
-            Assert.IsTrue(argList.ContainsKey(@"network.negotiate-auth.trusted-uris"), "ff integrated authentication enabled");
-        }
-
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive"),
          SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive")]
         public TestContext TestContext { get; set; }
+
+        [TestMethod, TestCategory("Unit")]
+        public void BrowserDriverFactoryGetDefaultServiceFirefoxTest()
+        {
+            using (var service1 = BrowserDriverFactory.GetDefaultService<FirefoxDriverService>())
+            {
+                Assert.IsInstanceOfType(service1, typeof(FirefoxDriverService));
+                Assert.IsFalse(service1.IsRunning);
+            }
+        }
 
         /*
         [TestMethod, TestCategory("Unit")]
@@ -123,16 +104,6 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod, TestCategory("Unit")]
-        public void BrowserDriverFactoryGetDefaultServiceFirefoxTest()
-        {
-            using (var service1 = BrowserDriverFactory.GetDefaultService<FirefoxDriverService>())
-            {
-                Assert.IsInstanceOfType(service1, typeof(FirefoxDriverService));
-                Assert.IsFalse(service1.IsRunning);
-            }
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public void BrowserDriverFactoryGetDesiredCapabilitiesTest()
         {
             var factory = new BrowserDriverFactory(new Proxy {Kind = ProxyKind.System}, TimeSpan.FromSeconds(60));
@@ -189,6 +160,35 @@ namespace SeleniumFixtureTest
             var factoryWrapper = new PrivateObject(factory);
             factoryWrapper.SetFieldOrProperty("_nativeMethods", new NativeMethodsMock());
             factory.CreateLocalDriver("IE");
+        }
+
+        private static object GetArgList(ICapabilities cap, string keyName)
+        {
+            var options = cap.GetCapability(keyName) as Dictionary<string, object>;
+            Assert.IsNotNull(options);
+            var argList = options.Values.ToList()[0];
+            Assert.IsNotNull(argList, "ArgList is empty");
+            return argList;
+        }
+
+        private static void ValidateChromeCapabilities(ICapabilities cap, bool headless)
+        {
+            Assert.AreEqual(@"chrome", cap.GetCapability(CapabilityType.BrowserName));
+            var argList = GetArgList(cap, @"goog:chromeOptions") as IReadOnlyCollection<object>;
+            Assert.IsNotNull(argList, "argList cannot be mapped to IReadOnlyCollection ");
+            Assert.IsTrue(argList.Count >= (headless ? 2 : 1), "arg count ok");
+            Assert.IsTrue(argList.Contains(@"test-type"), "test-type specified");
+            Assert.AreEqual(headless, argList.Contains(@"headless"), "headless ok");
+        }
+
+        private static void ValidateFirefoxCapabilities(ICapabilities cap)
+        {
+            Assert.AreEqual("firefox", cap.GetCapability(CapabilityType.BrowserName));
+            var argList = GetArgList(cap, "moz:firefoxOptions") as Dictionary<string, object>;
+            Assert.IsNotNull(argList, "ArgList cannot be mapped to Dictionary");
+            Assert.IsTrue(argList.Count >= 4, "ff arg count ok");
+            Assert.IsTrue(argList.ContainsKey(@"plugin.state.npctrl"), "ff silverlight enabled");
+            Assert.IsTrue(argList.ContainsKey(@"network.negotiate-auth.trusted-uris"), "ff integrated authentication enabled");
         }
     }
 }

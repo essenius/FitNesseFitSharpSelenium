@@ -9,8 +9,8 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-using System.Diagnostics;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -22,6 +22,11 @@ namespace SeleniumFixtureTest
     public sealed class ChromeFrameSwitchingBug : IDisposable
     {
         private IWebDriver _browserDriver;
+
+        public void Dispose()
+        {
+            _browserDriver?.Dispose();
+        }
 
         [TestMethod, TestCategory("Experiments")]
         public void FrameSwitchTestWithSeleniumApiDocumentation()
@@ -56,10 +61,5 @@ namespace SeleniumFixtureTest
 
         [TestCleanup]
         public void MyTestCleanup() => _browserDriver.Quit();
-
-        public void Dispose()
-        {
-            _browserDriver?.Dispose();
-        }
     }
 }

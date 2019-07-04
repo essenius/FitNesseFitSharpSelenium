@@ -17,25 +17,24 @@ namespace SeleniumFixture.Utilities
 {
     internal class NativeMethods
     {
-
         [DllImport("gdi32.dll")]
         private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
-
-        // see http://pinvoke.net/default.aspx/gdi32/GetDeviceCaps.html
-        private enum DeviceCap
-        {
-            VerticalHeightInPixels = 10,
-            DesktopVerticalHeightInPixels = 117
-        }
 
         // Internet Explorer doesn't like it if we use anything else than 100% screen scaling (as set in the Windows Settings)
         internal virtual bool ScreenScalingIs1()
         {
             var graphics = Graphics.FromHwnd(IntPtr.Zero);
             var desktop = graphics.GetHdc();
-            var  logicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.VerticalHeightInPixels);
-            var  physicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DesktopVerticalHeightInPixels);
+            var logicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.VerticalHeightInPixels);
+            var physicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DesktopVerticalHeightInPixels);
             return logicalScreenHeight == physicalScreenHeight;
+        }
+
+        // see http://pinvoke.net/default.aspx/gdi32/GetDeviceCaps.html
+        private enum DeviceCap
+        {
+            VerticalHeightInPixels = 10,
+            DesktopVerticalHeightInPixels = 117
         }
     }
 }

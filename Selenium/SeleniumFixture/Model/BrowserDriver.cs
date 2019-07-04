@@ -35,6 +35,20 @@ namespace SeleniumFixture.Model
         private static TimeSpan _timeout = TimeSpan.FromSeconds(60);
         private static readonly Dictionary<string, IWebDriver> Drivers = new Dictionary<string, IWebDriver>();
 
+        public static double CommandTimeoutSeconds
+        {
+            get => _timeout.TotalSeconds;
+            set => _timeout = TimeSpan.FromSeconds(value);
+        }
+
+        public static IWebDriver Current { get; set; }
+
+        public static string CurrentId { get; private set; }
+
+        public static int DriverCount => Drivers.Count;
+
+        private static string UniqueId => _idCounter++.ToString(CultureInfo.InvariantCulture);
+
         private static string AddDriver(IWebDriver newDriver)
         {
             var id = UniqueId;
@@ -50,18 +64,6 @@ namespace SeleniumFixture.Model
             CurrentId = string.Empty;
             Current = null;
         }
-
-        public static double CommandTimeoutSeconds
-        {
-            get => _timeout.TotalSeconds;
-            set => _timeout = TimeSpan.FromSeconds(value);
-        }
-
-        public static IWebDriver Current { get; set; }
-
-        public static string CurrentId { get; private set; }
-
-        public static int DriverCount => Drivers.Count;
 
         private static IWebDriver GetDriver(string driverId) => !Drivers.ContainsKey(driverId) ? null : Drivers[driverId];
 
@@ -84,7 +86,8 @@ namespace SeleniumFixture.Model
             }
         }
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Desired behavior. Returning exception to FitSHarp")]
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types",
+            Justification = "Desired behavior. Returning exception to FitSharp")]
         public static string NewRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
             try
@@ -109,10 +112,7 @@ namespace SeleniumFixture.Model
         {
             var driver = GetDriver(driverId);
             if (driver == null) return false;
-            if (!HasQuit(driver))
-            {
-                driver.Quit();
-            }
+            if (!HasQuit(driver)) driver.Quit();
             var isRemoved = Drivers.Remove(driverId);
             if (!isRemoved || driverId != CurrentId) return isRemoved;
             Current = null;
@@ -131,31 +131,28 @@ namespace SeleniumFixture.Model
 
         public static bool SetProxyType(string proxyType)
         {
-            const string unspecified = "Unspecified";
-            // try and convert casing of the desired proxy to the proper CamelCase format
-            var valueToUse =
-                Enum.GetNames(typeof(ProxyKind)).FirstOrDefault(enumName => enumName.Equals(proxyType, StringComparison.OrdinalIgnoreCase));
-            if (string.IsNullOrEmpty(valueToUse)) valueToUse = unspecified;
-
-            // now we know we have a valid value. Set the corresponding proxy type.
-            var conversionSucceeded = Enum.TryParse(valueToUse, out ProxyKind proxyTypeId);
-            Debug.Assert(conversionSucceeded);
-            _proxy = new Proxy {Kind = proxyTypeId};
-            return valueToUse != unspecified;
+            if (!Enum.TryParse(proxyType, true, out ProxyKind proxyKind)) throw new ArgumentException($"Unrecognized proxy type '{proxyType}'");
+            // can't update proxy in all cases, so create a new one.
+            _proxy = new Proxy {Kind = proxyKind};
+            return proxyKind != ProxyKind.Unspecified;
         }
 
         [SuppressMessage("ReSharper", "SwitchStatementMissingSomeCases", Justification = "no need to process the others")]
-        public static void SetProxyValue(string proxyValue)
+        public static bool SetProxyValue(string proxyType, string proxyValue)
         {
+            if (!SetProxyType(proxyType)) return false;
+            if (string.IsNullOrEmpty(proxyValue)) throw new ArgumentException($"No value specified for proxy type '{proxyType}'");
             switch (_proxy.Kind)
             {
                 case ProxyKind.Manual:
                     _proxy.HttpProxy = proxyValue;
                     _proxy.SslProxy = proxyValue;
-                    break;
+                    return true;
                 case ProxyKind.ProxyAutoConfigure:
                     _proxy.ProxyAutoConfigUrl = proxyValue;
-                    break;
+                    return true;
+                default:
+                    throw new ArgumentException($"No value expected for proxy type '{proxyType}'");
             }
         }
 
@@ -164,7 +161,5 @@ namespace SeleniumFixture.Model
             var screenshot = ((ITakesScreenshot)Current).GetScreenshot();
             return new Snapshot(screenshot.AsByteArray);
         }
-
-        private static string UniqueId => _idCounter++.ToString(CultureInfo.InvariantCulture);
     }
 }

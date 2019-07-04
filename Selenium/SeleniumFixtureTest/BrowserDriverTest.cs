@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -31,8 +32,9 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Integration")]
         public void BrowserDriverMissingBrowserCleansUpAndRaisesStopTestException()
         {
+            var driverCount = BrowserDriver.DriverCount;
             BrowserDriver.NewDriver("Chrome Headless");
-            Assert.AreEqual(1, BrowserDriver.DriverCount, "One browser open");
+            Assert.AreEqual(driverCount + 1, BrowserDriver.DriverCount, "One more browser open");
             try
             {
                 // Safari should not be installed on this machine. Should not be an issue since it's no longer maintained
@@ -59,18 +61,6 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Unit")]
         public void BrowserDriverRemoveNonExistingDriverTest() => Assert.IsFalse(BrowserDriver.RemoveDriver("bogus"));
 
-        [DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml", "rename",
-             DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml"), TestMethod, TestCategory("Unit")]
-        public void BrowserDriverRenameTest()
-        {
-            var privateTarget = new PrivateType(typeof(BrowserDriver));
-            var currentName = TestContext.DataRow["currentName"].ToString();
-            var timestamp = TestContext.DataRow["timestamp"].ToString();
-            var expectedName = TestContext.DataRow["expectedName"].ToString();
-            var actualName = privateTarget.InvokeStatic("CreateArchiveFileName", currentName, timestamp);
-            Assert.AreEqual(expectedName, actualName);
-        }
-
         [TestMethod, TestCategory("Integration")]
         public void BrowserDriverSetCurrentTest()
         {
@@ -92,6 +82,8 @@ namespace SeleniumFixtureTest
             var proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
             Assert.IsNotNull(proxy);
             Assert.AreEqual(proxyKind, (int)proxy.Kind);
+            Debug.Print(
+                $"Proxy kind: {proxy.SerializableProxyKind}; PAC: {proxy.ProxyAutoConfigUrl}; HTTP Proxy: {proxy.HttpProxy}; Autodetect: {proxy.IsAutoDetect}");
         }
 
         [TestCleanup]
@@ -99,7 +91,7 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              @"Can't run browser 'WrongBrowser' on Selenium server 'wrongaddress'")]
-        public void BrowserDriverWrongAddressRaisesStopTestException() => 
+        public void BrowserDriverWrongAddressRaisesStopTestException() =>
             BrowserDriver.NewRemoteDriver("WrongBrowser", @"wrongaddress", new Dictionary<string, object>());
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
@@ -108,7 +100,7 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Can't run browser 'WrongDriver' on Selenium server 'http://localhost'")]
-        public void BrowserDriverWrongRemoteDriverRaisesStopTestException() => 
+        public void BrowserDriverWrongRemoteDriverRaisesStopTestException() =>
             BrowserDriver.NewRemoteDriver("WrongDriver", "http://localhost", new Dictionary<string, object>());
     }
 }

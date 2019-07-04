@@ -10,15 +10,20 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium.Android;
+using OpenQA.Selenium.Appium.Interfaces;
+using OpenQA.Selenium.Appium.MultiTouch;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumFixture.Model;
@@ -80,12 +85,11 @@ namespace SeleniumFixture
         {
             MoveTo(element);
             if (!WaitUntilIsClickable(element)) return false;
-
             element.Click();
             return true;
         });
 
-        [Documentation("Click a specific element if it is visible.Useful for e.g.cookie confirmations")]
+        [Documentation("Click a specific element if it is visible. Useful for e.g.cookie confirmations")]
         public bool? ClickElementIfVisible(string searchCriterion)
         {
             if (ElementExists(searchCriterion) && ElementIsVisible(searchCriterion)) return ClickElement(searchCriterion);
@@ -103,6 +107,9 @@ namespace SeleniumFixture
             });
         }
 
+        [Documentation("Returns the number of elements matching the criteria")]
+        public int CountOfElements(string searchCriterion) => ElementsMatching(searchCriterion)?.Count ?? 0;
+
         [Documentation("Return a CSS property of a certain element (e.g. color)")]
         public string CssPropertyOfElement(string cssProperty, string searchCriterion) =>
             DoOperationOnElement(searchCriterion, element => element.GetCssValue(cssProperty));
@@ -119,7 +126,7 @@ namespace SeleniumFixture
             {
                 try
                 {
-                    var element = Driver.FindElement(new SearchParser(searchCriterion).By);
+                    var element = FindElement(searchCriterion);
                     Debug.Assert(element != null);
                     return operation(element);
                 }
@@ -154,34 +161,67 @@ namespace SeleniumFixture
         {
             const string script = "var myEvent = new MouseEvent('dblclick', {bubbles: true, cancelable: true, view: window});"
                                   + "arguments[0].dispatchEvent(myEvent);";
-            ((IJavaScriptExecutor) Driver).ExecuteScript(script, element);
+            ((IJavaScriptExecutor)Driver).ExecuteScript(script, element);
         }
 
+        [Documentation("Drag an element to an X,Y location. Only works for mobile platforms")]
+        public bool DragElementAndDropAt(string dragElementLocator, int x, int y)
+        {
+            var dragElement = FindElement(dragElementLocator);
+            if (Driver.IsAndroid() || Driver.IsIos())
+            {
+                if (!(Driver is IPerformsTouchActions driver)) return false;
+                var touchAction = new TouchAction(driver);
+                touchAction.LongPress(dragElement).MoveTo(x, y).Release().Perform();
+                return true;
+            }
+            throw new NotImplementedException("Drag and drop to coordinates was not implemented for web browsers");
+        }
+
+        // todo: make a simpler versionif target not invisible.
         [Documentation("Drag an element and drop it onto another element")]
         public bool DragElementAndDropOnElement(string dragElementLocator, string dropElementLocator)
         {
-            var dragElement = Driver.FindElement(new SearchParser(dragElementLocator).By);
-            var dropElement = Driver.FindElement(new SearchParser(dropElementLocator).By);
-            DragDrop.Html5DragAndDrop(Driver, dragElement, dropElement, DragDrop.Position.Center, DragDrop.Position.Center);
+            var dragElement = FindElement(dragElementLocator);
+            // We do the drop element resolution as late as possible since it may only appear during LongPress
+            if (Driver.IsAndroid() || Driver.IsIos())
+            {
+                if (!(Driver is IPerformsTouchActions driver)) return false;
+                // first we long press and find the element. It might only show up during longp ress
+                var checkAction = new TouchAction(driver);
+                checkAction.LongPress(dragElement).Perform();
+                var target = FindElement(dropElementLocator);
+                // Now do the actual drag and drop. Not using MoveTo(Element) as element may still be invisible.
+                var position = target.Location;
+                var size = target.Size;
+                var moveX = position.X + size.Width / 2;
+                var moveY = position.Y + size.Height / 2;
+                checkAction.Release().Perform();
+                var action = new TouchAction(driver);
+                dragElement = FindElement(dragElementLocator);
+                action.LongPress(dragElement).MoveTo(moveX, moveY).Release().Perform();
+                return true;
+            }
+            DragDrop.Html5DragAndDrop(Driver, dragElement, FindElement(dropElementLocator), DragDrop.Position.Center, DragDrop.Position.Center);
             return true;
         }
 
         [Documentation("Drag an element and drop it onto another element in another driver")]
         public bool DragElementAndDropOnElementInDriver(string dragElementLocator, string dropElementLocator, string dropDriverHandle)
         {
-            var dragElement = Driver.FindElement(new SearchParser(dragElementLocator).By);
+            var dragElement = FindElement(dragElementLocator);
             var dragDriverHandle = DriverId;
             var sourceDriver = Driver;
             SetDriver(dropDriverHandle);
             var targetDriver = Driver;
-            var dropElement = Driver.FindElement(new SearchParser(dropElementLocator).By);
+            var dropElement = FindElement(dropElementLocator);
             SetDriver(dragDriverHandle);
             DragDrop.DragToWindow(sourceDriver, dragElement, targetDriver, dropElement);
             return true;
         }
 
         [Documentation("Returns whether a certain element exists on the page")]
-        public bool ElementExists(string searchCriterion) => Driver != null && Driver.FindElements(new SearchParser(searchCriterion).By).Any();
+        public bool ElementExists(string searchCriterion) => Driver != null && ElementsMatching(searchCriterion).Any();
 
         [Documentation("Returns whether a certain element has the specified attribute")]
         public bool ElementHasAttribute(string searchCriterion, string attribute) => AttributeOfElement(attribute, searchCriterion) != null;
@@ -195,13 +235,57 @@ namespace SeleniumFixture
         [Documentation("Returns whether a certain element is visible on the page")]
         public bool ElementIsVisible(string searchCriterion) => DoOperationOnElement(searchCriterion, element => element.Displayed);
 
+        private IReadOnlyCollection<IWebElement> ElementsMatching(string searchCriterion) =>
+            Driver?.FindElements(new SearchParser(searchCriterion).By);
+
+        public IWebElement FindElement(string searchCriterion) => Driver.FindElement(new SearchParser(searchCriterion).By);
+
         private static bool IsClickable(IWebElement element) => element.Displayed && element.Enabled;
 
+        private static int? KeyCode(string keyCodeIn)
+        {
+            // if this is an integer, use it. Otherwise, look if we can convert via an AndroidKeyCode field name
+            if (!int.TryParse(keyCodeIn, out var keyCode))
+            {
+                var myType = typeof(AndroidKeyCode);
+                var myFieldInfo = myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
+                if (myFieldInfo == null) return null;
+                var success = int.TryParse(myFieldInfo.GetValue(null).ToString(), out keyCode);
+                if (!success) return null;
+            }
+            return keyCode;
+        }
+
+        [Documentation("Long press an element (mobile only)")]
+        public bool LongPressElementForSeconds(string searchCriterion, double seconds) => DoOperationOnElement(searchCriterion, element =>
+        {
+            if (!(Driver is IPerformsTouchActions driver)) return false;
+            var action = new TouchAction(driver);
+            action.LongPress(element).Wait(Convert.ToInt64(TimeSpan.FromSeconds(seconds).TotalMilliseconds)).Release().Perform();
+            return true;
+        });
+
+        // TODO: make this work for mobile 
         private void MoveTo(IWebElement element)
         {
-            ((IJavaScriptExecutor) Driver).ExecuteScript(
-                "arguments[0].scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});", element);
-            new Actions(Driver).MoveToElement(element).Build().Perform();
+            // Android doesn't support these.
+            try
+            {
+                ((IJavaScriptExecutor)Driver).ExecuteScript(
+                    "arguments[0].scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});", element);
+            }
+            catch (WebDriverException e) when (e.Message == "Method is not implemented")
+            {
+                // ignore
+            }
+            try
+            {
+                new Actions(Driver).MoveToElement(element).Build().Perform();
+            }
+            catch (NotImplementedException)
+            {
+                // ignore
+            }
         }
 
         [Documentation("Move the cursor to a certain element (e.g. for hovering)")]
@@ -211,6 +295,16 @@ namespace SeleniumFixture
             return true;
         });
 
+        /*
+        private void MoveToOnAndroid(IWebElement element)
+        {
+            var selector = "searchString";
+            Driver.FindElement(MobileBy.AndroidUIAutomator(
+                "new UiScrollable("
+                + "new UiSelector().scrollable(true)).scrollIntoView("
+                + "new UiSelector().textContains(\"Lock screen and security\"));"));
+        } */
+
         [Documentation("Right click an element (a.k.a. context click)")]
         public bool RightClickElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
         {
@@ -219,6 +313,37 @@ namespace SeleniumFixture
             new Actions(Driver).MoveToElement(element).ContextClick(element).Build().Perform();
             return true;
         });
+
+        [Documentation("Scroll in a direction until an element is found. Return true if found, false if not." +
+                       " Mobile only, uses MoveToElement with browsers (ignoring direction).")]
+        public bool ScrollToElement(string direction, string searchCriterion)
+        {
+            if (!Driver.IsAndroid() && !Driver.IsIos()) return MoveToElement(searchCriterion);
+
+            var contentHash = Driver.PageSource.GetHashCode();
+            int oldHash;
+            // we allow things like FromTop, from top, FROM top.
+            // IF that is used, we first scroll up to the top, and then start scrolling down.
+            if (Regex.Replace(direction, @"\s+", string.Empty).Equals("fromtop", StringComparison.InvariantCultureIgnoreCase))
+            {
+                do
+                {
+                    oldHash = contentHash;
+                    Scroll("up");
+                    contentHash = Driver.PageSource.GetHashCode();
+                } while (oldHash != contentHash);
+                direction = "down";
+            }
+
+            do
+            {
+                oldHash = contentHash;
+                if (ElementExists(searchCriterion) && ElementIsVisible(searchCriterion)) return true;
+                Scroll(direction);
+                contentHash = Driver.PageSource.GetHashCode();
+            } while (oldHash != contentHash);
+            return false;
+        }
 
         [Documentation("Return the fist selected item text of a listbox(single or multi - value)")]
         public string SelectedOptionInElement(string searchCriterion)
@@ -359,6 +484,15 @@ namespace SeleniumFixture
             return true;
         });
 
+        [Documentation("Single tap an element (mobile only)")]
+        public bool TapElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
+        {
+            if (!(Driver is IPerformsTouchActions driver)) return false;
+            var action = new TouchAction(driver);
+            action.Tap(element).Perform();
+            return true;
+        });
+
         [Documentation("Return the text of a certain element")]
         public string TextInElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element => element.Text);
 
@@ -384,7 +518,7 @@ namespace SeleniumFixture
         {
             // Do not mix implicit wait with explicit wait
             var implicitWait = Driver.GetImplicitWait();
-            Driver.SetImplicitWait(0);
+            if (Math.Abs(implicitWait) > 0.001) Driver.SetImplicitWait(0);
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(TimeoutInSeconds));
             try
             {
@@ -396,7 +530,7 @@ namespace SeleniumFixture
             }
             finally
             {
-                Driver.SetImplicitWait(implicitWait);
+                if (Math.Abs(implicitWait) > 0.001) Driver.SetImplicitWait(implicitWait);
             }
         }
 
