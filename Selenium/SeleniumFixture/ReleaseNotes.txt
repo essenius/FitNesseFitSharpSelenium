@@ -34,4 +34,4 @@
 2.1.1	 Introduced [Documentation] attributes to replace FixtureDocumentation dictionary. Cleaned up code; merged Selenium_Text with Selenium_Page
 2.2.0    Added ElementIsChecked; made AcceptAlert, DismissAlert and RespondToAlert return a bool, indicating success.
          Implemented a few test workarounds for apparent timing related flaws in the Edge browser (more to come).
-2.3.0    Initial support for Appium tests; introduction of optional environment variables overruling App.Config settings
+2.3.0    Initial support for Appium tests; introduction of optional environment variables overruling App.Config settings. ReSharper cleanup.
