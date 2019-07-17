@@ -11,7 +11,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using static System.Globalization.CultureInfo;
 using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model
@@ -31,7 +31,7 @@ namespace SeleniumFixture.Model
         {
             get
             {
-                var count = Convert.ToInt32(CallViaJavascript("length"), CultureInfo.InvariantCulture);
+                var count = Convert.ToInt32(CallViaJavascript("length"), InvariantCulture);
                 var result = new List<string>();
                 for (var i = 0; i < count; i++)
                 {

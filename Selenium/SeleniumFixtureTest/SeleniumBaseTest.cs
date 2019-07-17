@@ -331,7 +331,7 @@ namespace SeleniumFixtureTest
                 "Wait for dragSource on section level");
             try
             {
-                _selenium.DragElementAndDropAt("dragSource", 150, 730);
+                _selenium.DragElementAndDropAt("dragSource", new Coordinate(150, 730));
                 Assert.Fail("No exception thrown");
             }
             catch (NotImplementedException)
@@ -907,22 +907,30 @@ namespace SeleniumFixtureTest
         private void SeleniumWindowDimensionsTest()
         {
             // define sizes that are larger than minimal, but not likely to be maximized sizes
-            const int testWidth = 652;
-            const int testHeight = 224;
+            var testSize = new Coordinate(652, 224);
 
-            var originalHeight = _selenium.WindowHeight;
-            var originalWidth = _selenium.WindowWidth;
+            var originalSize = _selenium.WindowSize;
             Debug.Print("Original size is " + BrowserDriver.Current.Manage().Window.Size);
-            Assert.IsTrue(_selenium.SetWindowSizeX(testWidth, testHeight), "Set window size to test dimensions");
+            _selenium.WindowSize = testSize;
+            Assert.IsTrue(_selenium.WindowSizeIsCloseTo(testSize));
             if (!_runningHeadless)
             {
                 _selenium.MaximizeWindow();
-                Assert.AreNotEqual(testWidth, _selenium.WindowWidth, "Window width changed after maximize");
-                Assert.AreNotEqual(testHeight, _selenium.WindowHeight, "Window height changed after maximize");
+                Assert.IsFalse(_selenium.WindowSizeIsCloseTo(testSize), "Window size changed after maximize");
             }
+            // test of deprecated function
+#pragma warning disable 618
+            Selenium.ExceptionOnDeprecatedFunctions = false;
             _selenium.SetWindowSizeX(1, 1);
-            Debug.Print("Minimal size is " + BrowserDriver.Current.Manage().Window.Size);
-            Assert.IsTrue(_selenium.SetWindowSizeX(originalWidth, originalHeight), "Reset window size to original values");
+            var width = _selenium.WindowWidth;
+            var height = _selenium.WindowHeight;
+            Selenium.ExceptionOnDeprecatedFunctions = true;
+#pragma warning restore 618
+            Debug.Print("Minimal size is " + _selenium.WindowSize);
+            Assert.AreEqual(width, _selenium.WindowSize.X, "deprecated width matches Size.X");
+            Assert.AreEqual(height, _selenium.WindowSize.Y, "deprecated height matches Size.Y");
+            _selenium.WindowSize = originalSize;
+            Assert.IsTrue(_selenium.WindowSizeIsCloseTo(originalSize), "Reset window size to original values");
 
             // only slightly related, but might as well test that here too.
             Assert.IsTrue(_selenium.WindowHandles.Count > 0);

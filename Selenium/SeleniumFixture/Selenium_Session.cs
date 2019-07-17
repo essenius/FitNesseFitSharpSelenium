@@ -9,14 +9,14 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
+using OpenQA.Selenium;
+using SeleniumFixture.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
-using OpenQA.Selenium;
-using SeleniumFixture.Model;
 
 namespace SeleniumFixture
 {
@@ -33,13 +33,8 @@ namespace SeleniumFixture
     {
         private const string BrowserChoices = "Browser names can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera";
         private const int DefaultTimeoutInSeconds = 3;
-        private const string DocProtectedMode1 = "Check if Protected Mode for all security zones ";
-
-        private const string DocProtectedMode2 = ", and throw a StopTestException if not. " +
-                                                 "If you use Internet Explorer, it is important that all zones have the same protected mode setting";
 
         private BrowserStorage _browserStorage;
-
         private ProtectedMode _protectedMode;
 
         private BrowserStorage BrowserStorage
@@ -185,30 +180,30 @@ namespace SeleniumFixture
             return DriverId;
         }
 
-        [Documentation(DocProtectedMode1 + "is off" + DocProtectedMode2)]
-        public bool ProtectedModeIsOff()
+        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
+        [Documentation("Check if Protected Mode for all security zones meet the condition (ON/OFF/EQUAL), and throw a StopTestException if not. " +
+                       "If you use Internet Explorer, it is important that all zones have the same protected mode setting")]
+        public bool ProtectedModesAre(string condition)
         {
-            if (!ProtectedMode.AllAre(false)) throw new StopTestException("Protected mode is not off for all zones");
-            return true;
-        }
-
-        [Documentation(DocProtectedMode1 + "is on" + DocProtectedMode2)]
-        public bool ProtectedModeIsOn()
-        {
-            if (!ProtectedMode.AllAre(true)) throw new StopTestException("Protected mode is not on for all zones");
+            bool ok;
+            switch (condition.ToUpperInvariant())
+            {
+                case "ON": ok = ProtectedMode.AllAre(true);
+                    break;
+                case "OFF": ok = ProtectedMode.AllAre(false);
+                    break;
+                case "EQUAL": ok = ProtectedMode.AllAreSame();
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown condition '{condition}. Valid are On, Off or Equal.");
+            }
+            if (!ok) throw new StopTestException("Protected modes are not all " + condition.ToLowerInvariant());
             return true;
         }
 
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec"),
          Documentation("Debug function to see what the current protected mode settings are and what they come from")]
         internal Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
-
-        [Documentation(DocProtectedMode1 + "have the same value" + DocProtectedMode2)]
-        public bool ProtectedModesAreEqual()
-        {
-            if (!ProtectedMode.AllAreSame()) throw new StopTestException("Protected modes are not all the same");
-            return true;
-        }
 
         [Documentation("Remove an item from web storage (local or session) via its key")]
         public bool RemoveFromWebStorage(string key) => _browserStorage.RemoveItem(key);

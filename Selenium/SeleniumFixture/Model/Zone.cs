@@ -12,8 +12,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Win32;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model
 {
@@ -25,7 +25,6 @@ namespace SeleniumFixture.Model
         private const string ProtectedModeKeyName = "2500";
 
         private const string ZoneSubKey = "Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\{0}";
-        private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 
         private readonly Dictionary<string, string> _baseKeys = new Dictionary<string, string>
         {
@@ -82,11 +81,11 @@ namespace SeleniumFixture.Model
             {
                 throw new ArgumentException("Argument must be Machine Policies, Machine, User Policies, or User");
             }
-            var subKey = string.Format(Culture, ZoneSubKey, Id);
-            var keyString = string.Format(Culture, _baseKeys[registryLocation], subKey);
+            var subKey = string.Format(InvariantCulture, ZoneSubKey, Id);
+            var keyString = string.Format(InvariantCulture, _baseKeys[registryLocation], subKey);
             var zoneValue = GetZoneValueFrom(keyString);
             if (zoneValue == null) return null;
-            return Convert.ToInt32(zoneValue, Culture) == Enabled;
+            return Convert.ToInt32(zoneValue, InvariantCulture) == Enabled;
         }
 
         private void RetrieveProtectedValue()

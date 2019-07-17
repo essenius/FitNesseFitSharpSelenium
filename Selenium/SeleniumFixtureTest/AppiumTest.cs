@@ -80,7 +80,7 @@ namespace SeleniumFixtureTest
             const string galleryIcon = "XPath://android.widget.TextView[@text = 'Gallery']";
             Assert.IsTrue(Fixture.ScrollToElement("left", galleryIcon), "Scroll left to the page with Gallery on it");
             Assert.IsTrue(Fixture.ElementExists(galleryIcon), "Check the Gallery icon is there");
-            Assert.IsTrue(Fixture.DragElementAndDropAt(galleryIcon, 400, 800), "Drag and drop the gallery icon on the home page");
+            Assert.IsTrue(Fixture.DragElementAndDropAt(galleryIcon, new Coordinate(400, 800)), "Drag and drop the gallery icon on the home page");
             const string deleteArea = "id:com.android.launcher:id/delete_target_text";
             Assert.IsTrue(Fixture.DragElementAndDropOnElement(galleryIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
             Assert.IsFalse(Fixture.ElementExists(galleryIcon));
@@ -129,11 +129,8 @@ namespace SeleniumFixtureTest
         }
 
         [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            // safety net in case tests were ran individually
-            Fixture.Close();
-        }
+        public static void ClassCleanup() => Fixture.Close();
+        // safety net in case tests were ran individually
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -161,6 +158,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement(Apps));
             // expect the android guidance to kick in, and click it away
             const string okButton = "ClassName:android.widget.Button";
+            Fixture.WaitForElement(okButton);
+            Fixture.ClickElementIfVisible(okButton);
             Assert.IsTrue(Fixture.PressKeyCode("Home"));
         }
 

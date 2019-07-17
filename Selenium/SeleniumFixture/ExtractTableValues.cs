@@ -13,11 +13,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture
 {
@@ -89,9 +89,7 @@ namespace SeleniumFixture
             }
         }
 
-        /// <summary>
-        ///     Number of rows in the extracted table
-        /// </summary>
+        [Documentation("Number of rows in the extracted table")]
         public int RowCount
         {
             get
@@ -101,7 +99,7 @@ namespace SeleniumFixture
             }
         }
 
-        private static string DefaultHeader(int columnNumber) => string.Format(CultureInfo.CurrentCulture, "Column {0}", columnNumber + 1);
+        private static string DefaultHeader(int columnNumber) => string.Format(CurrentCulture, "Column {0}", columnNumber + 1);
 
         private void DoExtraction()
         {
