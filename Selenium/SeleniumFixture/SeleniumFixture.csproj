@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationInfo.cs" />
+    <Compile Include="Coordinate.cs" />
     <Compile Include="DocumentationAttribute.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\AppConfig.cs" />

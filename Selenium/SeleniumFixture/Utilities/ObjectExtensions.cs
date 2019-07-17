@@ -12,9 +12,9 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Utilities
 {
@@ -65,8 +65,8 @@ namespace SeleniumFixture.Utilities
         public static string ToMethodName(this string gracefulName)
         {
             if (string.IsNullOrEmpty(gracefulName)) return gracefulName;
-            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CultureInfo.CurrentCulture) + gracefulName.Substring(1);
-            var textInfo = CultureInfo.CurrentCulture.TextInfo;
+            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CurrentCulture) + gracefulName.Substring(1);
+            var textInfo = CurrentCulture.TextInfo;
             var result = string.Empty;
             var sections = gracefulName.Split(' ');
             return sections.Select(section => textInfo.ToTitleCase(textInfo.ToLower(section)))

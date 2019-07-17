@@ -11,6 +11,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -23,10 +24,8 @@ namespace SeleniumFixtureTest
     {
         private IWebDriver _browserDriver;
 
-        public void Dispose()
-        {
-            _browserDriver?.Dispose();
-        }
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_browserDriver", Justification = "False positive")]
+        public void Dispose() => _browserDriver?.Dispose();
 
         [TestMethod, TestCategory("Experiments")]
         public void FrameSwitchTestWithSeleniumApiDocumentation()

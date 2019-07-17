@@ -10,7 +10,7 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Globalization;
+using static System.Globalization.CultureInfo;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 
@@ -50,7 +50,7 @@ namespace SeleniumFixture.Model
         {
             get
             {
-                switch (Method.ToUpper(CultureInfo.CurrentCulture))
+                switch (Method.ToUpper(CurrentCulture))
                 {
                     case @"ACCESSIBILITYID":
                         return MobileBy.AccessibilityId;

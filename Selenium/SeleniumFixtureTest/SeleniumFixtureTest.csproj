@@ -106,6 +106,7 @@
     <Compile Include="NativeMethodsTest.cs" />
     <Compile Include="ObjectExtensionsTest.cs" />
     <Compile Include="AppConfigTest.cs" />
+    <Compile Include="CoordinateTest.cs" />
     <Compile Include="ZoneListFactoryTest.cs" />
     <Compile Include="ZoneListFactoryMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

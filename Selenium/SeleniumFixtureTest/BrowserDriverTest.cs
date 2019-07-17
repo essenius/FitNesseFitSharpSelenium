@@ -98,7 +98,7 @@ namespace SeleniumFixtureTest
              "Unrecognized browser: WrongBrowser")]
         public void BrowserDriverWrongDriverRaisesStopTestException() => BrowserDriver.NewDriver("WrongBrowser");
 
-        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
+        [TestMethod, TestCategory("Integration"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Can't run browser 'WrongDriver' on Selenium server 'http://localhost'")]
         public void BrowserDriverWrongRemoteDriverRaisesStopTestException() =>
             BrowserDriver.NewRemoteDriver("WrongDriver", "http://localhost", new Dictionary<string, object>());

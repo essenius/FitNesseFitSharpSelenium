@@ -21,6 +21,7 @@ using OpenQA.Selenium.Appium.iOS;
 using OpenQA.Selenium.Appium.MultiTouch;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
+using static System.FormattableString;
 
 namespace SeleniumFixture
 {
@@ -82,9 +83,8 @@ namespace SeleniumFixture
             return true;
         }
 
-        //TODO create and execute test cases, implement metastates
-        [Documentation(
-            "Press a key on an Android via a keycode (number or field name). Returns false if not run on an Android or the keycode is not recognised")]
+        //TODO implement metastates
+        [Documentation("Press a key on an Android via a keycode (number/field name). Returns false if not run on an Android or the keycode is not recognised")]
         public bool PressKeyCode(string keyCodeIn)
         {
             if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
@@ -101,8 +101,7 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation(
-            "Take a screenshot and return it rendered as an image (html img). Note: may return black if you run the browser driver from within a service")]
+        [Documentation("Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a service")]
         public static string Screenshot()
         {
             var snap = BrowserDriver.TakeScreenshot();
@@ -112,6 +111,7 @@ namespace SeleniumFixture
         [Documentation("Take a screenshot and return it as an object")]
         public static Snapshot ScreenshotObject() => BrowserDriver.TakeScreenshot();
 
+        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
         [Documentation("Scroll up, down, left or right")]
         public bool Scroll(string direction)
         {
@@ -154,7 +154,7 @@ namespace SeleniumFixture
             // default - a browser
             var xPixels = endX - startX;
             var yPixels = endY - startY;
-            ((IJavaScriptExecutor)Driver).ExecuteScript($"window.scrollBy({xPixels}, {yPixels})");
+            ((IJavaScriptExecutor)Driver).ExecuteScript(Invariant($"window.scrollBy({xPixels}, {yPixels})"));
             return true;
         }
 
@@ -208,7 +208,7 @@ namespace SeleniumFixture
         [Documentation("Waits for a certain text to be present (case insensitive search)")]
         public bool WaitForTextIgnoringCase(string textToSearch) => WaitForText(textToSearch, true);
 
-        [Documentation("Wait until the HTML source has the specified minimum length. Useful when pages are built dynamically and asynchronously")]
+        [Documentation("Wait until the page source has the specified minimum length. Useful when pages are built dynamically and asynchronously")]
         public bool WaitUntilPageSourceIsLargerThan(int thresholdLength) => WaitFor(drv => LengthOfPageSource > thresholdLength);
 
         [Documentation("Wait until a called JavaScript function returns a value that is not false or null")]

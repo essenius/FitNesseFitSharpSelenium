@@ -12,10 +12,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
+using static System.Globalization.CultureInfo;
 using System.Reflection;
 using ImageHandler;
 using OpenQA.Selenium;
@@ -47,7 +45,7 @@ namespace SeleniumFixture.Model
 
         public static int DriverCount => Drivers.Count;
 
-        private static string UniqueId => _idCounter++.ToString(CultureInfo.InvariantCulture);
+        private static string UniqueId => _idCounter++.ToString(InvariantCulture);
 
         private static string AddDriver(IWebDriver newDriver)
         {

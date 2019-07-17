@@ -44,8 +44,11 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
              @"protectedmode", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
-        public void ProtectedModeAllAreTest()
+        public void SeleniumProtectedModesAreTest()
         {
+            // including deprecated functions here - don't want to duplicate the whole test. Hence also the #pragma warning disable 618
+            Selenium.ExceptionOnDeprecatedFunctions = false;
+
             var testId = TestContext.DataRow["testId"].ToString();
             bool[] zones =
             {
@@ -65,27 +68,39 @@ namespace SeleniumFixtureTest
             if (allSame)
             {
                 Debug.Print("All same");
-                Assert.IsTrue(_selenium.ProtectedModesAreEqual(), testId + " [NotAllSame - AreEqual]");
+                Assert.IsTrue(_selenium.ProtectedModesAre("Equal"), testId + " [AllSame - Are Equal]");
+#pragma warning disable 618
+                Assert.IsTrue(_selenium.ProtectedModesAreEqual(), testId + " [AllSame - AreEqual]");
+#pragma warning restore 618
                 if (allOn)
                 {
                     Debug.Print("All on");
-                    Assert.IsTrue(_selenium.ProtectedModeIsOn(), testId + " [All On - IsOn]");
-                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModeIsOff(), testId, "All On - IsOff");
+                    Assert.IsTrue(_selenium.ProtectedModesAre("On"), testId + " [All On - Are On]");
+#pragma warning disable 618
+                    Assert.IsTrue(_selenium.ProtectedModeIsOn(), testId + " [All On - IsOn - Deprecated]");
+#pragma warning restore 618
+
+                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "All On - IsOff");
                 }
                 else
                 {
                     Debug.Print("all off");
-                    Assert.IsTrue(_selenium.ProtectedModeIsOff(), testId + " [All Off - IsOff]");
-                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModeIsOn(), testId, "All Off - IsOn");
+                    Assert.IsTrue(_selenium.ProtectedModesAre("Off"), testId + " [All Off - IsOff]");
+#pragma warning disable 618
+                    Assert.IsTrue(_selenium.ProtectedModeIsOff(), testId + " [All Off - IsOff - Deprecated]");
+#pragma warning restore 618
+                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "All Off - IsOn");
                 }
             }
             else
             {
                 Debug.Print("Not all same");
-                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAreEqual(), testId, "NotAllSame - AreEqual");
-                ExpectStopTestExceptionFor(() => _selenium.ProtectedModeIsOff(), testId, "NotAllSame - IsOff");
-                ExpectStopTestExceptionFor(() => _selenium.ProtectedModeIsOn(), testId, "NotAllSame - IsOn");
+                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Equal"), testId, "NotAllSame - AreEqual");
+                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "NotAllSame - IsOff");
+                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "NotAllSame - IsOn");
             }
+
+            Selenium.ExceptionOnDeprecatedFunctions = true;
 
             var modes = _selenium.ProtectedModePerZone();
             Assert.AreEqual(4, modes.Count);
@@ -198,7 +213,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.SubmitElement("name:q"));
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [TestMethod, TestCategory("Integration")]
         public void SeleniumLongPressElementUnsupportedTest()
         {
             _selenium.SetBrowser("Chrome");

@@ -35,3 +35,8 @@
 2.2.0    Added ElementIsChecked; made AcceptAlert, DismissAlert and RespondToAlert return a bool, indicating success.
          Implemented a few test workarounds for apparent timing related flaws in the Edge browser (more to come).
 2.3.0    Initial support for Appium tests; introduction of optional environment variables overruling App.Config settings. ReSharper cleanup.
+2.4.0    Introduced Coordinate class to simplify specification of sizes. Introduced WindowSize replacing WindowHeight, WindowWidth, and
+         SetWindowSizeX, made DragElementAndDropAt use Coordinate, renamed all HtmlSource functions to PageSource equivalents. 
+		 Introduced WindowSizeIsCloseTo, to allow for some browsers not setting the exact size but one or two pixels off. 
+		 Introduced ProtectedModesAre to replace ProtectedModeIsOff, ProtectedModeIsOn, ProtectedModesAreEqual.
+ 

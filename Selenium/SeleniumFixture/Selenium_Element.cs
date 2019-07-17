@@ -165,20 +165,18 @@ namespace SeleniumFixture
         }
 
         [Documentation("Drag an element to an X,Y location. Only works for mobile platforms")]
-        public bool DragElementAndDropAt(string dragElementLocator, int x, int y)
+        public bool DragElementAndDropAt(string dragElementLocator, Coordinate location)
         {
             var dragElement = FindElement(dragElementLocator);
-            if (Driver.IsAndroid() || Driver.IsIos())
-            {
-                if (!(Driver is IPerformsTouchActions driver)) return false;
-                var touchAction = new TouchAction(driver);
-                touchAction.LongPress(dragElement).MoveTo(x, y).Release().Perform();
-                return true;
-            }
-            throw new NotImplementedException("Drag and drop to coordinates was not implemented for web browsers");
+            if (!Driver.IsAndroid() && !Driver.IsIos())
+                throw new NotImplementedException("Drag and drop to coordinates was not implemented for web browsers");
+            if (!(Driver is IPerformsTouchActions driver)) return false;
+            var touchAction = new TouchAction(driver);
+            touchAction.LongPress(dragElement).MoveTo(location.X, location.Y).Release().Perform();
+            return true;
         }
 
-        // todo: make a simpler versionif target not invisible.
+        // todo: make a simpler version if target not invisible.
         [Documentation("Drag an element and drop it onto another element")]
         public bool DragElementAndDropOnElement(string dragElementLocator, string dropElementLocator)
         {
@@ -265,7 +263,6 @@ namespace SeleniumFixture
             return true;
         });
 
-        // TODO: make this work for mobile 
         private void MoveTo(IWebElement element)
         {
             // Android doesn't support these.
@@ -324,7 +321,7 @@ namespace SeleniumFixture
             int oldHash;
             // we allow things like FromTop, from top, FROM top.
             // IF that is used, we first scroll up to the top, and then start scrolling down.
-            if (Regex.Replace(direction, @"\s+", string.Empty).Equals("fromtop", StringComparison.InvariantCultureIgnoreCase))
+            if (Regex.Replace(direction, @"\s+", string.Empty).Equals("fromtop", StringComparison.OrdinalIgnoreCase))
             {
                 do
                 {

@@ -9,7 +9,7 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-using System.Globalization;
+using static System.FormattableString;
 
 namespace SeleniumFixture
 {
@@ -20,11 +20,10 @@ namespace SeleniumFixture
         public const string Copyright = "Copyright © Rik Essenius 2015-2019";
         public const string Description = "A FitNesse fixture to drive Selenium WebDriver";
 
-        public const string Version = "2.3.0";
+        public const string Version = "2.4.0";
         // don't forget to update the release notes
 
-        public static string ExtendedInfo =>
-            string.Format(CultureInfo.InvariantCulture, "{0} {1}. {2}. {3}", ApplicationName, Version, Description, Copyright);
+        public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");
 
         public static string VersionInfo(string qualifier)
         {
@@ -35,7 +34,7 @@ namespace SeleniumFixture
                 case "EXTENDED":
                     return ExtendedInfo;
                 default:
-                    return string.Format(CultureInfo.InvariantCulture, "{0} {1}", ApplicationName, Version);
+                    return Invariant($"{ApplicationName} {Version}");
             }
         }
     }

@@ -9,7 +9,6 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -37,11 +36,20 @@ namespace SeleniumFixture
         [Documentation("Returns the window handles (debugging purposes)")]
         internal ReadOnlyCollection<string> WindowHandles => Driver.WindowHandles;
 
-        [Documentation("The height of the browser window")]
-        public int WindowHeight => Driver.Manage().Window.Size.Height;
-
-        [Documentation("The width of the browser window")]
-        public int WindowWidth => Driver.Manage().Window.Size.Width;
+        [Documentation("The dimensions of the browser window (width, height)")]
+        public Coordinate WindowSize
+        {
+            get
+            {
+                var size = Driver.Manage().Window.Size;
+                return new Coordinate(size.Width, size.Height);
+            }
+            set
+            {
+                var window = Driver.Manage().Window;
+                window.Size = new Size(value.X, value.Y);
+            }
+        }
 
         [Documentation("Accept an alert, confirm or prompt dialog (press OK)")]
         public bool AcceptAlert()
@@ -95,16 +103,6 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation("Set the size of a browser window (width x height)")]
-        public bool SetWindowSizeX(int width, int height)
-        {
-            var window = Driver.Manage().Window;
-            window.Size = new Size(width, height);
-            // ChromeDriver is off a bit sometimes. Working around that.
-            return Math.Abs(window.Size.Width - width) <= 2 &&
-                   Math.Abs(window.Size.Height - height) <= 2;
-        }
-
         [Documentation("Stores all the window handles that the browser driver handles, including the main window.")]
         public void StoreWindowHandles() => StoreWindowHandles(true);
 
@@ -141,5 +139,8 @@ namespace SeleniumFixture
             StoreWindowHandles(false);
             return returnValue;
         }
+
+        [Documentation("Check if the window size is close enough to the specified size")]
+        public bool WindowSizeIsCloseTo(Coordinate comparison) => WindowSize.CloseTo(comparison);
     }
 }

@@ -18,7 +18,7 @@ using SeleniumFixture.Model;
 namespace SeleniumFixture
 {
     /// <summary>
-    ///     Deprecated and experimental methods of the Selenium script table fixture for FitNesse
+    ///     Deprecated methods of the Selenium script table fixture for FitNesse
     /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Entry point for FitSharp")]
     public sealed partial class Selenium
@@ -29,6 +29,26 @@ namespace SeleniumFixture
         [Documentation("Check for using deprecated functions by throwing an exception if a deprecated function is used.")]
         public static bool ExceptionOnDeprecatedFunctions { get; set; }
 
+        [Obsolete("Use WindowSize")]
+        public int WindowHeight
+        {
+            get
+            {
+                HandleDeprecatedFunction("Window Height", "Window Size");
+                return Driver.Manage().Window.Size.Height;
+            }
+        }
+
+        [Obsolete("Use WindowSize")]
+        public int WindowWidth
+        {
+            get
+            {
+                HandleDeprecatedFunction("Window Width", "Window Size");
+                return Driver.Manage().Window.Size.Width;
+            }
+        }
+
         private static void HandleDeprecatedFunction(string fixtureName, string fixtureReplacement)
         {
             if (ExceptionOnDeprecatedFunctions)
@@ -37,14 +57,14 @@ namespace SeleniumFixture
             }
         }
 
-        [Obsolete("Use PageSource instead"), Documentation("Return the HTML source of the current page in context")]
+        [Obsolete("Use PageSource instead")]
         public string HtmlSource()
         {
             HandleDeprecatedFunction("HTML Source", "Page Source");
             return PageSource;
         }
 
-        [Obsolete("Use LengthOfPageSource instead"), Documentation("Return the length of the current HTML page source")]
+        [Obsolete("Use LengthOfPageSource instead")]
         public int LengthOfHtmlSource()
         {
             HandleDeprecatedFunction("Length Of HTML Source", "Length Of Page Source");
@@ -56,13 +76,42 @@ namespace SeleniumFixture
             throw new NotSupportedException(ApplicationNameObsoleteMessage +
                                             " (" + browserName + "," + baseAddress + "," + name + ")");
 
+        [Obsolete("Use ProtectedModesAre")]
+        public bool ProtectedModeIsOff()
+        {
+            HandleDeprecatedFunction("Protected Mode Is Off", "Protected Modes Are");
+            return ProtectedModesAre("Off");
+        }
+
+        [Obsolete("Use ProtectedModesAre")]
+        public bool ProtectedModeIsOn()
+        {
+            HandleDeprecatedFunction("Protected Mode Is On", "Protected Modes Are");
+            return ProtectedModesAre("On");
+        }
+
+        [Obsolete("Use ProtectedModesAre")]
+        public bool ProtectedModesAreEqual()
+        {
+            HandleDeprecatedFunction("Protected Modes Are Equal", "Protected Modes Are");
+            return ProtectedModesAre("Equal");
+        }
+
         [Obsolete(ApplicationNameObsoleteMessage)]
         public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string applicationName) =>
             throw new NotSupportedException(ApplicationNameObsoleteMessage +
                                             " (" + browserName + "," + baseAddress + "," + applicationName + ")");
 
-        [Obsolete("Use WaitForPageSourceToChange"),
-         Documentation("Wait for the HTML source to change. Can happen with dynamic pages")]
+        [Obsolete("Use WindowSize")]
+        public bool SetWindowSizeX(int width, int height)
+        {
+            HandleDeprecatedFunction("Set Window Size X", "Set Window Size");
+            var newSize = new Coordinate(width, height);
+            WindowSize = newSize;
+            return newSize.CloseTo(WindowSize);
+        }
+
+        [Obsolete("Use WaitForPageSourceToChange")]
         public bool WaitForHtmlSourceToChange()
         {
             HandleDeprecatedFunction("Wait For HTML Source To Change", "Wait For Page Source To Change");
@@ -86,8 +135,7 @@ namespace SeleniumFixture
             });
         }
 
-        [Obsolete("Use WaitUntilPageSourceIsLargerThan"),
-         Documentation("Wait until the HTML source has the specified minimum length. Useful when pages are built dynamically and asynchronously")]
+        [Obsolete("Use WaitUntilPageSourceIsLargerThan")]
         public bool WaitUntilHtmlSourceIsLargerThan(int thresholdLength)
         {
             HandleDeprecatedFunction("Wait Until HTML Source Is Larger Than", "Wait Until Page Source Is Larger Than");
