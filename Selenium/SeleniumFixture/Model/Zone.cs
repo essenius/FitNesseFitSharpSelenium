@@ -79,7 +79,7 @@ namespace SeleniumFixture.Model
         {
             if (!_baseKeys.ContainsKey(registryLocation))
             {
-                throw new ArgumentException("Argument must be Machine Policies, Machine, User Policies, or User");
+                throw new ArgumentException(ErrorMessages.RegistryLocationIssue);
             }
             var subKey = string.Format(InvariantCulture, ZoneSubKey, Id);
             var keyString = string.Format(InvariantCulture, _baseKeys[registryLocation], subKey);

@@ -136,7 +136,7 @@ namespace SeleniumFixture
                     Thread.Sleep(100);
                 }
             }
-            throw new StaleElementReferenceException("Still stale after retrying", staleElementReferenceException);
+            throw new StaleElementReferenceException(ErrorMessages.StaleAfterRetry, staleElementReferenceException);
         }
 
         [Documentation("Double click an element")]
@@ -164,14 +164,16 @@ namespace SeleniumFixture
             ((IJavaScriptExecutor)Driver).ExecuteScript(script, element);
         }
 
+        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive")]
         [Documentation("Drag an element to an X,Y location. Only works for mobile platforms")]
         public bool DragElementAndDropAt(string dragElementLocator, Coordinate location)
         {
             var dragElement = FindElement(dragElementLocator);
             if (!Driver.IsAndroid() && !Driver.IsIos())
-                throw new NotImplementedException("Drag and drop to coordinates was not implemented for web browsers");
+                throw new NotImplementedException(ErrorMessages.NoDragDropToCoordinates);
             if (!(Driver is IPerformsTouchActions driver)) return false;
             var touchAction = new TouchAction(driver);
+            Debug.Assert(location != null, nameof(location) + " != null");
             touchAction.LongPress(dragElement).MoveTo(location.X, location.Y).Release().Perform();
             return true;
         }

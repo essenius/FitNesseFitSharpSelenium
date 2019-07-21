@@ -181,12 +181,13 @@ namespace SeleniumFixture
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
+        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False Positive")]
         [Documentation("Check if Protected Mode for all security zones meet the condition (ON/OFF/EQUAL), and throw a StopTestException if not. " +
                        "If you use Internet Explorer, it is important that all zones have the same protected mode setting")]
         public bool ProtectedModesAre(string condition)
         {
             bool ok;
-            switch (condition.ToUpperInvariant())
+            switch (condition?.ToUpperInvariant())
             {
                 case "ON": ok = ProtectedMode.AllAre(true);
                     break;
@@ -253,7 +254,7 @@ namespace SeleniumFixture
 
         [Documentation("Returns the version info of the fixture. " +
                        "SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name, version")]
-        public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier);
+        public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier + string.Empty);
 
         [Documentation("Wait a specified number of seconds (can be fractions). Note: this seems to impact iframe context, so use with care.")]
         public static void WaitSeconds(double seconds)

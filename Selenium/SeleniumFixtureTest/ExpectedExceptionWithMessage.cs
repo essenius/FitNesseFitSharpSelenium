@@ -39,8 +39,8 @@ namespace SeleniumFixtureTest
 
             var actualMessage = e.Message.Trim();
 
-            if (ExpectedMessage != null) Assert.IsTrue(actualMessage.IsLike(ExpectedMessage));
-            Console.Write("ExpectedExceptionWithMessageAttribute:" + e.Message);
+            if (ExpectedMessage != null)
+                Assert.IsTrue(actualMessage.IsLike(ExpectedMessage), $"Message {e.Message} is like {actualMessage}");
         }
     }
 }

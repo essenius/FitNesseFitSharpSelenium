@@ -22,8 +22,7 @@ namespace SeleniumFixture.Model
         {
             if (searchCriterion == null)
             {
-                throw new ArgumentNullException(nameof(searchCriterion),
-                    "SearchParser requires a non-null search criterion");
+                throw new ArgumentNullException(nameof(searchCriterion), ErrorMessages.NullSearchCriterion);
             }
 
             if (searchCriterion.Contains(Delimiter))
@@ -40,7 +39,7 @@ namespace SeleniumFixture.Model
 
         public SearchParser(string method, string locator)
         {
-            Locator = locator ?? throw new ArgumentNullException(nameof(locator), "SearchParser requires a non-null locator");
+            Locator = locator ?? throw new ArgumentNullException(nameof(locator), ErrorMessages.NullLocator);
             Method = string.IsNullOrEmpty(method) ? DefaultMethod : method;
         }
 

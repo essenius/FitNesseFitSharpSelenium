@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using OpenQA.Selenium;
 
@@ -137,7 +138,7 @@ namespace SeleniumFixture.Model
             var secondEndDelimiterPosition = _keys.IndexOf(EndDelimiter, endDelimiterPosition + 1);
             if (secondEndDelimiterPosition != -1 &&
                 !_keys.Substring(endDelimiterPosition + 1, secondEndDelimiterPosition - endDelimiterPosition - 1)
-                    .Contains(StartDelimiter.ToString()))
+                    .Contains(StartDelimiter.ToString(CultureInfo.InvariantCulture)))
             {
                 // we have two closing curly braces without an opening curly brace in between. Everything between
                 // the opening brace and the second closing brace is escaped

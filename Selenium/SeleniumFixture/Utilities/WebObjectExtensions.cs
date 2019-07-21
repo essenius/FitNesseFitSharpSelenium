@@ -76,7 +76,7 @@ namespace SeleniumFixture.Utilities
             if (javascript == null) return false;
             javascript.ExecuteScript("arguments[0].setAttribute(arguments[1], arguments[2]);", element, attributeName,
                 value);
-            return value.Equals(element.GetAttribute(attributeName));
+            return value.Equals(element.GetAttribute(attributeName), StringComparison.Ordinal);
         }
 
         public static void SetImplicitWait(this IWebDriver driver, double seconds)
@@ -91,7 +91,7 @@ namespace SeleniumFixture.Utilities
             var javascript = GetJavaScriptExecutor(element);
             if (javascript == null) return false;
             javascript.ExecuteScript("arguments[0].innerHTML = arguments[1];", element, value);
-            return value.Equals(element.Text);
+            return value.Equals(element.Text, StringComparison.Ordinal);
         }
     }
 }

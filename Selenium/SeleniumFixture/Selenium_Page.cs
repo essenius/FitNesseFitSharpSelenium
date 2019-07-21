@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using ImageHandler;
@@ -76,7 +77,7 @@ namespace SeleniumFixture
         [Documentation("Opens the specified URL in the browser and wait for it to load.")]
         public bool Open(Uri url)
         {
-            if (Driver == null) throw new StopTestException("Please set a browser before opening a page");
+            if (Driver == null) throw new StopTestException(ErrorMessages.NoBrowserSpecified);
             Driver.SetImplicitWait(ImplicitWaitSeconds);
             Driver.Navigate().GoToUrl(url);
             StoreWindowHandles();
@@ -111,6 +112,7 @@ namespace SeleniumFixture
         [Documentation("Take a screenshot and return it as an object")]
         public static Snapshot ScreenshotObject() => BrowserDriver.TakeScreenshot();
 
+        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive")]
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
         [Documentation("Scroll up, down, left or right")]
         public bool Scroll(string direction)
@@ -121,7 +123,7 @@ namespace SeleniumFixture
             var endX = startX;
             var endY = startY;
             // do this before the iOS check so we know the parameter value is right
-            switch (direction.ToUpperInvariant())
+            switch (direction?.ToUpperInvariant())
             {
                 case "UP":
                     endY = (int)(screenSize.Height * 0.9);
@@ -138,7 +140,6 @@ namespace SeleniumFixture
                 default:
                     throw new ArgumentException($"Direction '{direction}' should be Up, Down, Left or Right");
             }
-
             if (Driver is IOSDriver<IOSElement> iosDriver)
             {
                 var scrollObject = new Dictionary<string, string> {{"direction", direction.ToLowerInvariant()}};

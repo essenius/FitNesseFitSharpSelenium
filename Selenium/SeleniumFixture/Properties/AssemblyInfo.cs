@@ -1,4 +1,5 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿using System.Resources;
+// Copyright 2015-2019 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -26,3 +27,5 @@ using SeleniumFixture;
 [assembly: Guid("889c1884-e77a-4ff3-a55d-30bce399fae2")]
 [assembly: AssemblyVersion(ApplicationInfo.Version)]
 [assembly: InternalsVisibleTo("SeleniumFixtureTest")]
+[assembly: NeutralResourcesLanguage("en-US")]
+
