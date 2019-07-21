@@ -21,7 +21,7 @@ namespace SeleniumFixture
                 return;
             }
             var list = input.Split(',');
-            if (list.Length != 2) throw new ArgumentException("Could not parse a coordinate as 'int,int'");
+            if (list.Length != 2) throw new ArgumentException(ErrorMessages.CoordinateIsNoPair);
             X = Convert.ToInt32(list[0], InvariantCulture);
             Y = Convert.ToInt32(list[1], InvariantCulture);
         }
@@ -30,7 +30,8 @@ namespace SeleniumFixture
         public int Y { get; }
 
         // used for size calculation. Chrome is not always precise.
-        public bool CloseTo(Coordinate comparison) => Math.Abs(X - comparison.X) <= 2 && Math.Abs(Y - comparison.Y) <= 2;
+        public bool CloseTo(Coordinate comparison) => 
+            comparison != null && Math.Abs(X - comparison.X) <= 2 && Math.Abs(Y - comparison.Y) <= 2;
 
         public override bool Equals(object obj)
         {

@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
@@ -80,7 +81,7 @@ namespace SeleniumFixtureTest
 
         public static Uri CreateTestPageUri() => CreateUri(TestPage);
 
-        public static Uri CreateUri(string page) => new Uri(BaseUrl + page);
+        public static Uri CreateUri(string page) => new Uri(new Uri(BaseUrl), page);
 
         private static bool ExpectNoSuchElementExceptionFor<T>(Func<T> functionToExecute)
         {
@@ -126,7 +127,6 @@ namespace SeleniumFixtureTest
             // is to wait half a second before accepting or dismissing.
             // TODO: Still need to understand why that is and make a more structural fix.
             var ok = _selenium.WaitForTextIgnoringCase("data load completed");
-            Debug.Print(Selenium.Screenshot());
             Assert.IsTrue(ok, "Wait for data load completed");
             var waitTime = _selenium.Driver.IsEdge() ? 1.0 : 0;
             Assert.IsFalse(_selenium.AlertIsPresent());
@@ -562,6 +562,11 @@ namespace SeleniumFixtureTest
             // NativeSendKeys (which won't work for remote Selenium)
 
             var browser = _selenium.Driver;
+            if (browser.IsEdge())
+            {
+                MarkSkipped(nameof(SeleniumRightClickElementTest), "Edge doesn't do right-click right");
+                return;
+            }
             if ((browser.IsChrome() || browser.IsFirefox()) && (_runningHeadless || _runningRemote))
             {
                 MarkSkipped(nameof(SeleniumRightClickElementTest), "Cannot use native keys with remote/headless Chrome/Firefox");
@@ -663,10 +668,20 @@ namespace SeleniumFixtureTest
 
         private void SeleniumSelectMultiElementTest()
         {
+            // Does not work right for Edge, see https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/20638074/
+            if (_selenium.Driver.IsEdge())
+            {
+                MarkSkipped(nameof(SeleniumSelectMultiElementTest), "Edge driver does not handle multi-select right");
+                return;
+            }
+
+
             // taking default methods for options, which should use text (via id)
             _selenium.SelectOptionInElement("item 1", "id:multi-select");
             _selenium.SelectOptionInElement("item 3", "id:multi-select");
             _selenium.SelectOptionInElement("item 5", "id:multi-select");
+            Debug.Print(Selenium.Screenshot());
+
             AssertOptionValues("id:multi-select", new Collection<string> {"item 1", "item 3", "item 5"}, "first test");
             _selenium.SelectOptionInElement("item", "id:multi-select");
             AssertOptionValues("id:multi-select", new Collection<string> {"item 1", "item 3", "item 5", "item"}, "second test");
@@ -776,6 +791,7 @@ namespace SeleniumFixtureTest
 
         private void SeleniumSetNewInputTypesTest()
         {
+            // This test is dependent on the date settings of the machine it runs on
             VerifySendKeysToElementWithFallback("{RIGHT 100}{TAB}", "skill", "range", "100");
             VerifySendKeysToElementWithFallback("{LEFT 25}{TAB}", "skill", "range", "75");
             VerifySendKeysToElementWithFallback("3{TAB}2004{TAB}", "month", "month", "2004-03");
@@ -804,6 +820,21 @@ namespace SeleniumFixtureTest
             Selenium.WaitSeconds(0.2); // allow dropdown to expand
             const string selectAllInContextMenuSequence = "{DOWN}a";
             _selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
+            _selenium.SendKeysToElement("{DELETE}", textboxLocator);
+            Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
+        }
+
+        [TestMethod, TestCategory("Experiments")]
+        public void SeleniumShowEdgeRightClickError()
+        {
+            _selenium.SetTimeoutSeconds(20);
+            SetBrowser(false, "edge");
+            const string textboxLocator = "id:text1";
+            Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
+            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Selenium Fixture Test Page"));
+            Assert.IsTrue(_selenium.RightClickElement(textboxLocator), "Show context menu");
+            Selenium.WaitSeconds(0.2);
+            Assert.IsTrue(_selenium.SendKeysToElement("{DOWN}~", textboxLocator));
             _selenium.SendKeysToElement("{DELETE}", textboxLocator);
             Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
         }

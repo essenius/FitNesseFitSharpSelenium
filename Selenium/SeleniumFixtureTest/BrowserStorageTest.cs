@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Html5;
 using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest
@@ -21,6 +22,8 @@ namespace SeleniumFixtureTest
     public class BrowserStorageTest
     {
         // todo: fix issue of ChromeDriver not closing down
+        // todo: check why this test fails with new Chrome versions.
+        // No longer returns true for HasBrowserStorage
         private IWebDriver _driver; // was static
         private string _driverHandle; // was static
 
@@ -85,6 +88,8 @@ namespace SeleniumFixtureTest
             }
         }
 
+        // TODO: This does not work in recent versions of chromedriver (after 2.46).
+        // The flag IHasWebStorage.HasWebStorage returns false now. Find out why.
         [TestMethod, TestCategory("Integration")]
         public void BrowserStorageTests()
         {
@@ -101,7 +106,7 @@ namespace SeleniumFixtureTest
         [TestInitialize]
         public void TestInitialize()
         {
-            _driverHandle = BrowserDriver.NewDriver("chrome");
+            _driverHandle = BrowserDriver.NewDriver("chrome headless");
             _driver = BrowserDriver.Current;
             _driver.Navigate().GoToUrl(SeleniumBaseTest.CreateTestPageUri());
         }

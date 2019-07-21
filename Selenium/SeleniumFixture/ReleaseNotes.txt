@@ -39,4 +39,5 @@
          SetWindowSizeX, made DragElementAndDropAt use Coordinate, renamed all HtmlSource functions to PageSource equivalents. 
 		 Introduced WindowSizeIsCloseTo, to allow for some browsers not setting the exact size but one or two pixels off. 
 		 Introduced ProtectedModesAre to replace ProtectedModeIsOff, ProtectedModeIsOn, ProtectedModesAreEqual.
+2.4.1    Migrated to Roslyn based FxCop, fixed findings. Tweaked the Appium tests for predictability and documented emulator expectations.
  

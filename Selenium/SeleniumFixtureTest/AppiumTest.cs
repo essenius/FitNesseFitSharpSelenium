@@ -20,7 +20,11 @@ using SeleniumFixture;
 
 namespace SeleniumFixtureTest
 {
-    // For this test class to work, make sure the Appium server has been started and an Android 4.4 emulator is active
+    // For this test class to work, make sure the Appium server has been started and the Android emulator is active
+    // The specs for the device these tests were designed for are: 
+    // Name: Xh-4.65 KitKat 4.4, OS: KitKat 4.4 - API 19, Processor: x86, Memory: 1 GB, Resolution: 720 x 1280 Xh-DPI
+    // It assumes that the tests are run on Windows 10 1809 or newer, as that can use Hyper-V.
+
     [TestClass]
     public sealed class AppiumTest
     {
@@ -37,7 +41,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to Apps page");
             Assert.IsTrue(Fixture.WaitForElement(Apps));
             Assert.IsTrue(Fixture.Scroll("right"), "Scroll to the right");
-            Assert.IsTrue(Fixture.TextExistsIgnoringCase("Analog Clock"), "Check if the text 'Analog Clock' is there");
+            Assert.IsTrue(Fixture.TextExistsIgnoringCase("Widget Preview"), "Check if the text 'Widget Preview' is there");
             Assert.IsTrue(Fixture.Scroll("left"), "Scroll to the left");
             Assert.IsTrue(Fixture.TextExists("Music"), "Check if the text 'Music't is there");
             Assert.IsTrue(Fixture.PressKeyCode("Back"), "Press the Back button");
@@ -80,13 +84,13 @@ namespace SeleniumFixtureTest
             const string galleryIcon = "XPath://android.widget.TextView[@text = 'Gallery']";
             Assert.IsTrue(Fixture.ScrollToElement("left", galleryIcon), "Scroll left to the page with Gallery on it");
             Assert.IsTrue(Fixture.ElementExists(galleryIcon), "Check the Gallery icon is there");
-            Assert.IsTrue(Fixture.DragElementAndDropAt(galleryIcon, new Coordinate(400, 800)), "Drag and drop the gallery icon on the home page");
+            Assert.IsTrue(Fixture.DragElementAndDropAt(galleryIcon, new Coordinate(400, 400)), "Drag and drop the gallery icon on the home page");
             const string deleteArea = "id:com.android.launcher:id/delete_target_text";
             Assert.IsTrue(Fixture.DragElementAndDropOnElement(galleryIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
             Assert.IsFalse(Fixture.ElementExists(galleryIcon));
         }
 
-        [TestMethod, TestCategory("Appium")]
+        [TestMethod, TestCategory(@"Appium")]
         public void AppiumLongPressElementForSecondsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
@@ -94,6 +98,7 @@ namespace SeleniumFixtureTest
             const string calculatorIcon = "XPath://android.widget.TextView[@text = 'Calculator']";
             Assert.IsTrue(Fixture.LongPressElementForSeconds(calculatorIcon, 1), "Long Press Calculator Icon one second to copy it to the home page");
             const string deleteArea = "id:com.android.launcher:id/delete_target_text";
+            Assert.IsTrue(Fixture.WaitForElement(calculatorIcon));
             Assert.IsTrue(Fixture.DragElementAndDropOnElement(calculatorIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
             Assert.IsFalse(Fixture.ElementExists(calculatorIcon));
             // negative cases
@@ -110,6 +115,7 @@ namespace SeleniumFixtureTest
         {
             Assert.IsTrue(Fixture.TapElement(Apps));
             const string settingsIcon = "XPath://android.widget.TextView[@text = 'Settings']";
+            Assert.IsTrue(Fixture.WaitForElement(settingsIcon));
             Assert.IsTrue(Fixture.TapElement(settingsIcon));
             const string switchBluetooth = "id:com.android.settings:id/switchWidget";
             Assert.IsTrue(Fixture.WaitForElement(switchBluetooth));
@@ -142,7 +148,7 @@ namespace SeleniumFixtureTest
             Debug.Print($"Running {_testsToDo} tests for Appium");
             var caps = new Dictionary<string, object>
             {
-                {MobileCapabilityType.DeviceName, "My Device 1"},
+                {MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4"},
                 {"automationName", "UiAutomator1"},
                 //{ "appPackage", "com.android.settings"},
                 //{ "appActivity", ".Settings"},
@@ -166,7 +172,8 @@ namespace SeleniumFixtureTest
         [TestCleanup]
         public void TestCleanup()
         {
-            // Not doing ClassCleanup because that is only executed after the whole test suite ends.
+            // ClassCleanup is only executed after the whole test suite ends, so that would mean the fixture
+            // would stay open until the end of the suite if we would put the Close in there.
             _testsToDo--;
             if (_testsToDo == 0)
             {

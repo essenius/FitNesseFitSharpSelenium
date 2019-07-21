@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Resources;
 using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model
@@ -30,6 +31,6 @@ namespace SeleniumFixture.Model
         public override bool RemoveItem(string key) => false;
 
         public override void SetItem(string key, string value) =>
-            throw new NotImplementedException("Browser or driver does not support web storage");
+            throw new NotImplementedException(ErrorMessages.NoWebStorage);
     }
 }

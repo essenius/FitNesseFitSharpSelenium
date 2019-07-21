@@ -146,7 +146,7 @@ namespace SeleniumFixture.Model
         {
             if (!_nativeMethods.ScreenScalingIs1())
             {
-                throw new StopTestException("Internet Explorer requires a screen scaling of 100%. Set via Control Panel/Display Settings");
+                throw new StopTestException(ErrorMessages.IEScreenScalingIssue);
             }
 
             var driverFolder = Environment.GetEnvironmentVariable("IEWebDriver");
@@ -257,7 +257,6 @@ namespace SeleniumFixture.Model
                 // see https://bugs.chromium.org/p/chromium/issues/detail?id=737678 for why disable-gpu
                 options.AddArguments("headless", "disable-gpu");
             }
-
             return options;
         }
 
@@ -296,7 +295,7 @@ namespace SeleniumFixture.Model
         {
             if (_proxy.Kind != ProxyKind.System)
             {
-                throw new StopTestException("Edge browser can only work with system proxy");
+                throw new StopTestException(ErrorMessages.EdgeNeedsSystemProxy);
             }
 
             var options = new EdgeOptions {PageLoadStrategy = PageLoadStrategy.Eager};
