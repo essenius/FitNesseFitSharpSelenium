@@ -1,0 +1,22 @@
+!| import        |
+|SeleniumFixture |
+|SupportFunctions|
+
+!|library       |
+|CommonFunctions|
+
+|script                                                                                                                                                                                                                                    |
+|$okButton=    |echo|!-ClassName:android.widget.Button-!                                                                                                                                                                                   |
+|$capabilities=|echo|!{deviceName:Xh-4.65 !-KitKat-! 4.4, automationName:!-UiAutomator1-!, appPackage:com.android.launcher, appActivity:com.android.launcher2.Launcher, newCommandTimeout:300, clearSystemFiles:true, adbExecTimeout:30000}|
+Start an Appium session. 
+
+!|script           |Selenium                                                                |
+|set timeout       |60     |seconds                                                         |
+|set remote browser|Android|at address|http://localhost:4723|with capabilities|$capabilities|
+Go to the Apps page and click away the guidance, and go to the home page
+
+!|script                   |
+|tap element     |${apps}  |
+|wait for element|$okButton|
+|click element   |$okButton|
+|press keycode   |Home     |

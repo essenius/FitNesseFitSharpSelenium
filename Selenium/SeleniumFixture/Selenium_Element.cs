@@ -187,9 +187,10 @@ namespace SeleniumFixture
             if (Driver.IsAndroid() || Driver.IsIos())
             {
                 if (!(Driver is IPerformsTouchActions driver)) return false;
-                // first we long press and find the element. It might only show up during longp ress
+                // first we long press and find the element. It might only show up during longpress
                 var checkAction = new TouchAction(driver);
                 checkAction.LongPress(dragElement).Perform();
+                if (!WaitForElement(dropElementLocator)) throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
                 var target = FindElement(dropElementLocator);
                 // Now do the actual drag and drop. Not using MoveTo(Element) as element may still be invisible.
                 var position = target.Location;

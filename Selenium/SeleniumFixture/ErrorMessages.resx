@@ -120,6 +120,9 @@
   <data name="CoordinateIsNoPair" xml:space="preserve">
     <value>Could not parse coordinate as 'int, int'</value>
   </data>
+  <data name="DropElementNotFound" xml:space="preserve">
+    <value>Could not find element to be dropped on</value>
+  </data>
   <data name="EdgeNeedsSystemProxy" xml:space="preserve">
     <value>Edge browser can only work with system proxy</value>
   </data>

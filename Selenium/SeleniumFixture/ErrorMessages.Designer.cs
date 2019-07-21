@@ -70,6 +70,15 @@ namespace SeleniumFixture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find element to be dropped on.
+        /// </summary>
+        internal static string DropElementNotFound {
+            get {
+                return ResourceManager.GetString("DropElementNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edge browser can only work with system proxy.
         /// </summary>
         internal static string EdgeNeedsSystemProxy {

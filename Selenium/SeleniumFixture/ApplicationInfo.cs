@@ -20,7 +20,7 @@ namespace SeleniumFixture
         public const string Copyright = "Copyright © Rik Essenius 2015-2019";
         public const string Description = "A FitNesse fixture to drive Selenium WebDriver";
 
-        public const string Version = "2.4.1";
+        public const string Version = "2.4.2";
         // don't forget to update the release notes
 
         public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");
