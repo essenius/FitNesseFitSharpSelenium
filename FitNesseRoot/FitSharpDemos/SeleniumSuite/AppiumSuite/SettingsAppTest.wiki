@@ -1,0 +1,25 @@
+!|script                                                                               |
+|$settings=       |echo|XPath://android.widget.TextView[@text = 'Settings']            |
+|$addAccount=     |echo|AndroidUiAutomator:new UiSelector().textContains("Add account")|
+|$textView=       |echo|ClassName:android.widget.TextView                              |
+|$aboutPhone=     |echo|XPath://android.widget.TextView[@text = 'About phone']         |
+|$bluetoothSwitch=|echo|id:com.android.settings:id/switchWidget                        |
+
+!|script                                                             |
+|ensure|wait for element|$settings                                   |
+|ensure|tap element     |$settings                                   |
+|ensure|wait for element|$bluetoothSwitch                            |
+|check |text in element |$bluetoothSwitch|OFF                        |
+|reject|element         |$addAccount     |exists                     |
+|ensure|scroll          |down                                        |
+|ensure|wait for element|$addAccount                                 |
+|reject|element         |$bluetoothSwitch|exists                     |
+|ensure|scroll          |up              |to element|$bluetoothSwitch|
+|ensure|element         |$bluetoothSwitch|exists                     |
+|check |count of        |$textView       |elements  |>0              |
+|ensure|scroll          |from top        |to element|$aboutPhone     |
+|reject|element         |$bluetoothSwitch|exists                     |
+|ensure|scroll          |up              |to element|$bluetoothSwitch|
+|ensure|element         |$bluetoothSwitch|exists                     |
+
+

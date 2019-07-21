@@ -1,0 +1,11 @@
+!|script                                                          |
+|$gallery=|echo|XPath://android.widget.TextView[@text = 'Gallery']|
+Drag and drop an icon from the apps page. This should copy it to the home page.
+Check that that happens, and then delete it.
+
+!|script                                                    |
+|scroll          |left    |to element         |$gallery     |
+|element         |$gallery|exists                           |
+|drag element    |$gallery|and drop at        |400,400      |
+|drag element    |$gallery|and drop on element|$deleteArea|
+|reject          |element |$gallery           |exists       |

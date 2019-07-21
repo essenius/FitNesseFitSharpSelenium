@@ -1,0 +1,11 @@
+!define apps {AccessibilityId:Apps}
+
+For this test suite to work, make sure the Appium server has been started and the Android emulator is active. 
+The specs for the device that these tests were designed for are: 
+ * Name: Xh-4.65 !-KitKat-! 4.4 
+ * OS: !-KitKat-! 4.4 - API 19 
+ * Processor: x86
+ * Memory: 1 GB
+ * Resolution: 720 x 1280 Xh-DPI
+
+!contents -R2 -g -p -f -h
