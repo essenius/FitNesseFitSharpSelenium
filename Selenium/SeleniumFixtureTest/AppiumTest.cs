@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,6 +32,8 @@ namespace SeleniumFixtureTest
         private const string Apps = "AccessibilityId:Apps";
         private const string Browser = "XPath://android.widget.TextView[@text = 'Browser']";
 
+        [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "False positive" )]
+        [SuppressMessage("Code Quality", "IDE0052:Remove unread private members", Justification = "False positive")]
         private static TestContext _testContext;
         private static int _testsToDo;
         private static readonly Selenium Fixture = new Selenium();

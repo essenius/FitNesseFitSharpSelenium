@@ -49,8 +49,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>SeleniumFixtureTest.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Appium.Net, Version=4.0.0.6, Culture=neutral, processorArchitecture=MSIL">
