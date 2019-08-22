@@ -3,7 +3,7 @@ This repo contains a fixture to enable automated testing of web applications usi
 
 # Getting Started
 1. Download FitNesse (http://fitnesse.org) and install it to C:\Apps\FitNesse
-2. Download FitSharp (https://github.com/jediwhale/fitsharp) and install it to C:\Apps\FitNesse\FitSharp.
+2. Download FitSharp (https://github.com/jediwhale/fitsharp) and install it to C:\Apps\FitNesse\FitSharp. Note: at this point there seems to be a compatibility issue with FitSharp 2.7.1, so use 2.7.0 for now.
 3. Clone the repo to a local folder (C:\Data\FitNesseDemo)
 4. Update plugins.properties to point to the FitSharp folder (if you took other folders than suggested)
 5. Open the Seleniumfixture solution in Visual Studio
