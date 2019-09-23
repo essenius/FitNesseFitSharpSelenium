@@ -26,7 +26,7 @@ namespace SeleniumFixture.Model
     ///     Also includes the remote and local browser configuration
     ///     Supports IE, Chrome and Firefox. For FireFox, enables integrated authentication
     /// </summary>
-    internal static class BrowserDriver
+    internal static class BrowserDriverContainer
     {
         private static int _idCounter = 1;
         private static Proxy _proxy = new Proxy {Kind = ProxyKind.System};

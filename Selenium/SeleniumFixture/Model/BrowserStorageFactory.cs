@@ -24,8 +24,7 @@ namespace SeleniumFixture.Model
             var hasStorage = (IHasWebStorage)browserDriver;
             if (hasStorage.HasWebStorage) return new NativeBrowserStorage(browserDriver, storageType);
             var javaScriptExecutor = (IJavaScriptExecutor)browserDriver;
-            var javaScriptSupportsStorage =
-                javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
+            var javaScriptSupportsStorage = javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
             if (javaScriptSupportsStorage) return new JavaScriptBrowserStorage(browserDriver, storageType);
             return new NoBrowserStorage(browserDriver);
         }

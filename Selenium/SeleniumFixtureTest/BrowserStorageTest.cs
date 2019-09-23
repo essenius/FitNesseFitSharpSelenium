@@ -101,13 +101,13 @@ namespace SeleniumFixtureTest
         }
 
         [TestCleanup]
-        public void TestCleanup() => BrowserDriver.RemoveDriver(_driverHandle);
+        public void TestCleanup() => BrowserDriverContainer.RemoveDriver(_driverHandle);
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _driverHandle = BrowserDriver.NewDriver("chrome headless");
-            _driver = BrowserDriver.Current;
+            _driverHandle = BrowserDriverContainer.NewDriver("chrome headless");
+            _driver = BrowserDriverContainer.Current;
             _driver.Navigate().GoToUrl(SeleniumBaseTest.CreateTestPageUri());
         }
     }

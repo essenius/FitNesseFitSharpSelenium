@@ -99,10 +99,19 @@
     <Compile Include="Coordinate.cs" />
     <Compile Include="DocumentationAttribute.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Model\AndroidDriverCreator.cs" />
     <Compile Include="Model\AppConfig.cs" />
-    <Compile Include="Model\BrowserDriver.cs" />
+    <Compile Include="Model\BrowserDriverContainer.cs" />
+    <Compile Include="Model\BrowserDriverCreator.cs" />
     <Compile Include="Model\BrowserDriverFactory.cs" />
     <Compile Include="Model\BrowserStorageFactory.cs" />
+    <Compile Include="Model\ChromeDriverCreator.cs" />
+    <Compile Include="Model\EdgeDriverCreator.cs" />
+    <Compile Include="Model\FireFoxDriverCreator.cs" />
+    <Compile Include="Model\HeadlessChromeDriverCreator.cs" />
+    <Compile Include="Model\HeadlessFirefoxDriverCreator.cs" />
+    <Compile Include="Model\InternetExplorerDriverCreator.cs" />
+    <Compile Include="Model\IosDriverCreator.cs" />
     <Compile Include="Model\IZone.cs" />
     <Compile Include="Model\NativeBrowserStorage.cs" />
     <Compile Include="Model\JavaScriptBrowserStorage.cs" />
@@ -115,6 +124,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Model\NoBrowserDriverCreator.cs" />
+    <Compile Include="Model\OperaDriverCreator.cs" />
+    <Compile Include="Model\SafariDriverCreator.cs" />
     <Compile Include="Utilities\NativeMethods.cs" />
     <Compile Include="Model\NoBrowserStorage.cs" />
     <Compile Include="Model\ProtectedMode.cs" />
