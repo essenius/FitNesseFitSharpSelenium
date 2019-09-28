@@ -13,7 +13,6 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Html5;
 using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest
@@ -88,26 +87,27 @@ namespace SeleniumFixtureTest
             }
         }
 
-        // TODO: This does not work in recent versions of chromedriver (after 2.46).
-        // The flag IHasWebStorage.HasWebStorage returns false now. Find out why.
         [TestMethod, TestCategory("Integration")]
         public void BrowserStorageTests()
         {
-            BrowserStorageNativeCallMethodOnLocalTest();
+            // Disabled the native tests as ChromeDriver (the only browser using it in the past) no longer seems to support it after 2.46.
+            // The flag IHasWebStorage.HasWebStorage returns false now.
+
+            //BrowserStorageNativeCallMethodOnLocalTest();
             BrowserStorageJavaScriptFindFirstOnSessionTest();
             BrowserStorageNoTest();
             BrowserStorageJavaScriptFindFirstOnLocalTest();
-            BrowserStorageNativeFindFirstOnSessionTest();
+            //BrowserStorageNativeFindFirstOnSessionTest();
         }
 
         [TestCleanup]
-        public void TestCleanup() => BrowserDriver.RemoveDriver(_driverHandle);
+        public void TestCleanup() => BrowserDriverContainer.RemoveDriver(_driverHandle);
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _driverHandle = BrowserDriver.NewDriver("chrome headless");
-            _driver = BrowserDriver.Current;
+            _driverHandle = BrowserDriverContainer.NewDriver("chrome headless");
+            _driver = BrowserDriverContainer.Current;
             _driver.Navigate().GoToUrl(SeleniumBaseTest.CreateTestPageUri());
         }
     }

@@ -49,8 +49,8 @@ namespace SeleniumFixture
         [Documentation("Command Timeout value in seconds (i.e. the one specified in the driver constructor). Only works for local drivers")]
         public static double CommandTimeoutSeconds
         {
-            get => BrowserDriver.CommandTimeoutSeconds;
-            set => BrowserDriver.CommandTimeoutSeconds = value;
+            get => BrowserDriverContainer.CommandTimeoutSeconds;
+            set => BrowserDriverContainer.CommandTimeoutSeconds = value;
         }
 
         [Documentation("Returns the current driver object")]
@@ -65,8 +65,8 @@ namespace SeleniumFixture
         [Documentation("Domain where Integrated Authentication is to be used")]
         public static string IntegratedAuthenticationDomain
         {
-            get => BrowserDriverFactory.IntegratedAuthenticationDomain;
-            set => BrowserDriverFactory.IntegratedAuthenticationDomain = value;
+            get => FireFoxDriverCreator.IntegratedAuthenticationDomain;
+            set => FireFoxDriverCreator.IntegratedAuthenticationDomain = value;
         }
 
         private ProtectedMode ProtectedMode => _protectedMode ?? (_protectedMode = new ProtectedMode(new ZoneListFactory()));
@@ -101,7 +101,7 @@ namespace SeleniumFixture
         public bool Close()
         {
             if (Driver == null) return false;
-            BrowserDriver.RemoveDriver(DriverId);
+            BrowserDriverContainer.RemoveDriver(DriverId);
             Driver = null;
             DriverId = string.Empty;
             return true;
@@ -160,8 +160,8 @@ namespace SeleniumFixture
         [Documentation("Creates a new browser instance and makes it current. Returns an ID. " + BrowserChoices)]
         public string NewBrowser(string browserName)
         {
-            DriverId = BrowserDriver.NewDriver(browserName);
-            Driver = BrowserDriver.Current;
+            DriverId = BrowserDriverContainer.NewDriver(browserName);
+            Driver = BrowserDriverContainer.Current;
             _browserStorage = null; // force re-initialization on next call
             return DriverId;
         }
@@ -174,8 +174,8 @@ namespace SeleniumFixture
         [Documentation("Just like SetRemoteBrowserAtAddressWithCapabilities, but returns the driver ID instead of a boolean." + BrowserChoices)]
         public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
-            DriverId = BrowserDriver.NewRemoteDriver(browserName, baseAddress, capabilities);
-            Driver = BrowserDriver.Current;
+            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, capabilities);
+            Driver = BrowserDriverContainer.Current;
             _browserStorage = null;
             return DriverId;
         }
@@ -218,9 +218,9 @@ namespace SeleniumFixture
         [Documentation("Set the current browser driver using its ID (returned earlier by NewBrowser)")]
         public bool SetDriver(string driverId)
         {
-            if (!BrowserDriver.SetCurrent(driverId)) return false;
+            if (!BrowserDriverContainer.SetCurrent(driverId)) return false;
             DriverId = driverId;
-            Driver = BrowserDriver.Current;
+            Driver = BrowserDriverContainer.Current;
             _browserStorage = null;
             StoreWindowHandles();
             return true;
@@ -230,10 +230,10 @@ namespace SeleniumFixture
         public void SetInWebStorageTo(string key, string value) => BrowserStorage[key] = value;
 
         [Documentation("Sets the http and SSL proxy for the test. Type can be Direct, System, AutoDetect.")]
-        public static bool SetProxyType(string proxyType) => BrowserDriver.SetProxyType(proxyType);
+        public static bool SetProxyType(string proxyType) => BrowserDriverContainer.SetProxyType(proxyType);
 
         [Documentation("Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile).")]
-        public static bool SetProxyTypeValue(string proxyType, string proxyValue) => BrowserDriver.SetProxyValue(proxyType, proxyValue);
+        public static bool SetProxyTypeValue(string proxyType, string proxyValue) => BrowserDriverContainer.SetProxyValue(proxyType, proxyValue);
 
         [Documentation("Use a remote Selenium server (address including port). " +
                        "Raises a StopTestException if unable to connect. " + BrowserChoices)]

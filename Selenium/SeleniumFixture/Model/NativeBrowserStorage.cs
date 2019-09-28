@@ -24,8 +24,7 @@ namespace SeleniumFixture.Model
         private readonly IWebStorage _storageDriver;
         private readonly StorageType _storageType;
 
-        public NativeBrowserStorage(IWebDriver browserDriver, StorageType storageType)
-            : base(browserDriver)
+        public NativeBrowserStorage(IWebDriver browserDriver, StorageType storageType) : base(browserDriver)
         {
             var hasStorage = (IHasWebStorage)browserDriver;
             _storageDriver = hasStorage.WebStorage;

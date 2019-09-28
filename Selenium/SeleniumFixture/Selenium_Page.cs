@@ -105,12 +105,12 @@ namespace SeleniumFixture
         [Documentation("Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a service")]
         public static string Screenshot()
         {
-            var snap = BrowserDriver.TakeScreenshot();
+            var snap = BrowserDriverContainer.TakeScreenshot();
             return snap.Rendering;
         }
 
         [Documentation("Take a screenshot and return it as an object")]
-        public static Snapshot ScreenshotObject() => BrowserDriver.TakeScreenshot();
+        public static Snapshot ScreenshotObject() => BrowserDriverContainer.TakeScreenshot();
 
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive")]
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
