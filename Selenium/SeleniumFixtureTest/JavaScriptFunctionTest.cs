@@ -47,7 +47,7 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Unit"), ExpectedException(typeof(NoNullAllowedException))]
         public void JavaScriptFunctionTestWithoutBrowser()
         {
-            BrowserDriver.Current = null;
+            BrowserDriverContainer.Current = null;
             var javaScriptFunction = new JavaScriptFunction();
             javaScriptFunction.Reset();
         }

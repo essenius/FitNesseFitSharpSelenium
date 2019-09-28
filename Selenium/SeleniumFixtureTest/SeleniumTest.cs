@@ -249,18 +249,18 @@ namespace SeleniumFixtureTest
         public void SeleniumSetProxyTypeValueTest()
         {
             Assert.IsTrue(Selenium.SetProxyTypeValue("ProxyAutoConfigure", "http://localhost/my.pac"));
-            var proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            var proxy = new PrivateType(typeof(BrowserDriverContainer)).GetStaticField("_proxy") as Proxy;
             Assert.IsNotNull(proxy);
             Assert.AreEqual(ProxyKind.ProxyAutoConfigure, proxy.Kind);
             Assert.AreEqual("http://localhost/my.pac", proxy.ProxyAutoConfigUrl);
             Assert.IsTrue(Selenium.SetProxyTypeValue("Manual", "localhost:8080"));
-            proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            proxy = new PrivateType(typeof(BrowserDriverContainer)).GetStaticField("_proxy") as Proxy;
             Assert.IsNotNull(proxy);
             Assert.AreEqual(ProxyKind.Manual, proxy.Kind);
             Assert.AreEqual("localhost:8080", proxy.HttpProxy);
             Assert.AreEqual("localhost:8080", proxy.SslProxy);
             Assert.IsFalse(Selenium.SetProxyType("Unspecified"));
-            proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            proxy = new PrivateType(typeof(BrowserDriverContainer)).GetStaticField("_proxy") as Proxy;
             Assert.IsNotNull(proxy);
             Assert.AreEqual(ProxyKind.Unspecified, proxy.Kind);
         }

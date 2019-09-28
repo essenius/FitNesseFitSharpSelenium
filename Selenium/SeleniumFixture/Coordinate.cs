@@ -6,12 +6,14 @@ namespace SeleniumFixture
 {
     public class Coordinate
     {
+        [Documentation("Class for location or rectangle size")]
         public Coordinate(int x, int y)
         {
             X = x;
             Y = y;
         }
 
+        [Documentation("Initialize class via a string x,y with both x and y ints")]
         public Coordinate(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -26,7 +28,9 @@ namespace SeleniumFixture
             Y = Convert.ToInt32(list[1], InvariantCulture);
         }
 
+        [Documentation("the X (horizontal) value")]
         public int X { get; }
+        [Documentation("the Y (vertical) value")]
         public int Y { get; }
 
         // used for size calculation. Chrome is not always precise.

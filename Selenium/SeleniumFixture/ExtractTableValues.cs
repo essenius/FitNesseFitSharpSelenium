@@ -104,18 +104,18 @@ namespace SeleniumFixture
         private void DoExtraction()
         {
             if (_wasCalculated) return;
-            if (BrowserDriver.Current == null) throw new NoNullAllowedException("Browser Driver was not initialized");
+            if (BrowserDriverContainer.Current == null) throw new NoNullAllowedException("Browser Driver was not initialized");
             var headerCollection = new Collection<string>();
             ReadOnlyCollection<IWebElement> headerElements;
             IEnumerable<IWebElement> rowElements;
             if (string.IsNullOrEmpty(_tableLocation))
             {
-                headerElements = BrowserDriver.Current.FindElements(new SearchParser(_headerLocation).By);
-                rowElements = BrowserDriver.Current.FindElements(new SearchParser(_rowLocation).By);
+                headerElements = BrowserDriverContainer.Current.FindElements(new SearchParser(_headerLocation).By);
+                rowElements = BrowserDriverContainer.Current.FindElements(new SearchParser(_rowLocation).By);
             }
             else
             {
-                var tableElements = BrowserDriver.Current.FindElements(new SearchParser(_tableLocation).By);
+                var tableElements = BrowserDriverContainer.Current.FindElements(new SearchParser(_tableLocation).By);
                 headerElements = tableElements.FindElements(new SearchParser(_relativeHeaderLocationInTable).By);
                 rowElements = tableElements.FindElements(new SearchParser(_relativeRowLocationInTable).By);
             }

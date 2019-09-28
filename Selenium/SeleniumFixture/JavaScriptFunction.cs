@@ -27,7 +27,7 @@ namespace SeleniumFixture
         [Documentation("Dynamic Decision Table Interface (get column value)")]
         public object Get(string requestedValue)
         {
-            var scriptExecutor = (IJavaScriptExecutor)BrowserDriver.Current;
+            var scriptExecutor = (IJavaScriptExecutor)BrowserDriverContainer.Current;
             var parameters = string.Join(", ", _paramList.ToArray());
             var script = "return " + requestedValue + "(" + parameters + ");";
             return scriptExecutor.ExecuteScript(script);
@@ -36,7 +36,7 @@ namespace SeleniumFixture
         [Documentation("Dynamic Decision Table Interface (reset row so it's ready for the next line)")]
         public void Reset()
         {
-            if (BrowserDriver.Current == null) throw new NoNullAllowedException("Set browser first using the Selenium script");
+            if (BrowserDriverContainer.Current == null) throw new NoNullAllowedException("Set browser first using the Selenium script");
             _paramList.Clear();
         }
 

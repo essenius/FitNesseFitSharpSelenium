@@ -941,7 +941,7 @@ namespace SeleniumFixtureTest
             var testSize = new Coordinate(652, 224);
 
             var originalSize = _selenium.WindowSize;
-            Debug.Print("Original size is " + BrowserDriver.Current.Manage().Window.Size);
+            Debug.Print("Original size is " + BrowserDriverContainer.Current.Manage().Window.Size);
             _selenium.WindowSize = testSize;
             Assert.IsTrue(_selenium.WindowSizeIsCloseTo(testSize));
             if (!_runningHeadless)

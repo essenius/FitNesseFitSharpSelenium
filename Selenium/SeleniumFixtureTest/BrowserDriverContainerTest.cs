@@ -23,7 +23,7 @@ namespace SeleniumFixtureTest
 
 {
     [TestClass]
-    public class BrowserDriverTest
+    public class BrowserDriverContainerTest
     {
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive"),
          SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive")]
@@ -32,18 +32,18 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Integration")]
         public void BrowserDriverMissingBrowserCleansUpAndRaisesStopTestException()
         {
-            var driverCount = BrowserDriver.DriverCount;
-            BrowserDriver.NewDriver("Chrome Headless");
-            Assert.AreEqual(driverCount + 1, BrowserDriver.DriverCount, "One more browser open");
+            var driverCount = BrowserDriverContainer.DriverCount;
+            BrowserDriverContainer.NewDriver("Chrome Headless");
+            Assert.AreEqual(driverCount + 1, BrowserDriverContainer.DriverCount, "One more browser open");
             try
             {
                 // Safari should not be installed on this machine. Should not be an issue since it's no longer maintained
-                BrowserDriver.NewDriver("Safari");
+                BrowserDriverContainer.NewDriver("Safari");
                 Assert.Fail("No StopTestException raised");
             }
             catch (StopTestException)
             {
-                Assert.AreEqual(0, BrowserDriver.DriverCount, "Browsers should be closed");
+                Assert.AreEqual(0, BrowserDriverContainer.DriverCount, "Browsers should be closed");
             }
         }
 
@@ -51,24 +51,24 @@ namespace SeleniumFixtureTest
              "Can't run browser 'Opera' on Selenium server '*'")]
         public void BrowserDriverNonInstalledRemoteDriverRaisesStopTestException()
         {
-            BrowserDriver.NewRemoteDriver("Opera", SeleniumBaseTest.RemoteSelenium, new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("Opera", SeleniumBaseTest.RemoteSelenium, new Dictionary<string, object>());
         }
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Could not start browser: Safari")]
-        public void BrowserDriverNonPresentDriverRaisesStopTestException() => BrowserDriver.NewDriver("Safari");
+        public void BrowserDriverNonPresentDriverRaisesStopTestException() => BrowserDriverContainer.NewDriver("Safari");
 
         [TestMethod, TestCategory("Unit")]
-        public void BrowserDriverRemoveNonExistingDriverTest() => Assert.IsFalse(BrowserDriver.RemoveDriver("bogus"));
+        public void BrowserDriverRemoveNonExistingDriverTest() => Assert.IsFalse(BrowserDriverContainer.RemoveDriver("bogus"));
 
         [TestMethod, TestCategory("Integration")]
         public void BrowserDriverSetCurrentTest()
         {
-            var browser1 = BrowserDriver.NewDriver("chrome headless");
-            var browser2 = BrowserDriver.NewDriver("firefox headless");
-            Assert.AreEqual(browser2, BrowserDriver.CurrentId);
-            BrowserDriver.SetCurrent(browser1);
-            Assert.AreEqual(browser1, BrowserDriver.CurrentId);
+            var browser1 = BrowserDriverContainer.NewDriver("chrome headless");
+            var browser2 = BrowserDriverContainer.NewDriver("firefox headless");
+            Assert.AreEqual(browser2, BrowserDriverContainer.CurrentId);
+            BrowserDriverContainer.SetCurrent(browser1);
+            Assert.AreEqual(browser1, BrowserDriverContainer.CurrentId);
         }
 
         [DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml", @"setproxytype",
@@ -78,8 +78,8 @@ namespace SeleniumFixtureTest
             var input = TestContext.DataRow["input"].ToString();
             var expected = TestContext.DataRow["expected"].ToBool();
             var proxyKind = Convert.ToInt32(TestContext.DataRow["proxyKind"]);
-            Assert.AreEqual(expected, BrowserDriver.SetProxyType(input));
-            var proxy = new PrivateType(typeof(BrowserDriver)).GetStaticField("_proxy") as Proxy;
+            Assert.AreEqual(expected, BrowserDriverContainer.SetProxyType(input));
+            var proxy = new PrivateType(typeof(BrowserDriverContainer)).GetStaticField("_proxy") as Proxy;
             Assert.IsNotNull(proxy);
             Assert.AreEqual(proxyKind, (int)proxy.Kind);
             Debug.Print(
@@ -87,20 +87,20 @@ namespace SeleniumFixtureTest
         }
 
         [TestCleanup]
-        public void BrowserDriverTestCleanup() => BrowserDriver.CloseAllDrivers();
+        public void BrowserDriverTestCleanup() => BrowserDriverContainer.CloseAllDrivers();
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              @"Can't run browser 'WrongBrowser' on Selenium server 'wrongaddress'")]
         public void BrowserDriverWrongAddressRaisesStopTestException() =>
-            BrowserDriver.NewRemoteDriver("WrongBrowser", @"wrongaddress", new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("WrongBrowser", @"wrongaddress", new Dictionary<string, object>());
 
         [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Unrecognized browser: WrongBrowser")]
-        public void BrowserDriverWrongDriverRaisesStopTestException() => BrowserDriver.NewDriver("WrongBrowser");
+        public void BrowserDriverWrongDriverRaisesStopTestException() => BrowserDriverContainer.NewDriver("WrongBrowser");
 
         [TestMethod, TestCategory("Integration"), ExpectedExceptionWithMessage(typeof(StopTestException),
              "Can't run browser 'WrongDriver' on Selenium server 'http://localhost'")]
         public void BrowserDriverWrongRemoteDriverRaisesStopTestException() =>
-            BrowserDriver.NewRemoteDriver("WrongDriver", "http://localhost", new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("WrongDriver", "http://localhost", new Dictionary<string, object>());
     }
 }
