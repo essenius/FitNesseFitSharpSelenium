@@ -13,7 +13,6 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Html5;
 using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest
@@ -88,16 +87,17 @@ namespace SeleniumFixtureTest
             }
         }
 
-        // TODO: This does not work in recent versions of chromedriver (after 2.46).
+        // TODO: Native does not work in recent versions of chromedriver (after 2.46).
         // The flag IHasWebStorage.HasWebStorage returns false now. Find out why.
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void BrowserStorageTests()
         {
-            BrowserStorageNativeCallMethodOnLocalTest();
+            //BrowserStorageNativeCallMethodOnLocalTest();
             BrowserStorageJavaScriptFindFirstOnSessionTest();
             BrowserStorageNoTest();
             BrowserStorageJavaScriptFindFirstOnLocalTest();
-            BrowserStorageNativeFindFirstOnSessionTest();
+            //BrowserStorageNativeFindFirstOnSessionTest();
         }
 
         [TestCleanup]

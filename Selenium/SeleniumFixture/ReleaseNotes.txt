@@ -41,4 +41,5 @@
 		 Introduced ProtectedModesAre to replace ProtectedModeIsOff, ProtectedModeIsOn, ProtectedModesAreEqual.
 2.4.1    Migrated to Roslyn based FxCop, fixed findings. Tweaked the Appium tests for predictability and documented emulator expectations.
 2.4.2    Added Appium demo suite in the wiki, and fixed a wait issue with DragElementAndDropOnElement
+2.4.3    Added documentation tags for Coordinate, and disabled native BrowserStorage tests as Chrome doesn't seem to support this anymore.
  
