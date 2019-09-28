@@ -87,12 +87,12 @@ namespace SeleniumFixtureTest
             }
         }
 
-        // TODO: Native does not work in recent versions of chromedriver (after 2.46).
-        // The flag IHasWebStorage.HasWebStorage returns false now. Find out why.
-        [TestMethod]
-        [TestCategory("Integration")]
+        [TestMethod, TestCategory("Integration")]
         public void BrowserStorageTests()
         {
+            // Disabled the native tests as ChromeDriver (the only browser using it in the past) no longer seems to support it after 2.46.
+            // The flag IHasWebStorage.HasWebStorage returns false now.
+
             //BrowserStorageNativeCallMethodOnLocalTest();
             BrowserStorageJavaScriptFindFirstOnSessionTest();
             BrowserStorageNoTest();
