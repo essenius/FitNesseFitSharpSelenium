@@ -33,7 +33,7 @@ namespace SeleniumFixture
         [Documentation("the Y (vertical) value")]
         public int Y { get; }
 
-        // used for size calculation. Chrome is not always precise.
+        [Documentation("Used for size calculation. E.g. Chrome is not always precise with window sizing.")]
         public bool CloseTo(Coordinate comparison) => 
             comparison != null && Math.Abs(X - comparison.X) <= 2 && Math.Abs(Y - comparison.Y) <= 2;
 
@@ -46,6 +46,7 @@ namespace SeleniumFixture
 
         public override int GetHashCode() => Tuple.Create(X, Y).GetHashCode();
 
+        [Documentation("Parse a string into a coordinate. Expected format: x,y (with both x and y ints)")]
         public static Coordinate Parse(string input) => new Coordinate(input);
         public override string ToString() => Invariant($"{X}, {Y}");
     }
