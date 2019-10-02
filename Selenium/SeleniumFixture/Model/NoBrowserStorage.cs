@@ -11,7 +11,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Resources;
 using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model

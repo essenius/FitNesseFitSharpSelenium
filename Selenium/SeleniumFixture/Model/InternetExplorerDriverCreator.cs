@@ -16,7 +16,7 @@ using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
-    class InternetExplorerDriverCreator: BrowserDriverCreator
+    internal class InternetExplorerDriverCreator: BrowserDriverCreator
     {
         public InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {

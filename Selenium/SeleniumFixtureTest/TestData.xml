@@ -36,14 +36,6 @@
   <setproxytype input="unspecified" expected="false" proxyKind="6" />
   <setproxytype input="SYSTEM" expected="true" proxyKind="5" />
 
-  <!--<rename currentName="e:\data\file1.jpg"            timestamp="2014122413141516" expectedName="e:\data\file1_2014122413141516.jpg" />
-  <rename currentName="e:\data\file1"                timestamp="2014122413141516" expectedName="e:\data\file1_2014122413141516" />
-  <rename currentName="file1.jpg"                    timestamp="2014122413141516" expectedName="file1_2014122413141516.jpg" />
-  <rename currentName="..\file1.jpg"                 timestamp="2014122413141516" expectedName="..\file1_2014122413141516.jpg" />
-  <rename currentName="e:\data\file with spaces.jpg" timestamp="2014122413141516" expectedName="e:\data\file with spaces_2014122413141516.jpg" />
-  <rename currentName="e:\file1.jpg"                 timestamp="2014122413141516" expectedName="e:\file1_2014122413141516.jpg" /> -->
-  <!-- just to show the behavior when using a root path, this should not happen -->
-  <!--  <rename currentName="e:\" timestamp="2014122413141516" expectedName="_2014122413141516" /> -->
   <protectedmode testId="all off" zone1="false" zone2="false" zone3="false" zone4="false" expectedAllOn="false"
                  expectedAllSame="true" />
   <protectedmode testId="all on" zone1="true" zone2="true" zone3="true" zone4="true" expectedAllOn="true"
