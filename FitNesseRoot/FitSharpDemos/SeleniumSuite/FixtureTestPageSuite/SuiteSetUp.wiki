@@ -10,7 +10,7 @@ We define table types so that we don't need to specify these in the test pages
 Open the test page that we use for all tests
 
 !|script                 |Selenium                               |
-|check                   |version info|  |SeleniumFixture 2.4.0  |
+|check                   |version info|  |SeleniumFixture 2.4.4  |
 |set browser             |${BROWSER}                             |
 |maximize window                                                 |
 |set timeout             |10          |seconds                   |
