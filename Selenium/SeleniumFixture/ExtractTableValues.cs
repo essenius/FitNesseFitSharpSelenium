@@ -21,8 +21,8 @@ using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture
 {
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
     public class ExtractTableValues
     {
         private readonly string _headerLocation;
@@ -37,8 +37,8 @@ namespace SeleniumFixture
         private int _rowCount;
         private bool _wasCalculated;
 
-        [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional params"),
-         Documentation("Extract table values from an HTML table, identified by an XPath query")]
+        [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional params")]
+        [Documentation("Extract table values from an HTML table, identified by an XPath query")]
         public ExtractTableValues(string tableLocation) : this(tableLocation, 0)
         {
         }
@@ -105,7 +105,6 @@ namespace SeleniumFixture
         {
             if (_wasCalculated) return;
             if (BrowserDriverContainer.Current == null) throw new NoNullAllowedException("Browser Driver was not initialized");
-            var headerCollection = new Collection<string>();
             ReadOnlyCollection<IWebElement> headerElements;
             IEnumerable<IWebElement> rowElements;
             if (string.IsNullOrEmpty(_tableLocation))
@@ -120,15 +119,31 @@ namespace SeleniumFixture
                 rowElements = tableElements.FindElements(new SearchParser(_relativeRowLocationInTable).By);
             }
 
+            var headerCollection = HeaderCollection(headerElements);
+
+            if (_maxResults > 0) rowElements = rowElements.Take(_maxResults);
+
+            _result = RowCollection(rowElements, headerCollection);
+            _columnCount = headerCollection.Count;
+            _rowCount = _result.Count;
+            _wasCalculated = true;
+        }
+
+        private static Collection<string> HeaderCollection(IEnumerable<IWebElement> headerElements)
+        {
+            var headerCollection = new Collection<string>();
             foreach (var element in headerElements)
             {
                 headerCollection.Add(string.IsNullOrEmpty(element.Text)
                     ? DefaultHeader(headerCollection.Count)
                     : element.Text.Replace("\r\n", " ").Trim());
             }
+            return headerCollection;
+        }
 
+        private Collection<object> RowCollection(IEnumerable<IWebElement> rowElements, IList<string> headerList)
+        {
             var rowCollection = new Collection<object>();
-            if (_maxResults > 0) rowElements = rowElements.Take(_maxResults);
             foreach (var rowElement in rowElements)
             {
                 var cellCollection = new Collection<object>();
@@ -136,16 +151,12 @@ namespace SeleniumFixture
                 foreach (var cell in rowElement.FindElements(new SearchParser(_relativeCellLocationInRow).By))
                 {
                     // if we didn't have a header row, make one up
-                    if (headerCollection.Count <= index) headerCollection.Add(DefaultHeader(index));
-                    cellCollection.Add(new Collection<object> {headerCollection[index++], cell.Text.Trim()});
+                    if (headerList.Count <= index) headerList.Add(DefaultHeader(index));
+                    cellCollection.Add(new Collection<object> {headerList[index++], cell.Text.Trim()});
                 }
                 rowCollection.Add(cellCollection);
             }
-
-            _result = rowCollection;
-            _columnCount = headerCollection.Count;
-            _rowCount = rowCollection.Count;
-            _wasCalculated = true;
+            return rowCollection;
         }
 
         [Documentation("Query table interface returning the content of the table. Assumes that the Browser Driver was already initialized")]

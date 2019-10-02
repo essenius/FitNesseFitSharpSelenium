@@ -10,14 +10,34 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using static System.Globalization.CultureInfo;
+using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model
 {
     internal class SearchParser
     {
+        private readonly Dictionary<string, Func<string, By>> _byMapping = new Dictionary<string, Func<string, By>>
+        {
+            {@"ACCESSIBILITYID", MobileBy.AccessibilityId},
+            {@"ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator},
+            {@"CLASSNAME", By.ClassName},
+            {@"CSSSELECTOR", By.CssSelector},
+            {@"ID", By.Id},
+            {@"IOSCLASSCHAIN", MobileBy.IosClassChain},
+            {@"IOSNSPREDICATE", MobileBy.IosNSPredicate},
+            {@"IOSUIAUTOMATION", MobileBy.IosUIAutomation},
+            {@"LINKTEXT", By.LinkText},
+            {@"NAME", By.Name},
+            {@"PARTIALLINKTEXT", By.PartialLinkText},
+            {@"TAGNAME", By.TagName},
+            {@"TIZENAUTOMATION", MobileBy.TizenAutomation},
+            {@"WINDOWSAUTOMATION", MobileBy.WindowsAutomation},
+            {@"XPATH", By.XPath}
+        };
+
         public SearchParser(string searchCriterion)
         {
             if (searchCriterion == null)
@@ -49,41 +69,9 @@ namespace SeleniumFixture.Model
         {
             get
             {
-                switch (Method.ToUpper(CurrentCulture))
-                {
-                    case @"ACCESSIBILITYID":
-                        return MobileBy.AccessibilityId;
-                    case @"ANDROIDUIAUTOMATOR":
-                        return MobileBy.AndroidUIAutomator;
-                    case @"CLASSNAME":
-                        return By.ClassName;
-                    case @"CSSSELECTOR":
-                        return By.CssSelector;
-                    case @"ID":
-                        return By.Id;
-                    case @"IOSCLASSCHAIN":
-                        return MobileBy.IosClassChain;
-                    case @"IOSNSPREDICATE":
-                        return MobileBy.IosNSPredicate;
-                    case @"IOSUIAUTOMATION":
-                        return MobileBy.IosUIAutomation;
-                    case @"LINKTEXT":
-                        return By.LinkText;
-                    case @"NAME":
-                        return By.Name;
-                    case @"PARTIALLINKTEXT":
-                        return By.PartialLinkText;
-                    case @"TAGNAME":
-                        return By.TagName;
-                    case "TIZENAUTOMATION":
-                        return MobileBy.TizenAutomation;
-                    case "WINDOWSAUTOMATION":
-                        return MobileBy.WindowsAutomation;
-                    case @"XPATH":
-                        return By.XPath;
-                    default:
-                        throw new ArgumentException("Could not understand search method: " + Method);
-                }
+                var key = Method.ToUpper(CurrentCulture);
+                if (_byMapping.ContainsKey(key)) return _byMapping[key];
+                throw new ArgumentException("Could not understand search method: " + Method);
             }
         }
 

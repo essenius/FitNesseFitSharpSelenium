@@ -246,14 +246,12 @@ namespace SeleniumFixture
         private static int? KeyCode(string keyCodeIn)
         {
             // if this is an integer, use it. Otherwise, look if we can convert via an AndroidKeyCode field name
-            if (!int.TryParse(keyCodeIn, out var keyCode))
-            {
-                var myType = typeof(AndroidKeyCode);
-                var myFieldInfo = myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
-                if (myFieldInfo == null) return null;
-                var success = int.TryParse(myFieldInfo.GetValue(null).ToString(), out keyCode);
-                if (!success) return null;
-            }
+            if (int.TryParse(keyCodeIn, out var keyCode)) return keyCode;
+            var myType = typeof(AndroidKeyCode);
+            var myFieldInfo = myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
+            if (myFieldInfo == null) return null;
+            var success = int.TryParse(myFieldInfo.GetValue(null).ToString(), out keyCode);
+            if (!success) return null;
             return keyCode;
         }
 
@@ -295,20 +293,10 @@ namespace SeleniumFixture
             return true;
         });
 
-        /*
-        private void MoveToOnAndroid(IWebElement element)
-        {
-            var selector = "searchString";
-            Driver.FindElement(MobileBy.AndroidUIAutomator(
-                "new UiScrollable("
-                + "new UiSelector().scrollable(true)).scrollIntoView("
-                + "new UiSelector().textContains(\"Lock screen and security\"));"));
-        } */
-
         [Documentation("Right click an element (a.k.a. context click)")]
         public bool RightClickElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
         {
-            // does not work right for Chrome. It opens the menu, but does not seem to be able to interact with it.
+            // Does not work right for Chrome. It opens the menu, but does not seem to be able to interact with it.
             // A construct with .ContextClick.SendKeys.Build.Perform doesn't work either.
             new Actions(Driver).MoveToElement(element).ContextClick(element).Build().Perform();
             return true;
@@ -322,8 +310,8 @@ namespace SeleniumFixture
 
             var contentHash = Driver.PageSource.GetHashCode();
             int oldHash;
-            // we allow things like FromTop, from top, FROM top.
-            // IF that is used, we first scroll up to the top, and then start scrolling down.
+            // We allow things like FromTop, from top, FROM top.
+            // If that is used, we first scroll up to the top, and then start scrolling down.
             if (Regex.Replace(direction, @"\s+", string.Empty).Equals("fromtop", StringComparison.OrdinalIgnoreCase))
             {
                 do

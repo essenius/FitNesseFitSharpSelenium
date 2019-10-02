@@ -96,7 +96,7 @@ function hoverLightbulb(yes) {
 }
 
 function asyncDataLoad(callback, element) {
-    var timer = setTimeout(function () {
+    var _ = setTimeout(function () {
         var data = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
         callback(data, element);
     }, 1000);
@@ -167,7 +167,7 @@ function updateMonth(value) {
 }
 
 function toggleHideButtonClick() {
-    var timer = setTimeout(function () {
+    var _ = setTimeout(function () {
         var button = document.getElementById("hiddenButton");
         if (button.style.display === "none") {
             button.style.display = "inline";
@@ -180,7 +180,7 @@ function toggleHideButtonClick() {
 }
 
 function toggleDisabledButtonClick() {
-    var timer = setTimeout(function() {
+    var _ = setTimeout(function() {
         var button = document.getElementById("disabledButton");
         if (button.disabled) {
             button.removeAttribute("disabled");

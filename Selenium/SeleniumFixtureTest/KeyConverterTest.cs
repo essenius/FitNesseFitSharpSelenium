@@ -26,7 +26,7 @@ namespace SeleniumFixtureTest
          SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing exception")]
         public void KeyConverterExceptionTest()
         {
-            _ = new KeyConverter("{wrong").ToSeleniumFormat;
+            var _ = new KeyConverter("{wrong").ToSeleniumFormat;
         }
 
         [TestMethod, TestCategory("Unit")]

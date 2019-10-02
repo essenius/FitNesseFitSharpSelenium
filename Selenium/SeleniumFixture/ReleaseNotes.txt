@@ -43,4 +43,6 @@
 2.4.2    Added Appium demo suite in the wiki, and fixed a wait issue with DragElementAndDropOnElement
 2.4.3    Refactored BrowserDriver creation to use DriverCreator classes rather than one big factory. Added documentation tags for Coordinate, 
          and disabled native BrowserStorage tests as Chrome doesn't seem to support this anymore.
+2.4.4	 Added Documentation tags for Coordinate	
+2.4.5    Extracted a few methods, did some cleanup of comments and fixed a number of ReSharper findings
  

@@ -19,7 +19,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;

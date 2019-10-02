@@ -11,7 +11,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using ImageHandler;
@@ -140,18 +139,19 @@ namespace SeleniumFixture
                 default:
                     throw new ArgumentException($"Direction '{direction}' should be Up, Down, Left or Right");
             }
-            if (Driver is IOSDriver<IOSElement> iosDriver)
+            switch (Driver)
             {
-                var scrollObject = new Dictionary<string, string> {{"direction", direction.ToLowerInvariant()}};
-                iosDriver.ExecuteScript("mobile: scroll", scrollObject);
-                return true;
+                case IOSDriver<IOSElement> iosDriver:
+                {
+                    var scrollObject = new Dictionary<string, string> {{"direction", direction.ToLowerInvariant()}};
+                    iosDriver.ExecuteScript("mobile: scroll", scrollObject);
+                    return true;
+                }
+                case AndroidDriver<AppiumWebElement> androidDriver:
+                    new TouchAction(androidDriver).Press(startX, startY).MoveTo(endX, endY).Release().Perform();
+                    return true;
             }
 
-            if (Driver is AndroidDriver<AppiumWebElement> androidDriver)
-            {
-                new TouchAction(androidDriver).Press(startX, startY).MoveTo(endX, endY).Release().Perform();
-                return true;
-            }
             // default - a browser
             var xPixels = endX - startX;
             var yPixels = endY - startY;

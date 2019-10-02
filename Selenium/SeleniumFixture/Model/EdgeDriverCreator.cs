@@ -15,7 +15,7 @@ using OpenQA.Selenium.Edge;
 
 namespace SeleniumFixture.Model
 {
-    class EdgeDriverCreator : BrowserDriverCreator
+    internal class EdgeDriverCreator : BrowserDriverCreator
     {
         public EdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
