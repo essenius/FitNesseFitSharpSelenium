@@ -268,13 +268,13 @@ namespace SeleniumFixture
 
         private void MoveTo(IWebElement element)
         {
-            // Android doesn't support these.
+            // Android and WinApp don't support these.
             try
             {
                 ((IJavaScriptExecutor)Driver).ExecuteScript(
                     "arguments[0].scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});", element);
             }
-            catch (WebDriverException e) when (e.Message == "Method is not implemented")
+            catch (WebDriverException e) when (e.Message.Contains("not implemented" ))
             {
                 // ignore
             }

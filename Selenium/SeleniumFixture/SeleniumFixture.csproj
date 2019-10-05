@@ -127,6 +127,7 @@
     <Compile Include="Model\NoBrowserDriverCreator.cs" />
     <Compile Include="Model\OperaDriverCreator.cs" />
     <Compile Include="Model\SafariDriverCreator.cs" />
+    <Compile Include="Model\WinAppDriverCreator.cs" />
     <Compile Include="Utilities\NativeMethods.cs" />
     <Compile Include="Model\NoBrowserStorage.cs" />
     <Compile Include="Model\ProtectedMode.cs" />

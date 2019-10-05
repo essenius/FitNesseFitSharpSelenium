@@ -23,6 +23,15 @@ namespace SeleniumFixture.Utilities
     {
         private static double _lastSetImplicitWaitSeconds;
 
+        public static void AddAdditionalCapabilities(this DriverOptions options, Dictionary<string, object> capabilities)
+        {
+            if (capabilities == null) return;
+            foreach (var entry in capabilities.Keys)
+            {
+                options.AddAdditionalCapability(entry, capabilities[entry]);
+            }
+        }
+
         public static ReadOnlyCollection<IWebElement> FindElements(this IEnumerable<IWebElement> sourceElements, By by)
         {
             ReadOnlyCollection<IWebElement> returnValue = null;
