@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -104,16 +105,17 @@ namespace SeleniumFixture.Model
         internal DriverOptions RemoteOptions(Dictionary<string, object> capabilities)
         {
             var options = Options();
-            if (capabilities != null)
+            options.AddAdditionalCapabilities(capabilities);
+            /* if (capabilities != null)
             {
                 foreach (var entry in capabilities.Keys)
                 {
                     options.AddAdditionalCapability(entry, capabilities[entry]);
                 }
-            }
+            } */
             return options;
         }
 
-        protected Uri BaseUri(string baseAddress) => new Uri(baseAddress + "/wd/hub");
+        protected virtual Uri BaseUri(string baseAddress) => new Uri(baseAddress + "/wd/hub");
     }
 }

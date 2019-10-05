@@ -115,6 +115,8 @@
     <Compile Include="CoordinateTest.cs" />
     <Compile Include="BrowserDriverCreatorTest.cs" />
     <Compile Include="InternetExplorerDriverCreatorTest.cs" />
+    <Compile Include="WinAppNotepadTest.cs" />
+    <Compile Include="WinAppCalculatorTest.cs" />
     <Compile Include="ZoneListFactoryTest.cs" />
     <Compile Include="ZoneListFactoryMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -23,16 +23,17 @@ namespace SeleniumFixture.Model
         public BrowserDriverFactory(Proxy proxy, TimeSpan timeout) =>
             _browserDriverCreators = new List<BrowserDriverCreator>
             {
+                new AndroidDriverCreator(proxy, timeout),
                 new ChromeDriverCreator(proxy, timeout),
                 new HeadlessChromeDriverCreator(proxy, timeout),
                 new EdgeDriverCreator(proxy, timeout),
                 new FireFoxDriverCreator(proxy, timeout),
                 new HeadlessFirefoxDriverCreator(proxy, timeout),
                 new InternetExplorerDriverCreator(proxy, timeout),
+                new IosDriverCreator(proxy, timeout),
                 new OperaDriverCreator(proxy, timeout),
                 new SafariDriverCreator(timeout),
-                new AndroidDriverCreator(proxy, timeout),
-                new IosDriverCreator(proxy, timeout),
+                new WinAppDriverCreator(proxy, timeout),
                 new NoBrowserDriverCreator()
             };
 
