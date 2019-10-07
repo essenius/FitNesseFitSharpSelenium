@@ -45,4 +45,5 @@
          and disabled native BrowserStorage tests as Chrome doesn't seem to support this anymore.
 2.4.4	 Added Documentation tags for Coordinate	
 2.4.5    Extracted a few methods, did some cleanup of comments and fixed a number of ReSharper findings
+2.5.0    Enabled WinAppDriver with browser ID "WinApp". Added WindowPosition 
  
