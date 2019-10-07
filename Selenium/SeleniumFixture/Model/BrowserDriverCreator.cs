@@ -106,13 +106,6 @@ namespace SeleniumFixture.Model
         {
             var options = Options();
             options.AddAdditionalCapabilities(capabilities);
-            /* if (capabilities != null)
-            {
-                foreach (var entry in capabilities.Keys)
-                {
-                    options.AddAdditionalCapability(entry, capabilities[entry]);
-                }
-            } */
             return options;
         }
 
