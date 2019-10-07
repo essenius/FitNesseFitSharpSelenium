@@ -83,8 +83,24 @@ namespace SeleniumFixture
             return WaitForAlertToClose();
         }
 
-        [Documentation("Maximize browser window")]
+        [Documentation("Maximize window")]
         public void MaximizeWindow() => Driver.Manage().Window.Maximize();
+
+        [Documentation("Get or set the location of a window")]
+        public Coordinate WindowPosition
+        {
+            get
+            {
+                var position = Driver.Manage().Window.Position;
+                return new Coordinate(position.X, position.Y);
+            }
+            set
+            {
+                var window = Driver.Manage().Window;
+                if (value == null) throw new ArgumentNullException(nameof(WindowPosition), ErrorMessages.SizeIsNoPair);
+                window.Position = new Point(value.X, value.Y);
+            }
+        }
 
         [Documentation("Provide a text response to a prompt and confirm (press OK)")]
         public bool RespondToAlert(string text)
