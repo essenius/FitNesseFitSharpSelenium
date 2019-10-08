@@ -1,0 +1,14 @@
+!|script                                                                                             |
+|Click Element   |AccessibilityId:TogglePaneButton                                                   |
+|Wait For Element|Scientific Calculator                                                              |
+|Click Element   |Scientific Calculator                                                              |
+|Wait For Element|AccessibilityId:piButton                                                           |
+|Click Element   |AccessibilityId:degButton                                                          |
+|Wait For Element|AccessibilityId:radButton                                                          |
+|Click Element   |Clear                                                                              |
+|Assert Result   |0                                                                                  |
+|Click Element   |One                                                                                |
+|Click Element   |Sine                                                                               |
+|Assert Result   |0.8414709848078965066525023216303                                                  |
+|Check           |Text In Element|AccessibilityId:CalculatorExpression|Expression is sine radians (1)|
+            

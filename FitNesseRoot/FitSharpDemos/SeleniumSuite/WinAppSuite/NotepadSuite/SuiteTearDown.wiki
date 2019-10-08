@@ -1,0 +1,4 @@
+!|script                                |
+|Send Keys   |%{F4}%                    |
+|ClickElement|name:Don't Save|if visible|
+|Close                                  |

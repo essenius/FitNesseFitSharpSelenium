@@ -33,7 +33,6 @@ namespace SeleniumFixture.Model
         private AppiumOptions WinAppOptions()
         {
             var options = new AppiumOptions {PlatformName = "Windows", Proxy = Proxy};
-            //options.AddAdditionalCapability("deviceName", "WindowsPC");
             return options;
         }
 
@@ -45,6 +44,7 @@ namespace SeleniumFixture.Model
             return new WindowsDriver<WindowsElement>(uri, options, Timeout);
         }
 
+        // Apparently the Windows driver doesn't expect /wd/hub, unlike all other drivers.
         protected override Uri BaseUri(string baseAddress) => new Uri(baseAddress);
 
     }

@@ -1,0 +1,10 @@
+!| import        |
+|SeleniumFixture |
+|SupportFunctions|
+
+|Library         |
+|Common Functions|
+
+|script               |Selenium                                                                     |
+|Default Search Method|name                                                                         |
+|Set Remote Browser   |Win App|At Address|!-http://127.0.0.1:4723-!|With Capabilities|!{app:notepad}|

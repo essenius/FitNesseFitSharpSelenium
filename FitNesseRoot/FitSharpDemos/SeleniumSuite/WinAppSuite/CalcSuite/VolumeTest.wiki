@@ -1,0 +1,18 @@
+!|script                                                                  |
+|Click Element   |AccessibilityId:TogglePaneButton                        |
+|Wait For Element|Volume Converter                                        |
+|Click Element   |Volume Converter                                        |
+|Wait For Element|AccessibilityId:Units1                                  |
+|Click Element   |Clear entry                                             |
+|Text In Element |AccessibilityId:Value1|matches   |0                     |
+|Text In Element |AccessibilityId:Value2|matches   |0                     |
+|Set Element     |AccessibilityId:Units1|To        |Liters                |
+|Wait For Element|AccessibilityId:Units2                                  |
+|Click Element   |AccessibilityId:Units2                                  |
+|Wait            |0.5                   |Seconds                          |
+|Send Keys       |Gallons (US)          |To Element|AccessibilityId:Units2|
+|Click Element   |AccessibilityId:Units2                                  |
+|Wait For Element|AccessibilityId:Value2                                  |
+|Click Element   |AccessibilityId:Value2                                  |
+|Set Element     |AccessibilityId:Value2|to        |10                    |
+|Text In Element |AccessibilityId:Value1|matches   |37.85412              |

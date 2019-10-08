@@ -1,0 +1,11 @@
+!|script                                          |
+|Click Element   |AccessibilityId:TogglePaneButton|
+|Wait For Element|Standard Calculator             |
+|Click Element   |Standard Calculator             |
+|Click Element   |Clear                           |
+|Assert Result   |0                               |
+|Click Element   |One                             |
+|Click Element   |Plus                            |
+|Click Element   |Seven                           |
+|Click Element   |Equals                          |
+|AssertResult    |8                               |
