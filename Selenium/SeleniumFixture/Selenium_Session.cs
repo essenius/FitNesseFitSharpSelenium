@@ -9,26 +9,26 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-using OpenQA.Selenium;
-using SeleniumFixture.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
+using OpenQA.Selenium;
+using SeleniumFixture.Model;
 
 namespace SeleniumFixture
 {
     /// <summary>
     ///     Session handling methods of the Selenium script table fixture for FitNesse
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification =
-         "Can't change the type name - would be a breaking change")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification =
+        "Can't change the type name - would be a breaking change")]
     public sealed partial class Selenium
     {
         private const string BrowserChoices = "Browser names can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera";
@@ -73,8 +73,8 @@ namespace SeleniumFixture
 
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "API for FitNesse"),
-         Documentation("Get/set a Web Store. Sets all key-value pairs, but doesn't delete existing content. Clear any existing values beforehand")]
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "API for FitNesse")]
+        [Documentation("Get/set a Web Store. Sets all key-value pairs, but doesn't delete existing content. Clear any existing values beforehand")]
         public Dictionary<string, string> WebStorage
         {
             get { return BrowserStorage.KeySet.ToDictionary(key => key, key => BrowserStorage[key]); }
@@ -89,7 +89,10 @@ namespace SeleniumFixture
         public void AddToWebStorage(Dictionary<string, string> dictionaryToAdd)
         {
             if (dictionaryToAdd == null) return;
-            foreach (var key in dictionaryToAdd.Keys) BrowserStorage[key] = dictionaryToAdd[key];
+            foreach (var key in dictionaryToAdd.Keys)
+            {
+                BrowserStorage[key] = dictionaryToAdd[key];
+            }
         }
 
         internal bool AreAllProtectedModes(bool mode) => ProtectedMode.AllAre(mode);
@@ -110,14 +113,14 @@ namespace SeleniumFixture
         [Documentation("Execute JavaScript asynchronously (in the browser)")]
         public object ExecuteAsyncScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteAsyncScript(script);
         }
 
         [Documentation("Execute JavaScript (in the browser)")]
         public object ExecuteScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteScript(script);
         }
 
@@ -125,7 +128,7 @@ namespace SeleniumFixture
                        "then it is substituted by the element. You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithParameters(string script, Collection<string> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             var argsToUse = new List<object>();
             foreach (var locator in args ?? new Collection<string>())
             {
@@ -142,12 +145,13 @@ namespace SeleniumFixture
             return scriptExecutor.ExecuteScript(script, argsToUse.ToArray());
         }
 
-        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "FitSharp cannot parse IEnumerables"), Documentation(
-             "Execute JavaScript using parameters. No substitution of elements is attempted. " +
-             "You can refer to them via arguments[0-i] in the script")]
+        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "FitSharp cannot parse IEnumerables")]
+        [Documentation(
+            "Execute JavaScript using parameters. No substitution of elements is attempted. " +
+            "You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithPlainParameters(string script, Collection<object> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor)Driver;
+            var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteScript(script, args.ToArray());
         }
 
@@ -180,6 +184,10 @@ namespace SeleniumFixture
             return DriverId;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec")]
+        [Documentation("Debug function to see what the current protected mode settings are and what they come from")]
+        internal Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
+
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False Positive")]
         [Documentation("Check if Protected Mode for all security zones meet the condition (ON/OFF/EQUAL), and throw a StopTestException if not. " +
@@ -189,11 +197,14 @@ namespace SeleniumFixture
             bool ok;
             switch (condition?.ToUpperInvariant())
             {
-                case "ON": ok = ProtectedMode.AllAre(true);
+                case "ON":
+                    ok = ProtectedMode.AllAre(true);
                     break;
-                case "OFF": ok = ProtectedMode.AllAre(false);
+                case "OFF":
+                    ok = ProtectedMode.AllAre(false);
                     break;
-                case "EQUAL": ok = ProtectedMode.AllAreSame();
+                case "EQUAL":
+                    ok = ProtectedMode.AllAreSame();
                     break;
                 default:
                     throw new ArgumentException($"Unknown condition '{condition}. Valid are On, Off or Equal.");
@@ -201,10 +212,6 @@ namespace SeleniumFixture
             if (!ok) throw new StopTestException("Protected modes are not all " + condition.ToLowerInvariant());
             return true;
         }
-
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec"),
-         Documentation("Debug function to see what the current protected mode settings are and what they come from")]
-        internal Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
 
         [Documentation("Remove an item from web storage (local or session) via its key")]
         public bool RemoveFromWebStorage(string key) => _browserStorage.RemoveItem(key);
@@ -255,6 +262,9 @@ namespace SeleniumFixture
         [Documentation("Returns the version info of the fixture. " +
                        "SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name, version")]
         public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier + string.Empty);
+
+        [Documentation("Checks whether the current version (x.y.z) is at least a minimally required version")]
+        public static bool VersionIsAtLeast(string version) => ApplicationInfo.VersionIsAtLeast(version);
 
         [Documentation("Wait a specified number of seconds (can be fractions). Note: this seems to impact iframe context, so use with care.")]
         public static void WaitSeconds(double seconds)

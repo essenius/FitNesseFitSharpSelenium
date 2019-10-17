@@ -20,17 +20,17 @@ This repo contains a fixture to enable automated testing of web applications usi
 1. Ensure you have Java installed (1.7 or higher)
 1. Update plugins.properties:
 
-	a. Set TESTPAGE to http://your.test.site/Testpage.html (test site URL as per 6a)
+	a. Set TESTPAGE to http://your.test.site/Testpage.html (test site URL as per above)
 
-	b. Set SeleniumServer to the URL of your Selenium server (as per 6b)
+	b. Set SeleniumServer to the URL of your Selenium server (as per above)
 
 	c. Set BROWSER to the browser you want to run the test on (e.g. Chrome Headless)
-11. Start FitNesse with the root repo folder as the data folder as well as the current directory:
+1. Start FitNesse with the root repo folder as the data folder as well as the current directory:
 
 	cd /D C:\Data\FitNesseDemo
 	
 	java -jar C:\Apps\FitNesse\fitnesse-standalone.jar -d .
-12. Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite?suite
+1. Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite?suite
 
 # Contribute
 Enter an issue or provide a pull request.

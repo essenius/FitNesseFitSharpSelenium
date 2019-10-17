@@ -22,7 +22,7 @@ namespace SeleniumFixture.Model
         private const char EndDelimiter = '}';
         private const char StartDelimiter = '{';
 
-        private static readonly Dictionary<string, string> KeyDictionary = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> KeyDictionary = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
             {"ADD", Keys.Add},
             {"BACKSPACE", Keys.Backspace},

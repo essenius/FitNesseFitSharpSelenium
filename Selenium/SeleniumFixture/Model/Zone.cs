@@ -28,10 +28,10 @@ namespace SeleniumFixture.Model
 
         private readonly Dictionary<string, string> _baseKeys = new Dictionary<string, string>
         {
-            {"Machine Policies", @"HKLM\\SOFTWARE\\Policies\\{0}"},
-            {"User Policies", @"HKCU\\SOFTWARE\\Policies\\{0}"},
-            {"User", @"HKCU\\SOFTWARE\\{0}"},
-            {"Machine", @"HKLM\\SOFTWARE\\{0}"}
+            {"Machine Policies", "HKLM\\SOFTWARE\\Policies\\{0}"},
+            {"User Policies", "HKCU\\SOFTWARE\\Policies\\{0}"},
+            {"User", "HKCU\\SOFTWARE\\{0}"},
+            {"Machine", "HKLM\\SOFTWARE\\{0}"}
         };
 
         private string _foundIn;
@@ -71,6 +71,7 @@ namespace SeleniumFixture.Model
         private object GetZoneValueFrom(string keyString)
         {
             var rootKey = RootKeyOf(keyString);
+            // the Substring works because both HKLM and HKCU are 4 characters
             var registryKey = rootKey.OpenSubKey(keyString.Substring(5), false);
             return registryKey?.GetValue(ProtectedModeKeyName);
         }

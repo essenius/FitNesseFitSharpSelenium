@@ -286,5 +286,14 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(ApplicationInfo.ApplicationName + " " + ApplicationInfo.Version, Selenium.VersionInfo(""),
                 "Default version info OK");
         }
+
+        [TestMethod, TestCategory("Experiments")]
+        public void SeleniumZoneTest()
+        {
+            // this test will fail if not all protected mode settings are the same
+            var protectedModes = new ProtectedMode(new ZoneListFactory());
+            var same = protectedModes.AllAreSame();
+            Assert.IsTrue(same);
+        }
     }
 }

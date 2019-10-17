@@ -47,7 +47,7 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(@"aaaaa", new KeyConverter(@"{a 5}").ToSeleniumFormat, @"{a 5}");
             Assert.AreEqual(@"abcabc", new KeyConverter(@"{abc 2}").ToSeleniumFormat, @"{abc 2}");
 
-            var k = new KeyConverter("^ac{DEL}New Text~").ToSeleniumFormat;
+            var k = new KeyConverter("^ac{Del}New Text~").ToSeleniumFormat;
             int[] expected = {57353, 97, 99, 57367, 78, 101, 119, 32, 84, 101, 120, 116, 57351};
             Assert.AreEqual(expected.Length, k.Length, "expected size {0} but got {1}", expected.Length, k.Length);
             for (var i = 0; i < k.Length; i++)
@@ -73,7 +73,7 @@ namespace SeleniumFixtureTest
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("{DEL}").ToSeleniumFormat), "Text 1");
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("My New Text").ToSeleniumFormat), "Text 1");
                 Assert.IsTrue(_selenium.SetElementTo("text2", new KeyConverter("^a").ToSeleniumFormat), "Text 2");
-                Assert.IsTrue(_selenium.SetElementTo("text2", new KeyConverter("{DEL}^v").ToSeleniumFormat), "Text 2");
+                Assert.IsTrue(_selenium.SetElementTo("text2", new KeyConverter("{dEl}^v").ToSeleniumFormat), "Text 2");
             }
             finally
             {
