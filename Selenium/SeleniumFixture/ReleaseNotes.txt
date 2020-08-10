@@ -48,3 +48,4 @@
 2.5.0    Enabled WinAppDriver with browser ID "WinApp". Added WindowPosition 
 2.5.1    Made KeyParser case insensitive for the special keys (e.g. {Del} and {DEL} now both refer to the delete key).
          Added VersionIsAtLeast to assert that the current fixture has at least a minimal version. Fixed a bug in zone determination
+2.5.2    Upgraded NuGet packages to latest versions (except Webdriver)

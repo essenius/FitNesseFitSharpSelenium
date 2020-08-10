@@ -66,49 +66,46 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Integration")]
         public void KendoTableTest()
         {
-            try
-            {
-                Assert.IsTrue(Selenium.SetProxyTypeValue("manual", "***REMOVED***")); // ***REMOVED***
-                Assert.IsTrue(_selenium.SetBrowser("firefox"));
-                Assert.IsTrue(_selenium.Open(new Uri("https://demos.telerik.com/kendo-ui/grid/index")));
-                _selenium.ClickElementIfVisible("ClassName:optanon-allow-all");
-                Assert.IsTrue(_selenium.WaitUntilElementIsInvisible("ClassName:optanon-allow-all"));
-                Assert.IsTrue(_selenium.WaitUntilElementIsVisible("XPath://table[@role=\"grid\"]"));
-                // tricky: the header and data rows are in different tables with the same role. The fixture can now handle that
+            Selenium.SetProxyType("system");
+            Assert.IsTrue(_selenium.SetBrowser("firefox"));
+            Assert.IsTrue(_selenium.Open(new Uri("https://demos.telerik.com/kendo-ui/grid/index")));
 
-                TestTable("XPath://table[@role='grid']", 2, new[]
-                {
-                    new[]
-                    {
-                        new[] {"Contact Name", @"Maria Anders"}, new[] {"Contact Title", "Sales Representative"},
-                        new[] {"Company Name", @"Alfreds Futterkiste"}, new[] {"Country", "Germany"}
-                    },
-                    new[]
-                    {
-                        new[] {"Contact Name", "Ana Trujillo"}, new[] {"Contact Title", "Owner"},
-                        new[] {"Company Name", @"Ana Trujillo Emparedados y helados"}, new[] {"Country", "Mexico"}
-                    }
-                });
+            const string cookiesOkButton = "id:onetrust-accept-btn-handler";
+            Assert.IsTrue(_selenium.WaitUntilElementIsVisible(cookiesOkButton));
+            Assert.IsTrue(_selenium.ClickElement(cookiesOkButton));
+            Assert.IsTrue(_selenium.WaitUntilElementIsInvisible(cookiesOkButton));
 
-                _selenium.ClickElement("LinkText:Contact Name");
-                TestTable("XPath://table[@role='grid']", 2, new[]
-                {
-                    new[]
-                    {
-                        new[] {"Contact Name", @"Alejandra Camino"}, new[] {"Contact Title", "Accounting Manager"},
-                        new[] {"Company Name", @"Romero y tomillo"}, new[] {"Country", "Spain"}
-                    },
-                    new[]
-                    {
-                        new[] {"Contact Name", @"Alexander Feuer"}, new[] {"Contact Title", "Marketing Assistant"},
-                        new[] {"Company Name", @"Morgenstern Gesundkost"}, new[] {"Country", "Germany"}
-                    }
-                });
-            }
-            finally
+            Assert.IsTrue(_selenium.WaitUntilElementIsVisible("XPath://table[@role=\"grid\"]"));
+            // tricky: the header and data rows are in different tables with the same role. The fixture can now handle that
+
+            TestTable("XPath://table[@role='grid']", 2, new[]
             {
-                Selenium.SetProxyType("system");
-            }
+                new[]
+                {
+                    new[] {"Contact Name", @"Maria Anders"}, new[] {"Contact Title", "Sales Representative"},
+                    new[] {"Company Name", @"Alfreds Futterkiste"}, new[] {"Country", "Germany"}
+                },
+                new[]
+                {
+                    new[] {"Contact Name", "Ana Trujillo"}, new[] {"Contact Title", "Owner"},
+                    new[] {"Company Name", @"Ana Trujillo Emparedados y helados"}, new[] {"Country", "Mexico"}
+                }
+            });
+
+            _selenium.ClickElement("LinkText:Contact Name");
+            TestTable("XPath://table[@role='grid']", 2, new[]
+            {
+                new[]
+                {
+                    new[] {"Contact Name", @"Alejandra Camino"}, new[] {"Contact Title", "Accounting Manager"},
+                    new[] {"Company Name", @"Romero y tomillo"}, new[] {"Country", "Spain"}
+                },
+                new[]
+                {
+                    new[] {"Contact Name", @"Alexander Feuer"}, new[] {"Contact Title", "Marketing Assistant"},
+                    new[] {"Company Name", @"Morgenstern Gesundkost"}, new[] {"Country", "Germany"}
+                }
+            });
         }
 
         private static void TestTable(string xPathQuery, int max, string[][][] expectedValues)
