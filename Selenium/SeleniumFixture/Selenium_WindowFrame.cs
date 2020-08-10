@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -19,25 +19,24 @@ using OpenQA.Selenium;
 
 namespace SeleniumFixture
 {
-    /// <summary>
-    ///     Window and frame handling methods of the Selenium script table fixture for FitNesse
-    /// </summary>
+    // Window and frame handling methods of the Selenium script table fixture for FitNesse
+
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
      SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional parameters")]
     public sealed partial class Selenium
     {
         private string _mainWindowHandle;
 
-        [Documentation("Return the cached window handles (debugging purposes)")]
+        /// <returns>the cached window handles (debugging purposes)</returns>
         internal ReadOnlyCollection<string> CachedWindowHandles { get; private set; }
 
-        [Documentation("Return the internal name (handle) of the current browser window. This can be used later in a Select Window command")]
+        /// <returns>the internal name (handle) of the current browser window. This can be used later in a Select Window command</returns>
         public string CurrentWindowName => Driver.CurrentWindowHandle;
 
-        [Documentation("Returns the window handles (debugging purposes)")]
+        /// <returns>s the window handles (debugging purposes)</returns>
         internal ReadOnlyCollection<string> WindowHandles => Driver.WindowHandles;
 
-        [Documentation("The dimensions of the browser window (width, height)")]
+        /// <summary>The dimensions of the browser window (width, height)</summary>
         public Coordinate WindowSize
         {
             get
@@ -53,7 +52,7 @@ namespace SeleniumFixture
             }
         }
 
-        [Documentation("Accept an alert, confirm or prompt dialog (press OK)")]
+        /// <summary>Accept an alert, confirm or prompt dialog (press OK)</summary>
         public bool AcceptAlert()
         {
             if (!WaitForAlert()) return false;
@@ -61,7 +60,7 @@ namespace SeleniumFixture
             return WaitForAlertToClose();
         }
 
-        [Documentation("Check whether an alert, confirm or prompt box is active")]
+        /// <summary>Check whether an alert, confirm or prompt box is active</summary>
         public bool AlertIsPresent()
         {
             try
@@ -75,7 +74,7 @@ namespace SeleniumFixture
             }
         }
 
-        [Documentation("Dismiss an alert, confirm or prompt dialog (press Cancel)")]
+        /// <summary>Dismiss an alert, confirm or prompt dialog (press Cancel)</summary>
         public bool DismissAlert()
         {
             if (!WaitForAlert()) return false;
@@ -83,10 +82,10 @@ namespace SeleniumFixture
             return WaitForAlertToClose();
         }
 
-        [Documentation("Maximize window")]
+        /// <summary>Maximize window</summary>
         public void MaximizeWindow() => Driver.Manage().Window.Maximize();
 
-        [Documentation("Get or set the location of a window")]
+        /// <summary>Get or set the location of a window</summary>
         public Coordinate WindowPosition
         {
             get
@@ -102,7 +101,7 @@ namespace SeleniumFixture
             }
         }
 
-        [Documentation("Provide a text response to a prompt and confirm (press OK)")]
+        /// <summary>Provide a text response to a prompt and confirm (press OK)</summary>
         public bool RespondToAlert(string text)
         {
             if (!WaitForAlert()) return false;
@@ -111,8 +110,8 @@ namespace SeleniumFixture
             return WaitFor(drv => !AlertIsPresent());
         }
 
-        [Documentation("Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name). " +
-                       "If no handle is specified, it will select the window that was used for the Open command.")]
+        ///<summary>"Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name).
+        ///If no handle is specified, it will select the window that was used for the Open command.</summary>
         public bool SelectWindow(string windowName)
         {
             if (string.IsNullOrEmpty(windowName)) windowName = _mainWindowHandle;
@@ -121,20 +120,20 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation("Stores all the window handles that the browser driver handles, including the main window.")]
+        /// <summary>Stores all the window handles that the browser driver handles, including the main window.</summary>
         public void StoreWindowHandles() => StoreWindowHandles(true);
 
-        [Documentation("Stores all the window handles that the browser driver handles")]
+        /// <summary>Stores all the window handles that the browser driver handles</summary>
         public void StoreWindowHandles(bool setMain)
         {
             if (setMain || _mainWindowHandle == null) _mainWindowHandle = Driver.CurrentWindowHandle;
             CachedWindowHandles = Driver.WindowHandles;
         }
 
-        [Documentation("Switch to the root html context (i.e. leave frame context)")]
+        /// <summary>Switch to the root html context (i.e. leave frame context)</summary>
         public bool SwitchToDefaultContext() => Driver.SwitchTo().DefaultContent() != null;
 
-        [Documentation("Switch context to a frame in the current html page")]
+        /// <summary>Switch context to a frame in the current html page</summary>
         public bool SwitchToFrame(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
         {
             Driver.SwitchTo().Frame(element);
@@ -145,7 +144,7 @@ namespace SeleniumFixture
 
         internal bool WaitForAlertToClose() => WaitFor(drv => !AlertIsPresent());
 
-        [Documentation("After clicking a link that is known to open a new window, wait for that new window to appear. Returns the window name")]
+        /// <summary>After clicking a link that is known to open a new window, wait for that new window to appear. Returns the window name</summary>
         public string WaitForNewWindowName()
         {
             var returnValue = WaitFor(drv =>
@@ -158,7 +157,7 @@ namespace SeleniumFixture
             return returnValue;
         }
 
-        [Documentation("Check if the window size is close enough to the specified size")]
+        /// <summary>Check if the window size is close enough to the specified size</summary>
         public bool WindowSizeIsCloseTo(Coordinate comparison) => WindowSize.CloseTo(comparison);
     }
 }

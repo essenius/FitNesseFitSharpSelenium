@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,7 @@ using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture
 {
+    /// <summary>Extract values from an HTML table</summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
     public class ExtractTableValues
@@ -37,27 +38,32 @@ namespace SeleniumFixture
         private int _rowCount;
         private bool _wasCalculated;
 
+        /// <summary>Extract table values from an HTML table, identified by an XPath query</summary>
         [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional params")]
-        [Documentation("Extract table values from an HTML table, identified by an XPath query")]
         public ExtractTableValues(string tableLocation) : this(tableLocation, 0)
         {
         }
 
-        [Documentation("Extract table values from an HTML table, limit number of results")]
+        /// <summary>Extract table values from an HTML table, limit number of results</summary>
         public ExtractTableValues(string tableLocation, int maxResults) :
             this(tableLocation, "XPath:thead/tr/th", "XPath:tbody/tr", "XPath:td", maxResults)
         {
         }
 
-        [Documentation("Extract table values from an HTML table; import the headers and data for the table from different parent tables, " +
-                       "and limit number of results. Uses absolute header locator and absolute data row locator")]
+        /// <summary>Extract table values from an HTML table; import the headers and data for the table from different parent tables and limit number of results</summary>
+        /// <param name="headerLocation">absolute header location</param>
+        /// <param name="rowLocation">absolute data row location</param>
+        /// <param name="maxResults">maximum result count</param>
         public ExtractTableValues(string headerLocation, string rowLocation, int maxResults) :
             this(headerLocation, rowLocation, "XPath:td", maxResults)
         {
         }
 
-        [Documentation("Extract table values from an HTML table; import the headers and data for the table from different parent " +
-                       "tables and limit # of results. Uses absolute header location, absolute row location and relative cell locator (from rows)")]
+        /// <summary>Extract table values from an HTML table; import the headers and data for the table from different parent</summary>
+        /// <param name="headerLocation">absolute header location</param>
+        /// <param name="rowLocation">absolute row location</param>
+        /// <param name="relativeCellLocationInRow">cell locator relative from row</param>
+        /// <param name="maxResults">maximum result count</param>
         public ExtractTableValues(string headerLocation, string rowLocation, string relativeCellLocationInRow, int maxResults)
         {
             _headerLocation = headerLocation;
@@ -66,9 +72,12 @@ namespace SeleniumFixture
             _maxResults = maxResults;
         }
 
-        [Documentation("Extract table values from an HTML table; import the headers and data for the table from different parent " +
-                       "tables and limit # of results. Uses absolute table locator, relative (to table) header, relative(to table) data rows, " +
-                       "and relative (to row) cell locator")]
+        /// <summary>Extract table values from an HTML table; import the headers and data for the table from different parent tables and limit # of results</summary>
+        /// <param name="tableLocation">absolute table locator</param>
+        /// <param name="relativeHeaderLocationInTable">header locator relative to table</param>
+        /// <param name="relativeRowLocationInTable">data row locator relative to table</param>
+        /// <param name="relativeCellLocationInRow">cell locator relative to row</param>
+        /// <param name="maxResults">maximum result count</param>
         public ExtractTableValues(string tableLocation, string relativeHeaderLocationInTable,
             string relativeRowLocationInTable, string relativeCellLocationInRow, int maxResults)
         {
@@ -79,7 +88,7 @@ namespace SeleniumFixture
             _maxResults = maxResults;
         }
 
-        [Documentation("Number of data rows in the table (excluding header)")]
+        /// <summary>Number of data rows in the table (excluding header)</summary>
         public int ColumnCount
         {
             get
@@ -89,7 +98,7 @@ namespace SeleniumFixture
             }
         }
 
-        [Documentation("Number of rows in the extracted table")]
+        /// <summary>Number of rows in the extracted table</summary>
         public int RowCount
         {
             get
@@ -159,7 +168,7 @@ namespace SeleniumFixture
             return rowCollection;
         }
 
-        [Documentation("Query table interface returning the content of the table. Assumes that the Browser Driver was already initialized")]
+        /// <summary>Query table interface returning the content of the table. Assumes that the Browser Driver was already initialized</summary>
         public Collection<object> Query()
         {
             DoExtraction();

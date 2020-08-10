@@ -37,8 +37,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>FitNesseRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Debug\SeleniumFixture.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -97,7 +96,6 @@
   <ItemGroup>
     <Compile Include="ApplicationInfo.cs" />
     <Compile Include="Coordinate.cs" />
-    <Compile Include="DocumentationAttribute.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\AndroidDriverCreator.cs" />
     <Compile Include="Model\AppConfig.cs" />

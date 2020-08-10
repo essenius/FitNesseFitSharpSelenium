@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -25,28 +25,31 @@ using static System.FormattableString;
 
 namespace SeleniumFixture
 {
+    // Page handling methods of the Selenium script table fixture for FitNesse
+    // Only using XML documentation for Selenium here as it is a partial class, and we don't want multiple.
+
     /// <summary>
-    ///     Page handling methods of the Selenium script table fixture for FitNesse
+    /// Selenium Fixture for FitSharp
     /// </summary>
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "This is the interface class"),
      SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by Fitsharp"),
      SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by Fitsharp")]
     public sealed partial class Selenium
     {
-        [Documentation("Return the length of the current page source")]
+        /// <returns>the length of the current page source</returns>
         public int LengthOfPageSource => PageSource.Length;
 
-        [Documentation("Returns the number of open pages (tabs, newly opened windows) for this browser instance")]
+        /// <returns>the number of open pages (tabs, newly opened windows) for this browser instance</returns>
         public int PageCount => Driver.WindowHandles.Count;
 
-        [Documentation("Return the page source of the current page in context")]
+        /// <returns>the page source of the current page in context</returns>
         public string PageSource => Driver != null ? Driver.PageSource : string.Empty;
 
-        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "FitSharp needs it as a string"),
-         Documentation("Url of the current page")]
+        ///<summary>Url of the current page</summary>
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "FitSharp needs it as a string")]
         public string Url => Driver.Url;
 
-        [Documentation("Closes the current browser page. Does not close the browser itself if it's not the last page")]
+        /// <summary>Closes the current browser page. Does not close the browser itself if it's not the last page</summary>
         public bool ClosePage()
         {
             if (Driver == null) return false;
@@ -55,8 +58,7 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation(
-            "Long press a key on an Android via a keycode (number or field name). Returns false if not run on an Android or the keycode is not recognised")]
+        ///<summary>Long press a key on an Android via a keycode (number or field name). Returns false if not run on an Android or the keycode is not recognised</summary>
         public bool LongPressKeyCode(string keyCodeIn)
         {
             if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
@@ -66,14 +68,13 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation(
-            "Send keys using the .Net Framework Forms.SendKeys.SendWait function. Executes locally, so does not work on remote Selenium servers." +
-            "Can be useful for context menus, although the Chrome driver does not send keypresses there. " +
-            " The syntax of the keys is slightly different than the Selenium syntax used in Send Keys To Element. " +
-            "Primarily, control, alt and shift do not toggle, but only work on the following item. See MSDN SendKeys documentation")]
+        ///<summary>Send keys using the .Net Framework Forms.SendKeys.SendWait function. Executes locally, so does not work on remote Selenium servers.
+        /// Can be useful for context menus, although the Chrome driver does not send keypresses there.
+        /// The syntax of the keys is slightly different than the Selenium syntax used in Send Keys To Element. 
+        /// Primarily, control, alt and shift do not toggle, but only work on the following item. See MSDN SendKeys documentation</summary>
         public static void NativeSendKeys(string keys) => System.Windows.Forms.SendKeys.SendWait(keys);
 
-        [Documentation("Opens the specified URL in the browser and wait for it to load.")]
+        /// <summary>Opens the specified URL in the browser and wait for it to load.</summary>
         public bool Open(Uri url)
         {
             if (Driver == null) throw new StopTestException(ErrorMessages.NoBrowserSpecified);
@@ -84,7 +85,7 @@ namespace SeleniumFixture
         }
 
         //TODO implement metastates
-        [Documentation("Press a key on an Android via a keycode (number/field name). Returns false if not run on an Android or the keycode is not recognised")]
+        /// <summary>Press a key on an Android via a keycode (number/field name). Returns false if not run on an Android or the keycode is not recognised</summary>
         public bool PressKeyCode(string keyCodeIn)
         {
             if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
@@ -94,26 +95,26 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation("Reload the current page")]
+        /// <summary>Reload the current page</summary>
         public bool ReloadPage()
         {
             Driver.Navigate().Refresh();
             return true;
         }
 
-        [Documentation("Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a service")]
+        /// <summary>Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a service</summary>
         public static string Screenshot()
         {
             var snap = BrowserDriverContainer.TakeScreenshot();
             return snap.Rendering;
         }
 
-        [Documentation("Take a screenshot and return it as an object")]
+        /// <summary>Take a screenshot and return it as an object</summary>
         public static Snapshot ScreenshotObject() => BrowserDriverContainer.TakeScreenshot();
 
+        /// <summary>Scroll up, down, left or right</summary>
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive")]
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
-        [Documentation("Scroll up, down, left or right")]
         public bool Scroll(string direction)
         {
             var screenSize = Driver.Manage().Window.Size;
@@ -182,40 +183,40 @@ namespace SeleniumFixture
                 "^[\\s\\S]*" + Regex.Escape(textToSearch) + "[\\s\\S]*$", caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
         }
 
-        [Documentation("Check if a certain text exists on the page")]
+        /// <summary>Check if a certain text exists on the page</summary>
         public bool TextExists(string textToSearch) => TextExists(textToSearch, false);
 
-        [Documentation("Check if a certain text exists on the page (case insensitive search)")]
+        /// <summary>Check if a certain text exists on the page (case insensitive search)</summary>
         public bool TextExistsIgnoringCase(string textToSearch) => TextExists(textToSearch, true);
 
-        [Documentation("Get the title of the current page")]
+        /// <summary>Get the title of the current page</summary>
         public string Title() => Driver != null ? Driver.Title : string.Empty;
 
-        [Documentation("Wait for the HTML source to change. Can happen with dynamic pages")]
+        /// <summary>Wait for the HTML source to change. Can happen with dynamic pages</summary>
         public bool WaitForPageSourceToChange()
         {
             var currentSource = PageSource;
             return WaitFor(drv => PageSource != currentSource);
         }
 
-        [Documentation("Waits for a page to load, using default timeout")]
+        /// <summary>Waits for a page to load, using default timeout</summary>
         public bool WaitForPageToLoad() => WaitUntilElementIsVisible("XPath://*[not (.='')]");
 
         private bool WaitForText(string textToSearch, bool caseInsensitive) => WaitFor(drv => TextExists(textToSearch, caseInsensitive));
 
-        [Documentation("Waits for a certain text to be present (case sensitive search)")]
+        /// <summary>Waits for a certain text to be present (case sensitive search)</summary>
         public bool WaitForText(string textToSearch) => WaitForText(textToSearch, false);
 
-        [Documentation("Waits for a certain text to be present (case insensitive search)")]
+        /// <summary>Waits for a certain text to be present (case insensitive search)</summary>
         public bool WaitForTextIgnoringCase(string textToSearch) => WaitForText(textToSearch, true);
 
-        [Documentation("Wait until the page source has the specified minimum length. Useful when pages are built dynamically and asynchronously")]
+        /// <summary>Wait until the page source has the specified minimum length. Useful when pages are built dynamically and asynchronously</summary>
         public bool WaitUntilPageSourceIsLargerThan(int thresholdLength) => WaitFor(drv => LengthOfPageSource > thresholdLength);
 
-        [Documentation("Wait until a called JavaScript function returns a value that is not false or null")]
+        /// <summary>Wait until a called JavaScript function returns a value that is not false or null</summary>
         public bool WaitUntilScriptReturnsTrue(string script) => WaitFor(drv => ExecuteScript(script) is bool result && result);
 
-        [Documentation("Wait for a title to appear, using a regular expression to search")]
+        /// <summary>Wait for a title to appear, using a regular expression to search</summary>
         public bool WaitUntilTitleMatches(string regexPattern) => WaitFor(d => new Regex(regexPattern).IsMatch(d.Title));
     }
 }

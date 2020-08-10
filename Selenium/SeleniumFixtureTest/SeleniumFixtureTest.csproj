@@ -40,6 +40,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
     <CodeAnalysisRuleSet>SeleniumFixtureTest.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\SeleniumFixtureTest.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -105,7 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppiumTest.cs" />
-    <Compile Include="DocumentationAttributeTest.cs" />
     <Compile Include="ExpectedExceptionWithMessage.cs" />
     <Compile Include="BrowserDriverFactoryTest.cs" />
     <Compile Include="NativeMethodsMock.cs" />

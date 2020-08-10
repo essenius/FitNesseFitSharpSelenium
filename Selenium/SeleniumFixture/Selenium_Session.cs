@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -20,9 +20,8 @@ using SeleniumFixture.Model;
 
 namespace SeleniumFixture
 {
-    /// <summary>
-    ///     Session handling methods of the Selenium script table fixture for FitNesse
-    /// </summary>
+    // Session handling methods of the Selenium script table fixture for FitNesse
+
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
     [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Used by FitSharp")]
@@ -31,7 +30,6 @@ namespace SeleniumFixture
         "Can't change the type name - would be a breaking change")]
     public sealed partial class Selenium
     {
-        private const string BrowserChoices = "Browser names can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera";
         private const int DefaultTimeoutInSeconds = 3;
 
         private BrowserStorage _browserStorage;
@@ -46,35 +44,36 @@ namespace SeleniumFixture
             }
         }
 
-        [Documentation("Command Timeout value in seconds (i.e. the one specified in the driver constructor). Only works for local drivers")]
+        /// <summary>Command Timeout value in seconds (i.e. the one specified in the driver constructor). Only works for local drivers</summary>
         public static double CommandTimeoutSeconds
         {
             get => BrowserDriverContainer.CommandTimeoutSeconds;
             set => BrowserDriverContainer.CommandTimeoutSeconds = value;
         }
 
-        [Documentation("Returns the current driver object")]
+        /// <returns>the current driver object</returns>
         public IWebDriver Driver { get; private set; }
 
-        [Documentation("Returns the id of the current driver")]
+        /// <returns>the id of the current driver</returns>
         public string DriverId { get; private set; }
 
-        [Documentation("Set the number of seconds for implicit wait (0 = disable)")]
+        /// <summary>Set the number of seconds for implicit wait (0 = disable)</summary>
         public static double ImplicitWaitSeconds { get; set; } = 0;
 
-        [Documentation("Domain where Integrated Authentication is to be used")]
+        /// <summary>Domain where Integrated Authentication is to be used</summary>
         public static string IntegratedAuthenticationDomain
         {
             get => FireFoxDriverCreator.IntegratedAuthenticationDomain;
             set => FireFoxDriverCreator.IntegratedAuthenticationDomain = value;
         }
 
+        [SuppressMessage("Style", "IDE0074:Use compound assignment", Justification = "Not avalable in C# 7.3")]
         private ProtectedMode ProtectedMode => _protectedMode ?? (_protectedMode = new ProtectedMode(new ZoneListFactory()));
 
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 
+        /// <summary>Get/set a Web Store. Sets all key-value pairs, but doesn't delete existing content. Clear any existing values beforehand</summary>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "API for FitNesse")]
-        [Documentation("Get/set a Web Store. Sets all key-value pairs, but doesn't delete existing content. Clear any existing values beforehand")]
         public Dictionary<string, string> WebStorage
         {
             get { return BrowserStorage.KeySet.ToDictionary(key => key, key => BrowserStorage[key]); }
@@ -85,7 +84,7 @@ namespace SeleniumFixture
             }
         }
 
-        [Documentation("Add a set of key/value pairs to a web store")]
+        /// <summary>Add a set of key/value pairs to a web store</summary>
         public void AddToWebStorage(Dictionary<string, string> dictionaryToAdd)
         {
             if (dictionaryToAdd == null) return;
@@ -97,10 +96,10 @@ namespace SeleniumFixture
 
         internal bool AreAllProtectedModes(bool mode) => ProtectedMode.AllAre(mode);
 
-        [Documentation("Clear a web store (local or session)")]
+        /// <summary>Clear a web store (local or session)</summary>
         public bool ClearWebStorage() => BrowserStorage.Clear();
 
-        [Documentation("Closes this browser session")]
+        /// <summary>Closes this browser session</summary>
         public bool Close()
         {
             if (Driver == null) return false;
@@ -110,22 +109,22 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation("Execute JavaScript asynchronously (in the browser)")]
+        /// <summary>Execute JavaScript asynchronously (in the browser)</summary>
         public object ExecuteAsyncScript(string script)
         {
             var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteAsyncScript(script);
         }
 
-        [Documentation("Execute JavaScript (in the browser)")]
+        /// <summary>Execute JavaScript (in the browser)</summary>
         public object ExecuteScript(string script)
         {
             var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteScript(script);
         }
 
-        [Documentation("Execute JavaScript using parameters. If a parameter has a locator format (with colon), " +
-                       "then it is substituted by the element. You can refer to them via arguments[0-i] in the script")]
+        /// <summary>Execute JavaScript using parameters. If a parameter has a locator format (with colon) then it is substituted by the element</summary>
+        /// <remarks>You can refer to them via arguments[0-i] in the script</remarks>
         public object ExecuteScriptWithParameters(string script, Collection<string> args)
         {
             var scriptExecutor = (IJavaScriptExecutor) Driver;
@@ -145,23 +144,24 @@ namespace SeleniumFixture
             return scriptExecutor.ExecuteScript(script, argsToUse.ToArray());
         }
 
+        /// <summary>Execute JavaScript using parameters. No substitution of elements is attempted</summary>
+        ///<remarks>You can refer to them via arguments[0-i] in the script</remarks>
         [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "FitSharp cannot parse IEnumerables")]
-        [Documentation(
-            "Execute JavaScript using parameters. No substitution of elements is attempted. " +
-            "You can refer to them via arguments[0-i] in the script")]
         public object ExecuteScriptWithPlainParameters(string script, Collection<object> args)
         {
             var scriptExecutor = (IJavaScriptExecutor) Driver;
             return scriptExecutor.ExecuteScript(script, args.ToArray());
         }
 
-        [Documentation("Get a value from a web store (local or session)")]
+        /// <summary>Get a value from a web store (local or session)</summary>
         public string GetFromWebStorage(string key) => BrowserStorage[BrowserStorage.FindFirstKeyLike(key)];
 
-        [Documentation("Find the first item matching a glob pattern (with *?)")]
+        /// <summary>Find the first item matching a glob pattern (with *?)</summary>
         public string GetKeyLikeFromWebStorage(string key) => BrowserStorage.FindFirstKeyLike(key);
 
-        [Documentation("Creates a new browser instance and makes it current. Returns an ID. " + BrowserChoices)]
+        /// <summary>Creates a new browser instance and makes it current. See also <seealso cref="SetBrowser"/></summary>
+        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
+        /// <returns>an ID</returns>
         public string NewBrowser(string browserName)
         {
             DriverId = BrowserDriverContainer.NewDriver(browserName);
@@ -170,12 +170,13 @@ namespace SeleniumFixture
             return DriverId;
         }
 
-        [Documentation("Specifies that the test will be run at a remote Selenium server. Just like SetRemoteBrowserAtAddress, " +
-                       "but returns the driver ID instead of a boolean." + BrowserChoices)]
+        /// <summary>See <see cref="SetRemoteBrowserAtAddress" /></summary>
+        /// <returns>the driver ID </returns>
         public string NewRemoteBrowserAtAddress(string browserName, string baseAddress) =>
             NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, object>());
 
-        [Documentation("Just like SetRemoteBrowserAtAddressWithCapabilities, but returns the driver ID instead of a boolean." + BrowserChoices)]
+        /// <summary>See <see cref="SetRemoteBrowserAtAddressWithCapabilities" /></summary>
+        /// <returns>the driver ID</returns>
         public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
             DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, capabilities);
@@ -184,14 +185,15 @@ namespace SeleniumFixture
             return DriverId;
         }
 
+        /// <summary>Debug function to see what the current protected mode settings are and what they come from</summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec")]
-        [Documentation("Debug function to see what the current protected mode settings are and what they come from")]
         internal Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
 
+        /// <summary>Check if Protected Mode for all security zones meet the condition, and throw a StopTestException if not. 
+        /// If you use Internet Explorer, it is important that all zones have the same protected mode setting</summary>
+        /// <param name="condition">ON, OFF or EQUAL</param>
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False Positive")]
-        [Documentation("Check if Protected Mode for all security zones meet the condition (ON/OFF/EQUAL), and throw a StopTestException if not. " +
-                       "If you use Internet Explorer, it is important that all zones have the same protected mode setting")]
         public bool ProtectedModesAre(string condition)
         {
             bool ok;
@@ -213,16 +215,18 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation("Remove an item from web storage (local or session) via its key")]
+        /// <summary>Remove an item from web storage (local or session) via its key</summary>
         public bool RemoveFromWebStorage(string key) => _browserStorage.RemoveItem(key);
 
-        [Documentation("Resets the timeout to the default value")]
+        /// <summary>Resets the timeout to the default value</summary>
         public void ResetTimeout() => TimeoutInSeconds = DefaultTimeoutInSeconds;
 
-        [Documentation("Sets the browser to be used. " + BrowserChoices)]
+        /// <summary>Sets the browser to be used</summary>
+        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
+        /// <returns>whether the operation succeeded</returns>
         public bool SetBrowser(string browserName) => !string.IsNullOrEmpty(NewBrowser(browserName));
 
-        [Documentation("Set the current browser driver using its ID (returned earlier by NewBrowser)")]
+        /// <summary>Set the current browser driver using its ID (returned earlier by NewBrowser)</summary>
         public bool SetDriver(string driverId)
         {
             if (!BrowserDriverContainer.SetCurrent(driverId)) return false;
@@ -233,40 +237,45 @@ namespace SeleniumFixture
             return true;
         }
 
-        [Documentation("Set a key/value pair in a web store")]
+        /// <summary>Set a key/value pair in a web store</summary>
         public void SetInWebStorageTo(string key, string value) => BrowserStorage[key] = value;
 
-        [Documentation("Sets the http and SSL proxy for the test. Type can be Direct, System, AutoDetect.")]
+        /// <summary>Sets the http and SSL proxy for the test</summary>
+        /// <param name="proxyType">Direct, System, or AutoDetect</param>
         public static bool SetProxyType(string proxyType) => BrowserDriverContainer.SetProxyType(proxyType);
 
-        [Documentation("Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile).")]
+        /// <summary>Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile)</summary>
+        /// <param name="proxyType">Manual or ProxyAutoConfigure</param>
+        /// <param name="proxyValue">hostname.com:8080 with Manual, or http://host/pacfile withProxyAutoConfigure</param>
         public static bool SetProxyTypeValue(string proxyType, string proxyValue) => BrowserDriverContainer.SetProxyValue(proxyType, proxyValue);
 
-        [Documentation("Use a remote Selenium server (address including port). " +
-                       "Raises a StopTestException if unable to connect. " + BrowserChoices)]
+        /// <summary>Use a remote Selenium server (address including port). Raises a StopTestException if unable to connect</summary>
+        /// <returns>true</returns>
         public bool SetRemoteBrowserAtAddress(string browserName, string baseAddress) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddress(browserName, baseAddress));
 
-        [Documentation("Use a remote Selenium server (address including port) with a dictionary of desired capabilities. " +
-                       "Raises a StopTestException if unable to connect. " + BrowserChoices)]
+        /// <summary>Use a remote Selenium server (address including port) with a dictionary of desired capabilities</summary>
+        /// <remarks>Raises a StopTestException if unable to connect</remarks>
+        /// <returns></returns>
         public bool SetRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
             Dictionary<string, object> capabilities) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, capabilities));
 
-        [Documentation("Set the default timeout for all wait commands (except page loads). Default value is 3 seconds")]
+        /// <summary>Set the default timeout for all wait commands (except page loads). Default value is 3 seconds</summary>
         public void SetTimeoutSeconds(double timeoutInSeconds) => TimeoutInSeconds = timeoutInSeconds;
 
-        [Documentation("Select either Local or Session storage (to work on other Web Storage functions)")]
+        /// <summary>Select either Local or Session storage (to work on other Web Storage functions)</summary>
         public void UseWebStorage(StorageType storageType) => _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
 
-        [Documentation("Returns the version info of the fixture. " +
-                       "SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name, version")]
+
+        /// <param name="qualifier">SHORT, EXTENDED or empty</param>
+        /// <returns>the version info of the fixture. SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name, version</returns>
         public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier + string.Empty);
 
-        [Documentation("Checks whether the current version (x.y.z) is at least a minimally required version")]
+        /// <summary>Checks whether the current version (x.y.z) is at least a minimally required version</summary>
         public static bool VersionIsAtLeast(string version) => ApplicationInfo.VersionIsAtLeast(version);
 
-        [Documentation("Wait a specified number of seconds (can be fractions). Note: this seems to impact iframe context, so use with care.")]
+        /// <summary>Wait a specified number of seconds (can be fractions). Note: this seems to impact iframe context, so use with care</summary>
         public static void WaitSeconds(double seconds)
         {
             if (seconds > 0) Thread.Sleep(TimeSpan.FromSeconds(seconds));

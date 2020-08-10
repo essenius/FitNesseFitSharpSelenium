@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -15,18 +15,18 @@ using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
 
+// If we disable XML documents in this file, it's because the documentation is in the Obsolete tags.
+#pragma warning disable 1591
+
 namespace SeleniumFixture
 {
-    /// <summary>
-    ///     Deprecated methods of the Selenium script table fixture for FitNesse
-    /// </summary>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Entry point for FitSharp")]
     public sealed partial class Selenium
     {
         private const string ApplicationNameObsoleteMessage =
             "use of Application Name is no longer supported since the W3C spec is enforced. Use New/Set Remote Browser At Address";
 
-        [Documentation("Check for using deprecated functions by throwing an exception if a deprecated function is used.")]
+        /// <summary>Check for using deprecated functions by throwing an exception if a deprecated function is used.</summary>
         public static bool ExceptionOnDeprecatedFunctions { get; set; }
 
         [Obsolete("Use WindowSize")]
