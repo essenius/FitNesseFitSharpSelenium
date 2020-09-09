@@ -40,8 +40,6 @@ namespace SeleniumFixture.Model
         {
             // this is still the case in the new Edge - it ignores proxy settings in Options
             if (Proxy.Kind != ProxyKind.System) throw new StopTestException(ErrorMessages.EdgeNeedsSystemProxy);
-
-            //var options = new EdgeOptions { PageLoadStrategy = PageLoadStrategy.Eager };
             var options = new EdgeOptions { UseChromium = _driverService.UsingChromium};
             return options;
         }

@@ -51,6 +51,7 @@
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <DocumentationFile>bin\Release\SeleniumFixture.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>

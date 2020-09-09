@@ -21,7 +21,6 @@ namespace SeleniumFixture.Model
         {
         }
 
-
         public override string Name { get; } = "EDGEHEADLESS";
 
         protected override EdgeOptions EdgeOptions()
