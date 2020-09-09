@@ -50,3 +50,7 @@
          Added VersionIsAtLeast to assert that the current fixture has at least a minimal version. Fixed a bug in zone determination
 2.5.2    Upgraded NuGet packages to latest versions (except Webdriver)
 2.5.3    Replaced [Documentation] by standard XML documentation
+2.6.0    Edge browser is now expected to be the Chromium version. Edge Headless is suppported as well. 
+         Legacy Edge no longer works (it never worked well anyway). Cleaned up all exceptions that were needed for the legacy Edge.
+         Fixed some issues in AppDriver tests (newer calculators work a bit differently). 
+         Made tests for drivers that are not installed result in inconclusive tests rather than failed ones.

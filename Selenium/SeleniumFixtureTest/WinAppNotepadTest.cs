@@ -16,6 +16,7 @@ using SeleniumFixture;
 
 namespace SeleniumFixtureTest
 {
+    /// <remarks>Uses WinAppDriver, see https://github.com/microsoft/WinAppDriver/releases </remarks>
     [TestClass]
     public class WinAppNotepadTest
     {

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -27,6 +27,7 @@ namespace SeleniumFixture.Model
                 new ChromeDriverCreator(proxy, timeout),
                 new HeadlessChromeDriverCreator(proxy, timeout),
                 new EdgeDriverCreator(proxy, timeout),
+                new HeadlessEdgeDriverCreator(proxy, timeout),
                 new FireFoxDriverCreator(proxy, timeout),
                 new HeadlessFirefoxDriverCreator(proxy, timeout),
                 new InternetExplorerDriverCreator(proxy, timeout),
@@ -69,6 +70,7 @@ namespace SeleniumFixture.Model
                 case @"GOOGLECHROMEHEADLESS":
                     return @"CHROMEHEADLESS";
                 case "MICROSOFTEDGE":
+                case "MSEDGE":
                     return "EDGE";
                 case @"FF":
                     return @"FIREFOX";

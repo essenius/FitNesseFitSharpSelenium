@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -40,72 +40,6 @@ namespace SeleniumFixtureTest
             {
                 Debug.Print("Caught StopTestException");
             }
-        }
-
-        [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
-             @"protectedmode", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
-        public void SeleniumProtectedModesAreTest()
-        {
-            // including deprecated functions here - don't want to duplicate the whole test. Hence also the #pragma warning disable 618
-            Selenium.ExceptionOnDeprecatedFunctions = false;
-
-            var testId = TestContext.DataRow["testId"].ToString();
-            bool[] zones =
-            {
-                TestContext.DataRow["zone1"].ToBool(),
-                TestContext.DataRow["zone2"].ToBool(),
-                TestContext.DataRow["zone3"].ToBool(),
-                TestContext.DataRow["zone4"].ToBool()
-            };
-            var protectedMode = new ProtectedMode(new ZoneListFactoryMock(zones));
-            var allOn = TestContext.DataRow["expectedAllOn"].ToBool();
-            var allSame = TestContext.DataRow["expectedAllSame"].ToBool();
-
-            var property = _selenium.GetType().GetField("_protectedMode", BindingFlags.NonPublic | BindingFlags.Instance);
-            Debug.Assert(property != null, nameof(property) + " != null");
-            property.SetValue(_selenium, protectedMode);
-
-            if (allSame)
-            {
-                Debug.Print("All same");
-                Assert.IsTrue(_selenium.ProtectedModesAre("Equal"), testId + " [AllSame - Are Equal]");
-#pragma warning disable 618
-                Assert.IsTrue(_selenium.ProtectedModesAreEqual(), testId + " [AllSame - AreEqual]");
-#pragma warning restore 618
-                if (allOn)
-                {
-                    Debug.Print("All on");
-                    Assert.IsTrue(_selenium.ProtectedModesAre("On"), testId + " [All On - Are On]");
-#pragma warning disable 618
-                    Assert.IsTrue(_selenium.ProtectedModeIsOn(), testId + " [All On - IsOn - Deprecated]");
-#pragma warning restore 618
-
-                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "All On - IsOff");
-                }
-                else
-                {
-                    Debug.Print("all off");
-                    Assert.IsTrue(_selenium.ProtectedModesAre("Off"), testId + " [All Off - IsOff]");
-#pragma warning disable 618
-                    Assert.IsTrue(_selenium.ProtectedModeIsOff(), testId + " [All Off - IsOff - Deprecated]");
-#pragma warning restore 618
-                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "All Off - IsOn");
-                }
-            }
-            else
-            {
-                Debug.Print("Not all same");
-                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Equal"), testId, "NotAllSame - AreEqual");
-                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "NotAllSame - IsOff");
-                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "NotAllSame - IsOn");
-            }
-
-            Selenium.ExceptionOnDeprecatedFunctions = true;
-
-            var modes = _selenium.ProtectedModePerZone();
-            Assert.AreEqual(4, modes.Count);
-            Assert.AreEqual(3, modes[0].Count);
-            // the rest is already tested in ProtectedModeTest
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -179,8 +113,8 @@ namespace SeleniumFixtureTest
         {
             var obj = new PrivateType(typeof(Selenium));
 
-            Assert.AreEqual(66, (int)obj.InvokeStatic("KeyCode", "Enter"));
-            Assert.AreEqual(4, (int)obj.InvokeStatic("KeyCode", "4"));
+            Assert.AreEqual(66, (int) obj.InvokeStatic("KeyCode", "Enter"));
+            Assert.AreEqual(4, (int) obj.InvokeStatic("KeyCode", "4"));
             Assert.IsNull(obj.InvokeStatic("KeyCode", "NonExistingKeyCode"));
         }
 
@@ -226,6 +160,72 @@ namespace SeleniumFixtureTest
 
         [TestMethod, TestCategory("Integration"), ExpectedException(typeof(StopTestException))]
         public void SeleniumNonInstalledSafariTest() => _selenium.SetBrowser("Safari");
+
+        [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
+             @"protectedmode", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
+        public void SeleniumProtectedModesAreTest()
+        {
+            // including deprecated functions here - don't want to duplicate the whole test. Hence also the #pragma warning disable 618
+            Selenium.ExceptionOnDeprecatedFunctions = false;
+
+            var testId = TestContext.DataRow["testId"].ToString();
+            bool[] zones =
+            {
+                TestContext.DataRow["zone1"].ToBool(),
+                TestContext.DataRow["zone2"].ToBool(),
+                TestContext.DataRow["zone3"].ToBool(),
+                TestContext.DataRow["zone4"].ToBool()
+            };
+            var protectedMode = new ProtectedMode(new ZoneListFactoryMock(zones));
+            var allOn = TestContext.DataRow["expectedAllOn"].ToBool();
+            var allSame = TestContext.DataRow["expectedAllSame"].ToBool();
+
+            var property = _selenium.GetType().GetField("_protectedMode", BindingFlags.NonPublic | BindingFlags.Instance);
+            Debug.Assert(property != null, nameof(property) + " != null");
+            property.SetValue(_selenium, protectedMode);
+
+            if (allSame)
+            {
+                Debug.Print("All same");
+                Assert.IsTrue(_selenium.ProtectedModesAre("Equal"), testId + " [AllSame - Are Equal]");
+#pragma warning disable 618
+                Assert.IsTrue(_selenium.ProtectedModesAreEqual(), testId + " [AllSame - AreEqual]");
+#pragma warning restore 618
+                if (allOn)
+                {
+                    Debug.Print("All on");
+                    Assert.IsTrue(_selenium.ProtectedModesAre("On"), testId + " [All On - Are On]");
+#pragma warning disable 618
+                    Assert.IsTrue(_selenium.ProtectedModeIsOn(), testId + " [All On - IsOn - Deprecated]");
+#pragma warning restore 618
+
+                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "All On - IsOff");
+                }
+                else
+                {
+                    Debug.Print("all off");
+                    Assert.IsTrue(_selenium.ProtectedModesAre("Off"), testId + " [All Off - IsOff]");
+#pragma warning disable 618
+                    Assert.IsTrue(_selenium.ProtectedModeIsOff(), testId + " [All Off - IsOff - Deprecated]");
+#pragma warning restore 618
+                    ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "All Off - IsOn");
+                }
+            }
+            else
+            {
+                Debug.Print("Not all same");
+                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Equal"), testId, "NotAllSame - AreEqual");
+                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "NotAllSame - IsOff");
+                ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "NotAllSame - IsOn");
+            }
+
+            Selenium.ExceptionOnDeprecatedFunctions = true;
+
+            var modes = _selenium.ProtectedModePerZone();
+            Assert.AreEqual(4, modes.Count);
+            Assert.AreEqual(3, modes[0].Count);
+            // the rest is already tested in ProtectedModeTest
+        }
 
         [TestMethod, TestCategory("Unit")]
         public void SeleniumSearchDelimiterTest()

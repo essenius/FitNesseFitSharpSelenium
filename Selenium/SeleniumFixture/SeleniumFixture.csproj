@@ -69,6 +69,9 @@
     <Reference Include="ImageHandler, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ImageHandler.2.0.1\lib\net461\ImageHandler.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Edge.SeleniumTools, Version=3.141.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Edge.SeleniumTools.3.141.2\lib\net45\Microsoft.Edge.SeleniumTools.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -107,6 +110,7 @@
     <Compile Include="Model\EdgeDriverCreator.cs" />
     <Compile Include="Model\FireFoxDriverCreator.cs" />
     <Compile Include="Model\HeadlessChromeDriverCreator.cs" />
+    <Compile Include="Model\HeadlessEdgeDriverCreator.cs" />
     <Compile Include="Model\HeadlessFirefoxDriverCreator.cs" />
     <Compile Include="Model\InternetExplorerDriverCreator.cs" />
     <Compile Include="Model\IosDriverCreator.cs" />

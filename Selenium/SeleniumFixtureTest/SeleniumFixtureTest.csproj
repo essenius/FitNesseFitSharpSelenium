@@ -40,7 +40,8 @@
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
     <CodeAnalysisRuleSet>SeleniumFixtureTest.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\SeleniumFixtureTest.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,6 +64,9 @@
       <HintPath>..\packages\ImageHandler.2.0.1\lib\net461\ImageHandler.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Edge.SeleniumTools, Version=3.141.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Edge.SeleniumTools.3.141.2\lib\net45\Microsoft.Edge.SeleniumTools.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>

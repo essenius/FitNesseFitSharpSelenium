@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,39 +10,39 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
+using Microsoft.Edge.SeleniumTools;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Edge;
 
 namespace SeleniumFixture.Model
 {
     internal class EdgeDriverCreator : BrowserDriverCreator
     {
+        // we need this one to stay alive while the driver is alive
+        private readonly EdgeDriverService _driverService;
+
         public EdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
+            var driverFolder = Environment.GetEnvironmentVariable("EdgeWebDriver");
+            _driverService = driverFolder == null 
+                ? EdgeDriverService.CreateChromiumService() 
+                : EdgeDriverService.CreateChromiumService(driverFolder);
         }
 
         public override string Name { get; } = "EDGE";
         public override IWebDriver LocalDriver()
         {
-            EdgeDriverService driverService = null;
-            IWebDriver driver;
-            try
-            {
-                driverService = GetDefaultService<EdgeDriverService>();
-                driver = new EdgeDriver(driverService, EdgeOptions(), Timeout);
-            }
-            catch
-            {
-                driverService?.Dispose();
-                throw;
-            }
-            return driver;
+
+            var options = EdgeOptions();
+            return new EdgeDriver(_driverService, options, Timeout);
         }
 
-        private EdgeOptions EdgeOptions()
+        protected virtual EdgeOptions EdgeOptions()
         {
+            // this is still the case in the new Edge - it ignores proxy settings in Options
             if (Proxy.Kind != ProxyKind.System) throw new StopTestException(ErrorMessages.EdgeNeedsSystemProxy);
-            var options = new EdgeOptions { PageLoadStrategy = PageLoadStrategy.Eager };
+
+            //var options = new EdgeOptions { PageLoadStrategy = PageLoadStrategy.Eager };
+            var options = new EdgeOptions { UseChromium = _driverService.UsingChromium};
             return options;
         }
 

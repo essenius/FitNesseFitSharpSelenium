@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -105,7 +105,6 @@ namespace SeleniumFixtureTest
 
             var edgeCapabilities = new EdgeDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
             Assert.AreEqual("MicrosoftEdge", edgeCapabilities.GetCapability(CapabilityType.BrowserName));
-            Assert.AreEqual("eager", edgeCapabilities.GetCapability(CapabilityType.PageLoadStrategy));
             var ffCapabilities = new FireFoxDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
             ValidateFirefoxCapabilities(ffCapabilities);
 

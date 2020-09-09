@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -19,11 +20,13 @@ using SeleniumFixture;
 
 namespace SeleniumFixtureTest
 {
+    /// <remarks>Uses WinAppDriver, see https://github.com/microsoft/WinAppDriver/releases </remarks>
     [TestClass]
     public class WinAppCalculatorTest
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "False positive")]
+        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "False positive")]
         private static TestContext _testContext;
+
         private static int _testsToDo;
         private static readonly Selenium Fixture = new Selenium();
 
@@ -51,14 +54,28 @@ namespace SeleniumFixtureTest
                 {"app", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"}
             };
             Selenium.DefaultSearchMethod = "name";
-            Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4723", caps));
+            try
+            {
+                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4723", caps));
+            }
+            catch (StopTestException)
+            {
+                Assert.Inconclusive("Can't start WinApp");
+            }
+        }
+
+        private static bool ResultOk(string expectedResult, string rawResult)
+        {
+            var result = new Regex(@".*\s([-+]?[0-9]*\.?[0-9]+)\s.*").Matches(rawResult);
+            if (result[0].Groups.Count <= 1) return false;
+            Debug.Print(result[0].Groups[1].Value);
+            return result[0].Groups[1].Value.Equals(expectedResult);
         }
 
         [TestInitialize]
         // Ensure we are on Standard mode
         public void TestInitialize()
         {
-
         }
 
         [TestMethod, TestCategory("Experiments")]
@@ -88,17 +105,12 @@ namespace SeleniumFixtureTest
             Fixture.ClickElement("Clear");
             AssertResult("0");
             Assert.IsTrue(Fixture.ClickElement("One"), "Click 1");
+            Assert.IsTrue(Fixture.ClickElement("Trigonometry"), "Click Trigonometry");
+            Assert.IsTrue(Fixture.WaitForElement("Sine"), "Wait for Sin");
+
             Assert.IsTrue(Fixture.ClickElement("Sine"), "Click Sin");
             AssertResult("0.8414709848078965066525023216303");
-            Assert.AreEqual($"Expression is sine radians (1)", Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
-        }
-
-        private static bool ResultOk(string expectedResult, string rawResult)
-        {
-            var result = new Regex(@"[\u202a-\u202c]+([-+]?[0-9]*\.?[0-9]+)[\u202a-\u202c]").Matches(rawResult);
-            if (result[0].Groups.Count <= 1) return false;
-            Debug.Print(result[0].Groups[1].Value);
-            return result[0].Groups[1].Value.Equals(expectedResult);
+            Assert.AreEqual("Expression is sine radians (1)", Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
         }
 
         [TestMethod, TestCategory("Experiments")]

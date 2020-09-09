@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -67,7 +67,7 @@ namespace SeleniumFixture.Utilities
 
         public static bool IsChrome(this IWebDriver driver) => driver.IsBrowser("chrome");
 
-        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("microsoftedge");
+        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("msedge");
 
         public static bool IsFirefox(this IWebDriver driver) => driver.IsBrowser("firefox");
 

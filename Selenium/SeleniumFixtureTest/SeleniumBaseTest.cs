@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2020 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -122,12 +122,8 @@ namespace SeleniumFixtureTest
 
         private void SeleniumAlertTest()
         {
-            // Strange issue with Edge: the first time to accept or dismiss works, but after that the only way to make it work
-            // is to wait half a second before accepting or dismissing.
-            // TODO: Still need to understand why that is and make a more structural fix.
             var ok = _selenium.WaitForTextIgnoringCase("data load completed");
             Assert.IsTrue(ok, "Wait for data load completed");
-            var waitTime = _selenium.Driver.IsEdge() ? 1.0 : 0;
             Assert.IsFalse(_selenium.AlertIsPresent());
             Assert.IsTrue(_selenium.ElementExists("id:alertButton"));
             _selenium.ClickElement("id:alertButton");
@@ -137,36 +133,30 @@ namespace SeleniumFixtureTest
 
             _selenium.ClickElement("id:alertButton");
             Assert.IsTrue(_selenium.AlertIsPresent());
-            Selenium.WaitSeconds(waitTime);
             Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert");
             Assert.IsFalse(_selenium.AlertIsPresent(), "Alert not present after accept");
             Assert.IsTrue(_selenium.ElementExists("id:alertButton"), "Alert button exists");
             _selenium.ClickElement("id:confirmButton");
             Assert.IsTrue(_selenium.AlertIsPresent(), "Confirm alert present");
-            Selenium.WaitSeconds(waitTime);
             Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert (2)");
             Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"), "Pressed OK");
 
             _selenium.ClickElement("id:confirmButton");
-            Selenium.WaitSeconds(waitTime);
             Assert.IsTrue(_selenium.DismissAlert(), "Dismiss alert");
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss succeeded");
 
             _selenium.ClickElement("id:promptButton");
             Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert present");
-            Selenium.WaitSeconds(waitTime);
             _selenium.AcceptAlert();
             Assert.AreEqual("You returned: sure", _selenium.TextInElement("status"), "Prompt alert accepted");
 
             _selenium.ClickElement("id:promptButton");
-            Selenium.WaitSeconds(waitTime);
             _selenium.DismissAlert();
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss prompt alert succeeded");
 
             _selenium.ClickElement("id:promptButton");
             Selenium.WaitSeconds(0.5);
             Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert is present (2)");
-            Selenium.WaitSeconds(waitTime);
             _selenium.RespondToAlert(@"naah");
             Assert.AreEqual(@"You returned: naah", _selenium.TextInElement("status"));
         }
@@ -208,20 +198,6 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.ElementHasAttribute("id:brokenImage", "Alt"), "Alt attribute exists");
         }
 
-        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumChromeHeadlessTests()
-        {
-            SetBrowser(false, "chrome headless");
-            SeleniumExtendedTests();
-        }
-
-        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumChromeTests()
-        {
-            SetBrowser(false, "chrome");
-            SeleniumExtendedTests();
-        }
-
         private void SeleniumClearTest()
         {
             var originalValue = _selenium.AttributeOfElement("value", "text1");
@@ -245,8 +221,6 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked 1");
             Assert.IsTrue(_selenium.ClickElement("checkbox"), "clicked checkbox 1");
             Assert.IsFalse(_selenium.ElementIsChecked("checkbox"), "checkbox is not checked");
-            // yet another instability in Edge
-            Selenium.WaitSeconds(_selenium.Driver.IsEdge() ? 0.5 : 0);
             Assert.IsTrue(_selenium.ClickElement("checkbox"), "clicked checkbox 2");
             Assert.IsTrue(_selenium.ElementIsChecked("checkbox"), "checkbox is checked 2");
         }
@@ -254,12 +228,6 @@ namespace SeleniumFixtureTest
         private void SeleniumClickElementWithModifierTest()
         {
             var driver = _selenium.Driver;
-            if (driver.IsEdge())
-            {
-                MarkSkipped(nameof(SeleniumClickElementWithModifierTest),
-                    "Bug in Edge. It looks like deselecting doesn't work");
-                return;
-            }
             if (driver.IsIe())
             {
                 MarkSkipped(nameof(SeleniumClickElementWithModifierTest),
@@ -339,28 +307,6 @@ namespace SeleniumFixtureTest
             }
         }
 
-        [TestMethod, TestCategory("Experiments"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumEdgeTests()
-        {
-            // WebDriver support for Edge is quite flaky. Lots of issues with e.g. alerts and radio buttons.
-            // So your mileage may vary. Issues I found so far:
-            // * Alerts require a wait of >= 0.5 seconds after first call
-            // * Radio buttons don't get their checked attributes set (unlike all other browsers)
-            // * Deselect item doesn't work well - seems to select instead.
-            // For now I've put Edge in the experiments category. More work is needed.
-            // But since Microsoft is unclear about the future of Edge, I'm not putting a lot of effort into it right now.
-            try
-            {
-                SetBrowser(false, "edge");
-            }
-            catch (StopTestException)
-            {
-                MarkSkipped(nameof(SeleniumEdgeTests), "Edge not installed on this machine");
-                return;
-            }
-            SeleniumExtendedTests();
-        }
-
         private void SeleniumElementIsClickableTest()
         {
             Assert.IsTrue(_selenium.ElementIsClickable("button"), "Button is clickable");
@@ -383,13 +329,13 @@ namespace SeleniumFixtureTest
 
         private void SeleniumExecuteAsyncJavaScriptTest()
         {
-            Assert.IsTrue((bool)_selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
+            Assert.IsTrue((bool) _selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
         }
 
         private void SeleniumExtendedTests()
         {
             Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
-            // Since recently, the request is intercepted and an attempt to sign on is done. So we need to wait until the real page shows up
+            // Some proxies intercept requests and e.g. attempt to sign on. So we need to wait until the real page shows up.
             _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
             _selenium.ResetTimeout();
             SeleniumAlertTest();
@@ -434,20 +380,6 @@ namespace SeleniumFixtureTest
             SeleniumWindowSwitchingTest();
         }
 
-        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumFirefoxHeadlessTests()
-        {
-            SetBrowser(false, "firefox headless");
-            SeleniumExtendedTests();
-        }
-
-        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumFirefoxTests()
-        {
-            SetBrowser(false, "firefox");
-            SeleniumExtendedTests();
-        }
-
         private void SeleniumFrameTest()
         {
             Assert.IsTrue(_selenium.SwitchToFrame("iframe1"), "Switch to iframe1");
@@ -459,21 +391,6 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.TextExistsIgnoringCase("Nested Frames"), "Check if text 'Nested Frames' exists.");
         }
 
-        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumInternetExplorerTests()
-        {
-            GetProtectedMode();
-            Assert.AreNotEqual(ProtectedModeEnum.Unknown, _activeProtectedMode);
-            if (_activeProtectedMode == ProtectedModeEnum.Mixed)
-            {
-                MarkSkipped(nameof(SeleniumInternetExplorerTests), "Protected Modes are not all equal");
-                return;
-            }
-            SetBrowser(false, "ie");
-            // File API only supported on IE10+, so set supportUpload to false when testing on IE9. Not sure that's still needed.
-            SeleniumExtendedTests();
-        }
-
         private void SeleniumLengthOfPageSourceTest()
         {
             Assert.IsTrue(_selenium.ReloadPage(), "Reload page");
@@ -483,6 +400,54 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitUntilPageSourceIsLargerThan(initialLength), "Wait until HTML became larger");
             Assert.IsTrue(_selenium.TextInElementMatches("divAsyncLoad", "0,1,1,2"), "Check if output contains 0,1,1,2");
         }
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalChromeHeadlessTests() => SeleniumLocalTest("chrome headless");
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalChromeTests() => SeleniumLocalTest("chrome");
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalEdgeHeadlessTests() => SeleniumLocalTest("edge headless");
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalEdgeTests() => SeleniumLocalTest("edge");
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalFirefoxHeadlessTests() => SeleniumLocalTest("firefox headless");
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalFirefoxTests() => SeleniumLocalTest("firefox");
+
+        [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumLocalInternetExplorerTests()
+        {
+            GetProtectedMode();
+            Assert.AreNotEqual(ProtectedModeEnum.Unknown, _activeProtectedMode);
+            if (_activeProtectedMode == ProtectedModeEnum.Mixed)
+            {
+                MarkSkipped(nameof(SeleniumLocalInternetExplorerTests), "Protected Modes are not all equal");
+                return;
+            }
+            SeleniumLocalTest("ie");
+        }
+
+        private void SeleniumBrowserTest(bool isRemote, string browser)
+        {
+            try
+            {
+                SetBrowser(isRemote, browser);
+            }
+            catch (StopTestException)
+            {
+                MarkSkipped(nameof(SeleniumLocalEdgeTests), $"{browser} not available for {(isRemote ? "remote" : "local")}");
+                Assert.Inconclusive();
+                return;
+            }
+            SeleniumExtendedTests();
+        }
+
+        private void SeleniumLocalTest(string browser) => SeleniumBrowserTest(false, browser);
 
         private void SeleniumMoveToElementTest()
         {
@@ -497,6 +462,15 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(statusOk, "Status is 'Hovering' or 'OK'");
             Assert.IsTrue(_selenium.ScrollToElement("ignored", @"paragraphLightbulb"), "Scroll to paragraph (uses Move under the hood");
             Assert.IsTrue(_selenium.WaitUntilTextInElementMatches("status", ""), "Wait until text in status is empty");
+        }
+
+        [TestMethod, TestCategory("Experiments")]
+        public void SeleniumNewEdgeExperiment()
+        {
+            _selenium.SetTimeoutSeconds(20);
+            SetBrowser(false, "edge");
+            Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
+            SeleniumRightClickElementTest();
         }
 
         private void SeleniumNonExistingElementsTest()
@@ -523,58 +497,44 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod, TestCategory("RemoteBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumRemoteChromeHeadlessTests()
-        {
-            SetBrowser(true, "chrome headless");
-            SeleniumExtendedTests();
-        }
+        public void SeleniumRemoteChromeHeadlessTests() => SeleniuRemoteTest("chrome headless");
 
         [TestMethod, TestCategory("RemoteBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumRemoteChromeTests()
-        {
-            SetBrowser(true, "chrome");
-            SeleniumExtendedTests();
-        }
+        public void SeleniumRemoteChromeTests() => SeleniuRemoteTest("chrome");
+
+        // Remote Edge doesn't work yet. Perhaps in Selenium 4?
+        [TestMethod, TestCategory("RemoteBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
+        public void SeleniumRemoteEdgeTests() => SeleniuRemoteTest("edge");
 
         [TestMethod, TestCategory("RemoteBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumRemoteFirefoxTests()
-        {
-            SetBrowser(true, "firefox");
-            SeleniumExtendedTests();
-        }
+        public void SeleniumRemoteFirefoxTests() => SeleniuRemoteTest("firefox");
 
         [TestMethod, TestCategory("RemoteBrowser")]
         public void SeleniumRemoteInternetExplorerTests()
         {
             GetProtectedMode();
             Assert.AreNotEqual(ProtectedModeEnum.Unknown, _activeProtectedMode);
-            SetBrowser(true, "ie");
-            // IE9 does not support the File API
-            SeleniumExtendedTests();
+            SeleniuRemoteTest("ie");
         }
+
+        private void SeleniuRemoteTest(string browser) => SeleniumBrowserTest(true, browser);
 
         [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local", Justification =
             "Precondition check is the whole point")]
         private void SeleniumRightClickElementTest()
         {
-            // The Chrome and Firefox drivers doesn't handle key presses in the context menu well, so there we need to rely on
+            // The Chrome, Firefox and Edge drivers doesn't handle key presses in the context menu well, so there we need to rely on
             // NativeSendKeys (which won't work for remote Selenium)
 
             var browser = _selenium.Driver;
-            if (browser.IsEdge())
+            if ((browser.IsChrome() || browser.IsEdge() || browser.IsFirefox()) && (_runningHeadless || _runningRemote))
             {
-                MarkSkipped(nameof(SeleniumRightClickElementTest), "Edge doesn't do right-click right");
-                return;
-            }
-            if ((browser.IsChrome() || browser.IsFirefox()) && (_runningHeadless || _runningRemote))
-            {
-                MarkSkipped(nameof(SeleniumRightClickElementTest), "Cannot use native keys with remote/headless Chrome/Firefox");
+                MarkSkipped(nameof(SeleniumRightClickElementTest), "Cannot use native keys with remote/headless Chrome/Edge/Firefox");
                 return;
             }
 
             const string textboxLocator = "id:text1";
 
-            // The Firefox context menu no longer has 2 entries with shortcut a, so also doesn't expect an extra enter anymore 
             Assert.IsTrue(_selenium.MoveToElement(textboxLocator), "Move to textbox");
 
             var originalValue = _selenium.AttributeOfElement("value", textboxLocator);
@@ -583,10 +543,11 @@ namespace SeleniumFixtureTest
             Selenium.WaitSeconds(0.5); // allow dropdown to expand
 
             // Keystrokes are the same for native and Selenium
-            const string selectAllInContextMenuSequence = "{DOWN}a";
+            // Edge has two entries in the context menu that respond to an a, and we need the second
+            var selectAllInContextMenuSequence = browser.IsEdge() ? "{DOWN}aa{ENTER}" : "{DOWN}a";
 
             var driver = _selenium.Driver;
-            if (driver.IsChrome() || driver.IsFirefox())
+            if (driver.IsChrome() || driver.IsEdge() || driver.IsFirefox())
             {
                 Selenium.NativeSendKeys(selectAllInContextMenuSequence);
                 Debug.Print("NativeSendKeys");
@@ -667,14 +628,6 @@ namespace SeleniumFixtureTest
 
         private void SeleniumSelectMultiElementTest()
         {
-            // Does not work right for Edge, see https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/20638074/
-            if (_selenium.Driver.IsEdge())
-            {
-                MarkSkipped(nameof(SeleniumSelectMultiElementTest), "Edge driver does not handle multi-select right");
-                return;
-            }
-
-
             // taking default methods for options, which should use text (via id)
             _selenium.SelectOptionInElement("item 1", "id:multi-select");
             _selenium.SelectOptionInElement("item 3", "id:multi-select");
@@ -761,7 +714,7 @@ namespace SeleniumFixtureTest
         private void SeleniumSetElementCheckedTest()
         {
             Assert.IsTrue(_selenium.SetElementChecked("am"), "check am 1");
-            // The original method of ElementHasAttribute("am", "checked") works with all browsers except Edge
+            Assert.IsTrue(_selenium.ElementHasAttribute("am", "checked"));
             Assert.IsTrue(_selenium.ElementIsChecked("am"), "am is checked");
             Assert.IsFalse(_selenium.ElementIsChecked("fm"), "fm is not checked");
             Assert.IsTrue(_selenium.SetElementChecked("am", true), "check am 2");
@@ -793,11 +746,11 @@ namespace SeleniumFixtureTest
             // This test is dependent on the date settings of the machine it runs on
             VerifySendKeysToElementWithFallback("{RIGHT 100}{TAB}", "skill", "range", "100");
             VerifySendKeysToElementWithFallback("{LEFT 25}{TAB}", "skill", "range", "75");
-            VerifySendKeysToElementWithFallback("3{TAB}2004{TAB}", "month", "month", "2004-03");
+            VerifySendKeysToElementWithFallback("3{RIGHT}2004{TAB}", "month", "month", "2004-03");
             VerifySendKeysToElementWithFallback("472014", "week", "week", "2014-W47");
             VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
             VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
-            VerifySendKeysToElementWithFallback("2409{TAB}2014{TAB}0123", "datetime-local", "datetime-local", "2014-09-24T01:23");
+            VerifySendKeysToElementWithFallback("2409{RIGHT}2014{RIGHT}0123", "datetime-local", "datetime-local", "2014-09-24T01:23");
 
             // The color picker is a pain since it opens a system dialog which Selenium can't get to
             // So we cheat here and directly set the value
@@ -809,7 +762,9 @@ namespace SeleniumFixtureTest
         [TestMethod, TestCategory("Experiments")]
         public void SeleniumShowChromeRightClickError()
         {
-            // This test fails, as Chrome cannot interact with context menus. Workaround is using native sendkeys (but note that doesn't work remotely)
+            // Chrome cannot interact with context menus. Workaround is using native sendkeys (but note that doesn't work remotely)
+            // This test tries to select all in the context meny and then press delete. It just presses delete instead, so the
+            // field doesn't get empty. If this test would fail, right click would work
             SetBrowser(false, "chrome");
             _selenium.SetTimeoutSeconds(20);
             const string textboxLocator = "id:text1";
@@ -820,22 +775,7 @@ namespace SeleniumFixtureTest
             const string selectAllInContextMenuSequence = "{DOWN}a";
             _selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
             _selenium.SendKeysToElement("{DELETE}", textboxLocator);
-            Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
-        }
-
-        [TestMethod, TestCategory("Experiments")]
-        public void SeleniumShowEdgeRightClickError()
-        {
-            _selenium.SetTimeoutSeconds(20);
-            SetBrowser(false, "edge");
-            const string textboxLocator = "id:text1";
-            Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
-            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Selenium Fixture Test Page"));
-            Assert.IsTrue(_selenium.RightClickElement(textboxLocator), "Show context menu");
-            Selenium.WaitSeconds(0.2);
-            Assert.IsTrue(_selenium.SendKeysToElement("{DOWN}~", textboxLocator));
-            _selenium.SendKeysToElement("{DELETE}", textboxLocator);
-            Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
+            Assert.IsFalse(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
         }
 
         private void SeleniumStorageTestFor(string browser)
