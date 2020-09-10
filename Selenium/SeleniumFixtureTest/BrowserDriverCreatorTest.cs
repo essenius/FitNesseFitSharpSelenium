@@ -27,8 +27,7 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class BrowserDriverCreatorTest
     {
-        [TestMethod]
-        [TestCategory("Unit")]
+        [TestMethod, TestCategory("Unit")]
         public void BrowserDriverCreatorGetDefaultServiceFirefoxTest()
         {
             using (var service1 = BrowserDriverCreator.GetDefaultService<FirefoxDriverService>())
@@ -38,8 +37,7 @@ namespace SeleniumFixtureTest
             }
         }
 
-        [TestMethod]
-        [TestCategory("Unit")]
+        [TestMethod, TestCategory("Unit")]
         public void BrowserDriverCreatorGetDefaultServiceTest()
         {
             using (var service1 = BrowserDriverCreator.GetDefaultService<InternetExplorerDriverService>())
@@ -57,6 +55,46 @@ namespace SeleniumFixtureTest
                 Assert.IsNotNull(ex.InnerException, "ex.InnerException != null");
                 Assert.IsTrue(ex.InnerException.Message.StartsWith(@"The file c:\chromedriver.exe does not exist"));
             }
+        }
+
+
+        [TestMethod, TestCategory("Unit")]
+        public void BrowserDriverCreatorRemoteOptionsTest()
+        {
+            var proxy = new Proxy {Kind = ProxyKind.System};
+            var timeout = TimeSpan.FromSeconds(60);
+            var noAdditionalOptions = new Dictionary<string, object>();
+            var cc = new ChromeDriverCreator(proxy, TimeSpan.Zero);
+            var ro = cc.RemoteOptions(noAdditionalOptions);
+            var chromeCapabilities = ro.ToCapabilities();
+            ValidateChromeCapabilities(chromeCapabilities, false);
+            Assert.IsFalse(chromeCapabilities.HasCapability(CapabilityType.IsJavaScriptEnabled),
+                "javascriptEnabled capability does not exist");
+
+            var headlessCapabilities = new HeadlessChromeDriverCreator(proxy, TimeSpan.Zero).RemoteOptions(noAdditionalOptions).ToCapabilities();
+            ValidateChromeCapabilities(headlessCapabilities, true);
+
+            var edgeCapabilities = new EdgeDriverCreator(proxy, timeout).RemoteOptions(noAdditionalOptions).ToCapabilities();
+            Assert.AreEqual("MicrosoftEdge", edgeCapabilities.GetCapability(CapabilityType.BrowserName));
+            var ffCapabilities = new FireFoxDriverCreator(proxy, timeout).RemoteOptions(noAdditionalOptions).ToCapabilities();
+            ValidateFirefoxCapabilities(ffCapabilities);
+
+            var ieCapabilities = new InternetExplorerDriverCreator(proxy, timeout).RemoteOptions(noAdditionalOptions).ToCapabilities();
+            Assert.AreEqual("internet explorer", ieCapabilities.GetCapability(CapabilityType.BrowserName));
+            Assert.AreEqual("windows", ieCapabilities.GetCapability(CapabilityType.PlatformName));
+
+            var operaCapabilities = new OperaDriverCreator(proxy, timeout).RemoteOptions(noAdditionalOptions).ToCapabilities();
+            Assert.AreEqual("opera", operaCapabilities.GetCapability(CapabilityType.BrowserName));
+
+            var safariCapabilities = new SafariDriverCreator(timeout).RemoteOptions(noAdditionalOptions).ToCapabilities();
+            Assert.AreEqual("safari", safariCapabilities.GetCapability(CapabilityType.BrowserName));
+
+            var noCapabilities = new NoBrowserDriverCreator().RemoteOptions(noAdditionalOptions);
+            Assert.IsNull(noCapabilities);
+
+            var additionalCapabilities = new Dictionary<string, object> {{"javascriptEnabled", false}};
+            var chromeCapabilities2 = new ChromeDriverCreator(proxy, timeout).RemoteOptions(additionalCapabilities).ToCapabilities();
+            Assert.IsFalse(chromeCapabilities2.GetCapability("javascriptEnabled").ToBool(), "Additional capabilities found");
         }
 
         private static object GetArgList(ICapabilities cap, string keyName)
@@ -88,7 +126,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(argList.ContainsKey(@"network.negotiate-auth.trusted-uris"), "ff integrated authentication enabled");
         }
 
-        [TestMethod]
+        /*[TestMethod]
         [TestCategory("Unit")]
         public void BrowserDriverCreatorGetDesiredCapabilitiesTest()
         {
@@ -124,6 +162,6 @@ namespace SeleniumFixtureTest
             var additionalCapabilities = new Dictionary<string, object> {{"javascriptEnabled", false}};
             var chromeCapabilities2 = new ChromeDriverCreator(proxy, timeout).DesiredCapabilities(additionalCapabilities);
             Assert.IsFalse(chromeCapabilities2.GetCapability("javascriptEnabled").ToBool(), "Additional capabilities found");
-        }
+        } */
     }
 }

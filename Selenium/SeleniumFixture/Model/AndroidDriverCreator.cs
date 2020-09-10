@@ -27,6 +27,8 @@ namespace SeleniumFixture.Model
 
         public override IWebDriver LocalDriver() => null;
 
+        // This command fails when using Appium with WebDriver 4.
+        // Under the hood it uses DesiredCapabilities which is not allowed in WebDriver 4.
         public override DriverOptions Options() => new AppiumOptions {PlatformName = "Android", Proxy = Proxy};
 
         public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)

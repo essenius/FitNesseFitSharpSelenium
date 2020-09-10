@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -32,15 +31,17 @@ namespace SeleniumFixture.Model
 
         private AppiumOptions WinAppOptions()
         {
-            var options = new AppiumOptions {PlatformName = "Windows", Proxy = Proxy};
+            var options = new AppiumOptions();
+            options.PlatformName = "Windows";
+            options.Proxy = Proxy;
             return options;
         }
 
         public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
             var uri = BaseUri(baseAddress);
-            var options = WinAppOptions();
-            options.AddAdditionalCapabilities(capabilities);
+            var options = RemoteOptions(capabilities) as AppiumOptions;
+            //options.AddAdditionalCapabilities(capabilities);
             return new WindowsDriver<WindowsElement>(uri, options, Timeout);
         }
 

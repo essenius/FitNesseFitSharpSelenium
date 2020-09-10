@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -56,11 +55,11 @@ namespace SeleniumFixture.Model
             return (T) methodInfo.Invoke(serviceType, parameterList.ToArray());
         }
 
-        // We cannot stop using the deprecated DesiredCapabilities at this point (hence the pragma disable 618) because
+
+        // We cannot stop using the deprecated DesiredCapabilities at this point because
         // we want the flexibility to specify non-predefined capabilities to enable external services as BrowserStack.
         // Using the AddAdditionalCapabilities adds to the options rather than a separate capability.
-#pragma warning disable 618
-        private DesiredCapabilities DesiredCapabilities()
+        /*private DesiredCapabilities DesiredCapabilities()
         {
             var options = Options();
             // We need to get a bit clever here. Different browsers return different underlying types, and ICapabilities has no way to iterate
@@ -75,8 +74,7 @@ namespace SeleniumFixture.Model
                 desiredCapabilities.SetCapability(entry, cap[entry]);
             }
             return desiredCapabilities;
-#pragma warning restore 618
-        }
+        } 
 
         internal ICapabilities DesiredCapabilities(Dictionary<string, object> capabilities)
         {
@@ -89,13 +87,13 @@ namespace SeleniumFixture.Model
 #pragma warning restore 618
             }
             return desiredCapabilities;
-        }
+        } */
 
         public virtual IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
             var uri = BaseUri(baseAddress);
-            var desiredCapabilities = DesiredCapabilities(capabilities);
-            var result = new RemoteWebDriver(uri, desiredCapabilities, Timeout);
+            //var desiredCapabilities = DesiredCapabilities(capabilities);
+            var result = new RemoteWebDriver(uri, RemoteOptions(capabilities).ToCapabilities(), Timeout);
             return result;
         }
 
@@ -105,7 +103,10 @@ namespace SeleniumFixture.Model
         internal DriverOptions RemoteOptions(Dictionary<string, object> capabilities)
         {
             var options = Options();
-            options.AddAdditionalCapabilities(capabilities);
+            foreach (var entry in capabilities.Keys)
+            {
+                options.AddAdditionalOption(entry, capabilities[entry]);
+            }
             return options;
         }
 
