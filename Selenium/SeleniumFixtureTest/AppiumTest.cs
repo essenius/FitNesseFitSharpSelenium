@@ -88,6 +88,9 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.ScrollToElement("left", galleryIcon), "Scroll left to the page with Gallery on it");
             Assert.IsTrue(Fixture.ElementExists(galleryIcon), "Check the Gallery icon is there");
             Assert.IsTrue(Fixture.DragElementAndDropAt(galleryIcon, new Coordinate(400, 400)), "Drag and drop the gallery icon on the home page");
+            // the drag/drop makes the element temporarily disappear, so wait for it to be back
+            Assert.IsTrue(Fixture.WaitForElement(galleryIcon), "Wait for the Gallery icon");
+            // Tricky: the target only appears after the 'drag' starts.
             const string deleteArea = "id:com.android.launcher:id/delete_target_text";
             Assert.IsTrue(Fixture.DragElementAndDropOnElement(galleryIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
             Assert.IsFalse(Fixture.ElementExists(galleryIcon));

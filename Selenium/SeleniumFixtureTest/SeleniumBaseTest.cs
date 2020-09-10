@@ -411,7 +411,7 @@ namespace SeleniumFixtureTest
         public void SeleniumLocalEdgeHeadlessTests() => SeleniumLocalTest("edge headless");
 
         [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
-        public void SeleniumLocalEdgeTests() => SeleniumLocalTest("edge");
+        public void SeleniumLocalEdgeTests() => SeleniumLocalTest("msedge");
 
         [TestMethod, TestCategory("LocalBrowser"), DeploymentItem(@"test\SeleniumFixtureTest\uploadTestFile.txt")]
         public void SeleniumLocalFirefoxHeadlessTests() => SeleniumLocalTest("firefox headless");
@@ -462,15 +462,6 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(statusOk, "Status is 'Hovering' or 'OK'");
             Assert.IsTrue(_selenium.ScrollToElement("ignored", @"paragraphLightbulb"), "Scroll to paragraph (uses Move under the hood");
             Assert.IsTrue(_selenium.WaitUntilTextInElementMatches("status", ""), "Wait until text in status is empty");
-        }
-
-        [TestMethod, TestCategory("Experiments")]
-        public void SeleniumNewEdgeExperiment()
-        {
-            _selenium.SetTimeoutSeconds(20);
-            SetBrowser(false, "edge");
-            Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
-            SeleniumRightClickElementTest();
         }
 
         private void SeleniumNonExistingElementsTest()

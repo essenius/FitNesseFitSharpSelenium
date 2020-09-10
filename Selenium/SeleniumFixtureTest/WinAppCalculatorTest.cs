@@ -20,7 +20,8 @@ using SeleniumFixture;
 
 namespace SeleniumFixtureTest
 {
-    /// <remarks>Uses WinAppDriver, see https://github.com/microsoft/WinAppDriver/releases </remarks>
+    /// <remarks>Uses WinAppDriver, see https://github.com/microsoft/WinAppDriver/releases.
+    /// Start WinAppDriver with parameter 4727 as Appium uses the default port 4723 </remarks>
     [TestClass]
     public class WinAppCalculatorTest
     {
@@ -56,7 +57,7 @@ namespace SeleniumFixtureTest
             Selenium.DefaultSearchMethod = "name";
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4723", caps));
+                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
             }
             catch (StopTestException)
             {

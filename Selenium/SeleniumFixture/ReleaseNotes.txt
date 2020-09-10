@@ -54,3 +54,4 @@
          Legacy Edge no longer works (it never worked well anyway). Cleaned up all exceptions that were needed for the legacy Edge.
          Fixed some issues in AppDriver tests (newer calculators work a bit differently). 
          Made tests for drivers that are not installed result in inconclusive tests rather than failed ones.
+2.6.1    Handled changed exception behavior for scrollIntoView and enhanced test coverage a bit

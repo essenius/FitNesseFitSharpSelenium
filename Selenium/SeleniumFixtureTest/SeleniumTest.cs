@@ -42,6 +42,21 @@ namespace SeleniumFixtureTest
             }
         }
 
+        [TestMethod, TestCategory("Integration"), 
+         ExpectedExceptionWithMessage(typeof(StopTestException), "Edge browser can only work with system proxy")]
+        public void SeleniumEdgeCantHandleCustomProxyTest()
+        {
+            try
+            {
+                Selenium.SetProxyTypeValue("Manual", "localhost:8888");
+                _selenium.SetBrowser("microsoft edge");
+            }
+            finally
+            {
+                Selenium.SetProxyType("System");
+            }
+        }
+
         [TestMethod, TestCategory("Integration")]
         public void SeleniumCommandTimeoutSecondsTest()
         {
