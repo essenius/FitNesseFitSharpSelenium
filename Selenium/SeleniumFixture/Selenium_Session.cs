@@ -57,8 +57,8 @@ namespace SeleniumFixture
         /// <returns>the id of the current driver</returns>
         public string DriverId { get; private set; }
 
-        /// <summary>Set the number of seconds for implicit wait (0 = disable)</summary>
-        public static double ImplicitWaitSeconds { get; set; } = 0;
+        /// <summary>Set the number of seconds for implicit wait (default 0 = disable)</summary>
+        public static double ImplicitWaitSeconds { get; set; }
 
         /// <summary>Domain where Integrated Authentication is to be used</summary>
         public static string IntegratedAuthenticationDomain

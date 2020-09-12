@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
 
@@ -21,6 +22,7 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class WinAppNotepadTest
     {
+        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Dalse positive")]
         private static TestContext _testContext;
         private static readonly Selenium Fixture = new Selenium();
 
