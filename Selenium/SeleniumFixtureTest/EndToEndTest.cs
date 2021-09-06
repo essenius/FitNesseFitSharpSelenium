@@ -709,7 +709,6 @@ namespace SeleniumFixtureTest
             var height = _selenium.WindowHeight;
             Selenium.ExceptionOnDeprecatedFunctions = true;
 #pragma warning restore 618
-            Debug.Print("Minimal size is " + _selenium.WindowSize);
             Assert.AreEqual(width, _selenium.WindowSize.X, "deprecated width matches Size.X");
             Assert.AreEqual(height, _selenium.WindowSize.Y, "deprecated height matches Size.Y");
             _selenium.WindowSize = originalSize;

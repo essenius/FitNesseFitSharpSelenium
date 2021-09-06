@@ -66,6 +66,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement("accessibilityId:equals"), "Press =");
             Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:56"), "Wait for answer (also checks value)");
             Assert.AreEqual("56", Fixture.TextInElement(resultBox), "Check the calculation result");
+            var screenshot = Selenium.Screenshot();
+            Assert.IsTrue(screenshot.StartsWith("<img alt=\"Screenshot\" src=\"data: image / png; base64,iVBORw0KGgoAAAANSUhEUgAAAtIAAAUCCAY"), "Screenshot starts OK");
             Debug.Print(Selenium.Screenshot());
 
             // Now we test the LongPressKeyCode with Home. Something strange happening here. It does something else from Appium than on the device emulator itself:
@@ -152,7 +154,6 @@ namespace SeleniumFixtureTest
             _testsToDo = typeof(AppiumTest)
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
-            Debug.Print($"Running {_testsToDo} tests for Appium");
             var caps = new Dictionary<string, object>
             {
                 { MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4" },
@@ -192,7 +193,6 @@ namespace SeleniumFixtureTest
             _testsToDo--;
             if (_testsToDo == 0)
             {
-                Debug.Print("Closing session");
                 Fixture.Close();
             }
             else

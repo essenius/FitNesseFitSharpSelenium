@@ -63,14 +63,12 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(140, Fixture.WindowSize.Y, "Height OK");
             Fixture.MaximizeWindow();
             Assert.AreNotEqual(desiredSize, Fixture.WindowSize, "Size differs");
-            Debug.Print(Fixture.WindowSize.ToString());
             Fixture.WindowSize = desiredSize;
             Assert.AreEqual(desiredSize, Fixture.WindowSize, "Size OK");
             var desiredLocation = new Coordinate(200, 250);
             Fixture.WindowPosition = desiredLocation;
             Assert.AreEqual(desiredLocation, Fixture.WindowPosition, "Position OK");
             var snapshot = Selenium.Screenshot();
-            Debug.Print(snapshot);
             const string expectedPart =
                 "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAACMCAIAAADdvmjPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAB";
             Assert.IsTrue(snapshot.StartsWith(expectedPart), "Snapshot starts OK");

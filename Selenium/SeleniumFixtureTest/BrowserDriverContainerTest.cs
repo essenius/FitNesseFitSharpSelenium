@@ -88,8 +88,6 @@ namespace SeleniumFixtureTest
             var proxy = proxyField.GetValue(null) as Proxy;
             Assert.IsNotNull(proxy);
             Assert.AreEqual(proxyKind, (int)proxy.Kind);
-            Debug.Print(
-                $"Proxy kind: {proxy.SerializableProxyKind}; PAC: {proxy.ProxyAutoConfigUrl}; HTTP Proxy: {proxy.HttpProxy}; Autodetect: {proxy.IsAutoDetect}");
         }
 
         [TestCleanup]

@@ -38,7 +38,6 @@ namespace SeleniumFixtureTest
             }
             catch (StopTestException)
             {
-                Debug.Print("Caught StopTestException");
             }
         }
 
@@ -190,7 +189,6 @@ namespace SeleniumFixtureTest
         {
             _selenium.SetTimeoutSeconds(30);
             var proxy = AppConfig.Get("Proxy");
-            Debug.Print("Proxy:" + proxy);
             Assert.IsTrue(Selenium.SetProxyTypeValue("Manual", proxy));
             Assert.IsTrue(Selenium.SetProxyType("System"));
             Assert.IsTrue(_selenium.SetBrowser("Firefox"));
@@ -256,14 +254,12 @@ namespace SeleniumFixtureTest
 
             if (expectedAllSame)
             {
-                Debug.Print("All same");
                 Assert.IsTrue(_selenium.ProtectedModesAre("Equal"), testId + " [AllSame - Are Equal]");
 #pragma warning disable 618
                 Assert.IsTrue(_selenium.ProtectedModesAreEqual(), testId + " [AllSame - AreEqual]");
 #pragma warning restore 618
                 if (expectedAllOn)
                 {
-                    Debug.Print("All on");
                     Assert.IsTrue(_selenium.ProtectedModesAre("On"), testId + " [All On - Are On]");
 #pragma warning disable 618
                     Assert.IsTrue(_selenium.ProtectedModeIsOn(), testId + " [All On - IsOn - Deprecated]");
@@ -273,7 +269,6 @@ namespace SeleniumFixtureTest
                 }
                 else
                 {
-                    Debug.Print("all off");
                     Assert.IsTrue(_selenium.ProtectedModesAre("Off"), testId + " [All Off - IsOff]");
 #pragma warning disable 618
                     Assert.IsTrue(_selenium.ProtectedModeIsOff(), testId + " [All Off - IsOff - Deprecated]");
@@ -283,7 +278,6 @@ namespace SeleniumFixtureTest
             }
             else
             {
-                Debug.Print("Not all same");
                 ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Equal"), testId, "NotAllSame - AreEqual");
                 ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("Off"), testId, "NotAllSame - IsOff");
                 ExpectStopTestExceptionFor(() => _selenium.ProtectedModesAre("On"), testId, "NotAllSame - IsOn");

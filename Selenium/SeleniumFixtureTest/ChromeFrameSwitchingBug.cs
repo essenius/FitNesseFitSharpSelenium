@@ -53,7 +53,6 @@ namespace SeleniumFixtureTest
             Debug.Print("___________________________________________________");
             Debug.Print(_browserDriver.PageSource);
             Debug.Print("___________________________________________________");
-            //Thread.Sleep(TimeSpan.FromSeconds(2));
             Assert.IsNotNull(_browserDriver.FindElement(By.LinkText(deprecatedText)));
         }
 

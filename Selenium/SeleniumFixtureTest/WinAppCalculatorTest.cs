@@ -60,7 +60,6 @@ namespace SeleniumFixtureTest
         {
             var result = new Regex(@".*\s([-+]?[0-9]*\.?[0-9]+)\s.*").Matches(rawResult);
             if (result[0].Groups.Count <= 1) return false;
-            Debug.Print(result[0].Groups[1].Value);
             return result[0].Groups[1].Value.Equals(expectedResult);
         }
 
