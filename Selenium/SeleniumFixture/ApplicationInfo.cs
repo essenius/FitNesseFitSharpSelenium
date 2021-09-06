@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,40 +10,53 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using static System.FormattableString;
 
 namespace SeleniumFixture
 {
-    internal static class ApplicationInfo
+    /// <summary>Provide fixture metadata</summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
+    public static class ApplicationInfo
     {
-        public const string ApplicationName = "SeleniumFixture";
-        public const string Author = "Rik Essenius";
-        public const string Copyright = "Copyright © Rik Essenius 2015-2020";
-        public const string Description = "A FitNesse fixture to drive Selenium WebDriver";
+        /// <summary>Name of the fixture</summary>
+        public static string ApplicationName { get; } = ThisAssembly.GetName().Name;
 
-        public const string Version = "2.6.0";
-        // don't forget to update the release notes
+        /// <summary>Copyright notice</summary>
+        public static string Copyright { get; } = ThisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
 
+        /// <summary> Description of the fixture</summary>
+        public static string Description { get; } = ThisAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
+
+        /// <summary> Name, version, description and copyright</summary>
+        public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");
+
+        private static Assembly ThisAssembly => Assembly.GetExecutingAssembly();
+
+        /// <summary>Version of the fixture</summary>
+        public static string Version { get; } = ThisAssembly.GetName().Version?.ToString();
+
+        /// <summary> Version info</summary>
+        /// <param name="qualifier">Short or Extended</param>
+        public static string VersionInfo(string qualifier)
+        {
+            return qualifier.ToUpperInvariant() switch
+            {
+                "SHORT" => Version,
+                "EXTENDED" => ExtendedInfo,
+                _ => Invariant($"{ApplicationName} {Version}")
+            };
+        }
+
+        /// <summary>Check for minimal version</summary>
+        /// <param name="versionString">minimally required version</param>
+        /// <returns>true if version is at least that</returns>
         public static bool VersionIsAtLeast(string versionString)
         {
             var versionCompared = new Version(versionString);
             var version = new Version(Version);
             return version.CompareTo(versionCompared) >= 0;
-        }
-
-        public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");
-
-        public static string VersionInfo(string qualifier)
-        {
-            switch (qualifier.ToUpperInvariant())
-            {
-                case "SHORT":
-                    return Version;
-                case "EXTENDED":
-                    return ExtendedInfo;
-                default:
-                    return Invariant($"{ApplicationName} {Version}");
-            }
         }
     }
 }

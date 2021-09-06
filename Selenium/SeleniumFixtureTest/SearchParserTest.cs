@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,7 +10,6 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
@@ -21,16 +20,16 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class SearchParserTest
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentException)),
-         SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing an exception")]
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedException(typeof(ArgumentException))]
         public void SearchParserByFunctionNullTest()
         {
             _ = new SearchParser("unknown", "abc").By;
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [TestMethod]
+        [TestCategory("Unit")]
         public void SearchParserByFunctionTest()
         {
             const string locator = "abc";
@@ -64,38 +63,45 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(searchParser.By, By.XPath(locator));
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException)),
-         SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
-        public void SearchParserFindElement1NullTest() => new SearchParser(null);
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SearchParserFindElement1NullTest() => _ = new SearchParser(null);
 
-        [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
-             "SearchParser.FindElement1", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
-        public void SearchParserFindElement1Test()
+        [DataTestMethod]
+        [TestCategory("Unit")]
+        [DataRow("  abc  ", "id", "abc")]
+        [DataRow("abc:def", "abc", "def")]
+        [DataRow("abc : def", "abc", "def")]
+        [DataRow("abc:def:ghi", "abc", "def:ghi")]
+        [DataRow("abc : def:ghi", "abc", "def:ghi")]
+        [DataRow("abc : def : ghi", "abc", "def : ghi")]
+        [DataRow(":abc", "", "abc")]
+        [DataRow("abc:", "abc", "")]
+        [DataRow(":", "", "")]
+        [DataRow("", "id", "")]
+        public void SearchParserFindElement1Test(string input, string expectedMethod, string expectedLocator)
         {
-            var input = TestContext.DataRow["input"].ToString();
-            var expectedMethod = TestContext.DataRow["expectedMethod"].ToString();
-            var expectedLocator = TestContext.DataRow["expectedLocator"].ToString();
             var searchParser = new SearchParser(input);
             Assert.AreEqual(expectedMethod, searchParser.Method, "Method OK");
             Assert.AreEqual(expectedLocator, searchParser.Locator, "Locator OK");
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentNullException)),
-         SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "forcing an exception")]
-        public void SearchParserFindElement2NullTest() => new SearchParser(null, null);
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SearchParserFindElement2NullTest() => _ = new SearchParser(null, null);
 
-        [TestMethod, TestCategory("Unit")]
-        public void SearchParserFindElement2Test()
+        [DataTestMethod]
+        [TestCategory("Unit")]
+        [DataRow("filled", "abc", "def", "abc", "def")]
+        [DataRow("null", null, "def", "id", "def")]
+        [DataRow("empty", "", "def", "id", "def")]
+        public void SearchParserFindElement2Test(string testId, string methodIn, string locatorIn, string expectedMethod, string expectedLocator)
         {
-            var searchParser = new SearchParser("abc", "def");
-            Assert.AreEqual("abc", searchParser.Method, "Method OK");
-            Assert.AreEqual("def", searchParser.Locator, "Locator OK");
-            searchParser = new SearchParser(null, "def");
-            Assert.AreEqual("id", searchParser.Method, "Method OK");
-            Assert.AreEqual("def", searchParser.Locator, "Locator OK");
-            searchParser = new SearchParser(string.Empty, "def");
-            Assert.AreEqual("id", searchParser.Method, "Method OK");
-            Assert.AreEqual("def", searchParser.Locator, "Locator OK");
+            var searchParser = new SearchParser(methodIn, locatorIn);
+            Assert.AreEqual(expectedMethod, searchParser.Method, $"{testId} Method OK");
+            Assert.AreEqual(expectedLocator, searchParser.Locator, $"{testId} Locator OK");
         }
     }
 }

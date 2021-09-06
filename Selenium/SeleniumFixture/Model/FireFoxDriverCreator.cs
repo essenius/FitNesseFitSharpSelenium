@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -17,32 +17,13 @@ namespace SeleniumFixture.Model
 {
     internal class FireFoxDriverCreator : BrowserDriverCreator
     {
-
-        public static string IntegratedAuthenticationDomain { get; set; } = AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
-
         public FireFoxDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
         }
 
-        public override string Name { get; } = "FIREFOX";
+        public static string IntegratedAuthenticationDomain { get; set; } = AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
 
-        public override IWebDriver LocalDriver()
-        {
-            var driverFolder = Environment.GetEnvironmentVariable("GeckoWebDriver");
-            FirefoxDriverService driverService = null;
-            IWebDriver driver;
-            try
-            {
-                driverService = GetDefaultService<FirefoxDriverService>(driverFolder);
-                driver = new FirefoxDriver(driverService, FirefoxOptions(), Timeout);
-            }
-            catch
-            {
-                driverService?.Dispose();
-                throw;
-            }
-            return driver;
-        }
+        public override string Name { get; } = "FIREFOX";
 
         protected virtual FirefoxOptions FirefoxOptions()
         {
@@ -70,6 +51,27 @@ namespace SeleniumFixture.Model
             return options;
         }
 
-        public override DriverOptions Options() => FirefoxOptions();
+        public override IWebDriver LocalDriver()
+        {
+            var driverFolder = Environment.GetEnvironmentVariable("GeckoWebDriver");
+            FirefoxDriverService driverService = null;
+            IWebDriver driver;
+            try
+            {
+                driverService = GetDefaultService<FirefoxDriverService>(driverFolder);
+                // Workaround for the issue making .NET COre networking slow with GeckoDriver.
+                // see https://github.com/SeleniumHQ/selenium/issues/7840
+                driverService.Host = "::1";
+                driver = new FirefoxDriver(driverService, FirefoxOptions(), Timeout);
+            }
+            catch
+            {
+                driverService?.Dispose();
+                throw;
+            }
+            return driver;
+        }
+
+        protected override DriverOptions Options() => FirefoxOptions();
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Internal;
 
@@ -43,8 +42,7 @@ namespace SeleniumFixture.Utilities
             return returnValue;
         }
 
-        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Enable use in extension method")]
-        public static double GetImplicitWait(this IWebDriver driver) => _lastSetImplicitWaitSeconds;
+        public static double GetImplicitWait(this IWebDriver _) => _lastSetImplicitWaitSeconds;
         // Currently this only works for firefox: (int)driver.Manage().Timeouts().ImplicitWait.TotalSeconds;
 
         private static IJavaScriptExecutor GetJavaScriptExecutor(IWebElement element)

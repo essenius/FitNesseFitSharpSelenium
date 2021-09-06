@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,7 +10,6 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
@@ -23,8 +22,8 @@ namespace SeleniumFixtureTest
         // todo: fix issue of ChromeDriver not closing down
         // todo: check why this test fails with new Chrome versions.
         // No longer returns true for HasBrowserStorage
-        private IWebDriver _driver; // was static
-        private string _driverHandle; // was static
+        private IWebDriver _driver;
+        private string _driverHandle;
 
         private void BrowserStorageJavaScriptFindFirstOnLocalTest()
         {
@@ -48,28 +47,6 @@ namespace SeleniumFixtureTest
             Assert.IsNull(bs.FindFirstKeyLike("key*"), @"JSFFS FindFirst after clear");
         }
 
-        private void BrowserStorageNativeCallMethodOnLocalTest()
-        {
-            var bs = new NativeBrowserStorage(_driver, StorageType.Local);
-            Assert.IsNull(bs.CallMethod("Clear"), @"NCML Clear");
-            Assert.IsFalse(bs.KeySet.Any(), @"NCML Keyset empty after clear");
-            bs.CallMethod("SetItem", @"key1", @"value1");
-            Assert.AreEqual("value1", bs.CallMethod("GetItem", "key1"), @"NCML GetItem");
-            bs.CallMethod("RemoveItem", @"key1");
-            Assert.IsFalse(bs.KeySet.Any(), @"NCML Keyset empty afterwards");
-        }
-
-        private void BrowserStorageNativeFindFirstOnSessionTest()
-        {
-            var bs = new NativeBrowserStorage(_driver, StorageType.Session);
-            bs.Clear();
-            bs["key1"] = "value1";
-            Assert.AreEqual("value1", bs.GetItem("key1"), @"NFFS GetValue");
-            Assert.AreEqual("key1", bs.FindFirstKeyLike("key*"), @"NFFS FindFirst before clear");
-            bs.RemoveItem("key1");
-            Assert.IsNull(bs.FindFirstKeyLike("key1"), @"NFFS FindFirst after clear");
-        }
-
         private void BrowserStorageNoTest()
         {
             var bs = new NoBrowserStorage(_driver);
@@ -87,17 +64,16 @@ namespace SeleniumFixtureTest
             }
         }
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void BrowserStorageTests()
         {
             // Disabled the native tests as ChromeDriver (the only browser using it in the past) no longer seems to support it after 2.46.
             // The flag IHasWebStorage.HasWebStorage returns false now.
 
-            //BrowserStorageNativeCallMethodOnLocalTest();
             BrowserStorageJavaScriptFindFirstOnSessionTest();
             BrowserStorageNoTest();
             BrowserStorageJavaScriptFindFirstOnLocalTest();
-            //BrowserStorageNativeFindFirstOnSessionTest();
         }
 
         [TestCleanup]
@@ -108,7 +84,7 @@ namespace SeleniumFixtureTest
         {
             _driverHandle = BrowserDriverContainer.NewDriver("chrome headless");
             _driver = BrowserDriverContainer.Current;
-            _driver.Navigate().GoToUrl(SeleniumBaseTest.CreateTestPageUri());
+            _driver.Navigate().GoToUrl(EndToEndTest.CreateTestPageUri());
         }
     }
 }

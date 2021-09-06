@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,6 @@ using static System.Globalization.CultureInfo;
 namespace SeleniumFixture
 {
     /// <summary>Extract values from an HTML table</summary>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
     public class ExtractTableValues
     {
@@ -50,7 +49,10 @@ namespace SeleniumFixture
         {
         }
 
-        /// <summary>Extract table values from an HTML table; import the headers and data for the table from different parent tables and limit number of results</summary>
+        /// <summary>
+        ///     Extract table values from an HTML table; import the headers and data for the table from different parent tables and
+        ///     limit number of results
+        /// </summary>
         /// <param name="headerLocation">absolute header location</param>
         /// <param name="rowLocation">absolute data row location</param>
         /// <param name="maxResults">maximum result count</param>
@@ -72,7 +74,10 @@ namespace SeleniumFixture
             _maxResults = maxResults;
         }
 
-        /// <summary>Extract table values from an HTML table; import the headers and data for the table from different parent tables and limit # of results</summary>
+        /// <summary>
+        ///     Extract table values from an HTML table; import the headers and data for the table from different parent tables and
+        ///     limit # of results
+        /// </summary>
         /// <param name="tableLocation">absolute table locator</param>
         /// <param name="relativeHeaderLocationInTable">header locator relative to table</param>
         /// <param name="relativeRowLocationInTable">data row locator relative to table</param>
@@ -150,6 +155,13 @@ namespace SeleniumFixture
             return headerCollection;
         }
 
+        /// <summary>Query table interface returning the content of the table. Assumes that the Browser Driver was already initialized</summary>
+        public Collection<object> Query()
+        {
+            DoExtraction();
+            return _result;
+        }
+
         private Collection<object> RowCollection(IEnumerable<IWebElement> rowElements, IList<string> headerList)
         {
             var rowCollection = new Collection<object>();
@@ -161,18 +173,11 @@ namespace SeleniumFixture
                 {
                     // if we didn't have a header row, make one up
                     if (headerList.Count <= index) headerList.Add(DefaultHeader(index));
-                    cellCollection.Add(new Collection<object> {headerList[index++], cell.Text.Trim()});
+                    cellCollection.Add(new Collection<object> { headerList[index++], cell.Text.Trim() });
                 }
                 rowCollection.Add(cellCollection);
             }
             return rowCollection;
-        }
-
-        /// <summary>Query table interface returning the content of the table. Assumes that the Browser Driver was already initialized</summary>
-        public Collection<object> Query()
-        {
-            DoExtraction();
-            return _result;
         }
     }
 }

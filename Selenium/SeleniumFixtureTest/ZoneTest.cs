@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,65 +10,64 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using Microsoft.Win32.Fakes;
 using SeleniumFixture.Model;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixtureTest
 {
     [TestClass]
     public class ZoneTest
     {
-        //[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive"),
-        // SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive")]
-        public TestContext TestContext { get; set; }
-
-        [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
-             @"zonetest", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
-        public void ZoneInitialProtectedModeTest()
+        [DataTestMethod]
+        [TestCategory("Unit")]
+        [DataRow("both policies", "0", "3", "", "", true)]
+        [DataRow("both hkcu", "", "0", "3", "", true)]
+        [DataRow("hkcuPolicies/hklm", "", "3", "", "0", false)]
+        [DataRow("hklmPolicies/hkcu", "3", "", "0", "", false)]
+        [DataRow("hkcu/hklm", "", "", "0", "3", true)]
+        [DataRow("hklm", "", "", "", "0", true)]
+        [DataRow("both hklm", "0", "", "", "3", true)]
+        public void ZoneInitialProtectedModeTest(string testId, string hklmPoliciesValue, string hkcuPoliciesValue, string hkcuValue,
+            string hklmValue, bool expectedProtected)
         {
+            if (!OperatingSystem.IsWindows()) return;
             using (ShimsContext.Create())
             {
-                var hklmPoliciesValue = TestContext.DataRow["hklmPolicies"].ToString();
-                var hkcuPoliciesValue = TestContext.DataRow["hkcuPolicies"].ToString();
-                var hklmValue = TestContext.DataRow["hklm"].ToString();
-                var hkcuValue = TestContext.DataRow["hkcu"].ToString();
-
                 var hklmShim = ShimFactory.CreateRegistryKey(hklmPoliciesValue, hklmValue);
                 var hkcuShim = ShimFactory.CreateRegistryKey(hkcuPoliciesValue, hkcuValue);
-
                 var zone = new Zone(1, hklmShim, hkcuShim);
-
-                var expected = TestContext.DataRow["expectedProtected"].ToBool();
-                var testId = TestContext.DataRow["testId"].ToString();
-                Assert.AreEqual(expected, zone.IsProtected, testId);
+                Assert.AreEqual(expectedProtected, zone.IsProtected, testId);
             }
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentException)),
-         SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing exception")]
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedException(typeof(ArgumentException))]
+        [SupportedOSPlatform("windows")]
         public void ZoneIsProtectedInInvalidKeyTest()
         {
             var zone = new Zone(1, Registry.LocalMachine, Registry.CurrentUser);
             _ = zone.IsProtectedIn("wrong key");
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [TestMethod]
+        [TestCategory("Unit")]
         public void ZoneNoZoneInformationReturnsProtected()
         {
+            if (!OperatingSystem.IsWindows()) return;
             using (ShimsContext.Create())
             {
                 var hkcuShim = new ShimRegistryKey
                 {
-                    OpenSubKeyStringBoolean = (key, isWritable) => null
+                    OpenSubKeyStringBoolean = (_, _) => null
                 };
                 var hklmShim = new ShimRegistryKey
                 {
-                    OpenSubKeyStringBoolean = (key, isWritable) => null
+                    OpenSubKeyStringBoolean = (_, _) => null
                 };
                 Assert.IsTrue(new Zone(2, hklmShim, hkcuShim).IsProtected);
             }

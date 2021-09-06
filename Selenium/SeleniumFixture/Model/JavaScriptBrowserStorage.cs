@@ -11,8 +11,8 @@
 
 using System;
 using System.Collections.Generic;
-using static System.Globalization.CultureInfo;
 using OpenQA.Selenium;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model
 {

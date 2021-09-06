@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -23,6 +23,15 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "CHROME";
 
+        protected virtual ChromeOptions ChromeOptions()
+        {
+            var options = new ChromeOptions { Proxy = Proxy };
+            // Get rid of the warning bar "You are using an unsupported command-line flag" 
+            options.AddArgument("test-type");
+            options.AddArgument("enable-automation");
+            return options;
+        }
+
         public override IWebDriver LocalDriver()
         {
             var driverFolder = Environment.GetEnvironmentVariable("ChromeWebDriver");
@@ -42,15 +51,6 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        public override DriverOptions Options() => ChromeOptions();
-
-        protected virtual ChromeOptions ChromeOptions()
-        {
-            var options = new ChromeOptions { Proxy = Proxy };
-            // Get rid of the warning bar "You are using an unsupported command-line flag" 
-            options.AddArgument("test-type");
-            options.AddArgument("enable-automation");
-            return options;
-        }
+        protected override DriverOptions Options() => ChromeOptions();
     }
 }

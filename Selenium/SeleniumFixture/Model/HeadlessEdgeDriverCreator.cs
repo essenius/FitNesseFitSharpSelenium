@@ -26,7 +26,7 @@ namespace SeleniumFixture.Model
         protected override EdgeOptions EdgeOptions()
         {
             var options = base.EdgeOptions();
-            options.AddArguments("headless"); 
+            options.AddArguments("headless");
             return options;
         }
     }

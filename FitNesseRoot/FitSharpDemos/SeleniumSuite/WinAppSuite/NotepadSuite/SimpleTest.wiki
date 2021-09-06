@@ -1,6 +1,7 @@
 !define Location1 {10, 10}
 !define Location2 {200, 250}
-!define Size {470, 140}
+!define SizeToSet {470x140}
+!define SizeToRead {470, 140}
 !define Sentence {The quick brown fox jumps over the lazy dog}
 
 !|script                                                                                 |
@@ -11,10 +12,10 @@
 |check                |Text in Element|ClassName:Edit|=~/${Sentence}\r?\nHello\r?\nthere/|
 |Window Position      |${Location1}                                                      |
 |Check                |Window Position|${Location1}                                      |
-|Window Size          |${Size}                                                           |
-|Check                |Window Size    |${Size}                                           |
+|Window Size          |${SizeToSet}                                                      |
+|Check                |Window Size    |${SizeToRead}                                     |
 |Maximize Window                                                                         |
-|Check not            |Window Size    |${Size}                                           |
-|Window Size          |${Size}                                                           |
+|Check not            |Window Size    |${SizeToRead}                                     |
+|Window Size          |${SizeToSet}                                                           |
 |Window Position      |${Location2}                                                      |
 |show                 |Screenshot                                                        |

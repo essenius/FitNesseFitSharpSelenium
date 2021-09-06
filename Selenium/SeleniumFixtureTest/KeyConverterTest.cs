@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,7 +10,6 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
 using SeleniumFixture.Model;
@@ -22,33 +21,19 @@ namespace SeleniumFixtureTest
     {
         private Selenium _selenium;
 
-        [TestMethod, TestCategory("Unit"), ExpectedExceptionWithMessage(typeof(ArgumentException), "Could not find end delimiter '}'"),
-         SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing exception")]
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedExceptionWithMessage(typeof(ArgumentException), "Could not find end delimiter '}'")]
         public void KeyConverterExceptionTest()
         {
             var _ = new KeyConverter("{wrong").ToSeleniumFormat;
         }
 
-        [TestMethod, TestCategory("Unit")]
-        public void KeyConverterTest1()
+        [TestMethod]
+        public void KeyConverterSpecialKeysTest()
         {
-            Assert.AreEqual(@"abcdefghijklmnopqrstuvwxyz",
-                new KeyConverter(@"abcdefghijklmnopqrstuvwxyz").ToSeleniumFormat, "all lower case characters");
-            Assert.AreEqual(@"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                new KeyConverter(@"ABCDEFGHIJKLMNOPQRSTUVWXYZ").ToSeleniumFormat, "all upper case characters");
-            Assert.AreEqual("1234567890", new KeyConverter("1234567890").ToSeleniumFormat, "all digits");
-            Assert.AreEqual("`!@#$&*()-_=[];:'\",<.>/?,",
-                new KeyConverter("`!@#$&*()-_=[];:'\",<.>/?,").ToSeleniumFormat,
-                "keyboard symbols other than letters and digits");
-            Assert.AreEqual("{%^~}[abc]", new KeyConverter("{{}{%}{^}{~}{}}{[abc]}").ToSeleniumFormat,
-                "special characters {%^~}");
-            Assert.AreEqual("", new KeyConverter("{}").ToSeleniumFormat, "{}");
-            Assert.AreEqual(@"abc}def", new KeyConverter(@"{abc}def}").ToSeleniumFormat, @"{abc}def}");
-            Assert.AreEqual(@"aaaaa", new KeyConverter(@"{a 5}").ToSeleniumFormat, @"{a 5}");
-            Assert.AreEqual(@"abcabc", new KeyConverter(@"{abc 2}").ToSeleniumFormat, @"{abc 2}");
-
             var k = new KeyConverter("^ac{Del}New Text~").ToSeleniumFormat;
-            int[] expected = {57353, 97, 99, 57367, 78, 101, 119, 32, 84, 101, 120, 116, 57351};
+            int[] expected = { 57353, 97, 99, 57367, 78, 101, 119, 32, 84, 101, 120, 116, 57351 };
             Assert.AreEqual(expected.Length, k.Length, "expected size {0} but got {1}", expected.Length, k.Length);
             for (var i = 0; i < k.Length; i++)
             {
@@ -56,17 +41,32 @@ namespace SeleniumFixtureTest
             }
         }
 
+        [DataTestMethod]
+        [TestCategory("Unit")]
+        [DataRow("all lower case characters", @"abcdefghijklmnopqrstuvwxyz", @"abcdefghijklmnopqrstuvwxyz")]
+        [DataRow("all upper case characters", @"ABCDEFGHIJKLMNOPQRSTUVWXYZ", @"ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+        [DataRow("all digits", @"1234567890", @"1234567890")]
+        [DataRow("keyboard symbols other than letters and digits", "`!@#$&*()-_=[];:'\",<.>/?, ", "`!@#$&*()-_=[];:'\",<.>/?, ")]
+        [DataRow("special characters {%^~}", "{{}{%}{^}{~}{}}{[abc]}", "{%^~}[abc]")]
+        [DataRow("{}", "{}", "")]
+        [DataRow(@"{abc}def}", @"{abc}def}", @"abc}def")]
+        [DataRow(@"{a 5}", @"{a 5}", "aaaaa")]
+        [DataRow(@"{abc 2}", @"{abc 2}", @"abcabc")]
+        public void KeyConverterTest1(string testId, string input, string expected) =>
+            Assert.AreEqual(expected, new KeyConverter(input).ToSeleniumFormat, testId);
+
         [TestInitialize]
         public void KeyConverterTestInitialize() => _selenium = new Selenium();
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void KeyConverterTestInSelenium()
         {
             try
             {
                 _selenium.SetTimeoutSeconds(20);
                 Assert.IsTrue(_selenium.SetBrowser("chrome"));
-                Assert.IsTrue(_selenium.Open(SeleniumBaseTest.CreateTestPageUri()));
+                Assert.IsTrue(_selenium.Open(EndToEndTest.CreateTestPageUri()));
                 Assert.IsTrue(_selenium.WaitForElement("text1"));
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("^a").ToSeleniumFormat), "Text 1");
                 Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("^c").ToSeleniumFormat), "Text 1");

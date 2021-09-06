@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -25,55 +25,56 @@ namespace SeleniumFixtureTest
         [TestCleanup]
         public void ExtractTableValuesCleanup() => _selenium.Close();
 
-        [TestMethod, TestCategory("Unit"),
-         ExpectedExceptionWithMessage(typeof(NoNullAllowedException), "Browser Driver was not initialized")]
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedExceptionWithMessage(typeof(NoNullAllowedException), "Browser Driver was not initialized")]
         public void ExtractTableValuesNoDriverTest()
         {
             var extract = new ExtractTableValues(string.Empty);
             extract.Query();
         }
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void ExtractTableValuesSimpleTest()
         {
             _selenium.SetBrowser("chrome");
-            _selenium.Open(SeleniumBaseTest.CreateTestPageUri());
+            _selenium.Open(EndToEndTest.CreateTestPageUri());
             // Tricky stuff happening here - attempts to logon behind the scenes
             _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
             TestTable("XPath://table[@id='normalTable']", 0, new[]
             {
-                new[] {new[] {"header1", "value 1"}, new[] {"header2", "10"}},
-                new[] {new[] {"header1", "value 2"}, new[] {"header2", "20"}},
-                new[] {new[] {"header1", "value 3"}, new[] {"header2", "30"}}
+                new[] { new[] { "header1", "value 1" }, new[] { "header2", "10" } },
+                new[] { new[] { "header1", "value 2" }, new[] { "header2", "20" } },
+                new[] { new[] { "header1", "value 3" }, new[] { "header2", "30" } }
             });
 
             TestTable("CssSelector: table#tableWithoutHeaders", 0, new[]
             {
-                new[] {new[] {"Column 1", "value 4"}, new[] {"Column 2", "40"}},
-                new[] {new[] {"Column 1", "value 5"}, new[] {"Column 2", "50"}}
+                new[] { new[] { "Column 1", "value 4" }, new[] { "Column 2", "40" } },
+                new[] { new[] { "Column 1", "value 5" }, new[] { "Column 2", "50" } }
             });
 
             TestTable("id:tableWithEmptyHeaders", 0, new[]
             {
-                new[] {new[] {"Column 1", "value 6"}, new[] {"Column 2", "60"}},
-                new[] {new[] {"Column 1", "value 7"}, new[] {"Column 2", "70"}}
+                new[] { new[] { "Column 1", "value 6" }, new[] { "Column 2", "60" } },
+                new[] { new[] { "Column 1", "value 7" }, new[] { "Column 2", "70" } }
             });
         }
 
         [TestInitialize]
         public void ExtractTableValuesTestInitialize() => _selenium = new Selenium();
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void KendoTableTest()
         {
             Selenium.SetProxyType("system");
+            // we take an old page from WayBack Machine which we know is not changing 
+            // this can be slow to load, so we increase the timeout
+            Selenium.CommandTimeoutSeconds = 120;
             Assert.IsTrue(_selenium.SetBrowser("firefox"));
-            Assert.IsTrue(_selenium.Open(new Uri("https://demos.telerik.com/kendo-ui/grid/index")));
-
-            const string cookiesOkButton = "id:onetrust-accept-btn-handler";
-            Assert.IsTrue(_selenium.WaitUntilElementIsVisible(cookiesOkButton));
-            Assert.IsTrue(_selenium.ClickElement(cookiesOkButton));
-            Assert.IsTrue(_selenium.WaitUntilElementIsInvisible(cookiesOkButton));
+            Assert.IsTrue(_selenium.Open(new Uri("https://web.archive.org/web/20150713051625/http://demos.telerik.com/kendo-ui/grid/index")));
 
             Assert.IsTrue(_selenium.WaitUntilElementIsVisible("XPath://table[@role=\"grid\"]"));
             // tricky: the header and data rows are in different tables with the same role. The fixture can now handle that
@@ -82,13 +83,13 @@ namespace SeleniumFixtureTest
             {
                 new[]
                 {
-                    new[] {"Contact Name", @"Maria Anders"}, new[] {"Contact Title", "Sales Representative"},
-                    new[] {"Company Name", @"Alfreds Futterkiste"}, new[] {"Country", "Germany"}
+                    new[] { "Contact Name", @"Maria Anders" }, new[] { "Contact Title", "Sales Representative" },
+                    new[] { "Company Name", @"Alfreds Futterkiste" }, new[] { "Country", "Germany" }
                 },
                 new[]
                 {
-                    new[] {"Contact Name", "Ana Trujillo"}, new[] {"Contact Title", "Owner"},
-                    new[] {"Company Name", @"Ana Trujillo Emparedados y helados"}, new[] {"Country", "Mexico"}
+                    new[] { "Contact Name", "Ana Trujillo" }, new[] { "Contact Title", "Owner" },
+                    new[] { "Company Name", @"Ana Trujillo Emparedados y helados" }, new[] { "Country", "Mexico" }
                 }
             });
 
@@ -97,13 +98,13 @@ namespace SeleniumFixtureTest
             {
                 new[]
                 {
-                    new[] {"Contact Name", @"Alejandra Camino"}, new[] {"Contact Title", "Accounting Manager"},
-                    new[] {"Company Name", @"Romero y tomillo"}, new[] {"Country", "Spain"}
+                    new[] { "Contact Name", @"Alejandra Camino" }, new[] { "Contact Title", "Accounting Manager" },
+                    new[] { "Company Name", @"Romero y tomillo" }, new[] { "Country", "Spain" }
                 },
                 new[]
                 {
-                    new[] {"Contact Name", @"Alexander Feuer"}, new[] {"Contact Title", "Marketing Assistant"},
-                    new[] {"Company Name", @"Morgenstern Gesundkost"}, new[] {"Country", "Germany"}
+                    new[] { "Contact Name", @"Alexander Feuer" }, new[] { "Contact Title", "Marketing Assistant" },
+                    new[] { "Company Name", @"Morgenstern Gesundkost" }, new[] { "Country", "Germany" }
                 }
             });
         }

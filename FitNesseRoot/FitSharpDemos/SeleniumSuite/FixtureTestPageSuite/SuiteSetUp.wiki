@@ -1,6 +1,3 @@
-!| import       |
-|SeleniumFixture|
-
 We define table types so that we don't need to specify these in the test pages
 
 !|define table type           |
@@ -12,7 +9,7 @@ Open the test page that we use for all tests
 !|script                 |Selenium                   |
 |ensure                  |version is at least|2.5.1  |
 |set browser             |${BROWSER}                 |
-|maximize window                                     |
+| window size            |1074x768                   |
 |set timeout             |10                 |seconds|
 |open                    |${TESTPAGE}                |
 |wait until title matches|Selenium Fixture Test Page |

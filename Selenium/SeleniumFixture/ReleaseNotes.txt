@@ -55,5 +55,6 @@
          Fixed some issues in AppDriver tests (newer calculators work a bit differently). 
          Made tests for drivers that are not installed result in inconclusive tests rather than failed ones.
 2.6.1    Handled changed exception behavior for scrollIntoView and enhanced test coverage a bit
+3.0.0    Migration to .NET 5.0, refactored end to end tests for better observability, ugraded test site
 
 Note: we can't upgrade to Webdriver 4 until Appium and WinApp support it.

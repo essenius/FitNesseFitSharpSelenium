@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -12,8 +12,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.RegularExpressions;
-using ImageHandler;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
@@ -29,11 +29,11 @@ namespace SeleniumFixture
     // Only using XML documentation for Selenium here as it is a partial class, and we don't want multiple.
 
     /// <summary>
-    /// Selenium Fixture for FitSharp
+    ///     Selenium Fixture for FitSharp
     /// </summary>
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "This is the interface class"),
-     SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by Fitsharp"),
-     SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by Fitsharp")]
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "This is the interface class")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by Fitsharp")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by Fitsharp")]
     public sealed partial class Selenium
     {
         /// <returns>the length of the current page source</returns>
@@ -46,7 +46,6 @@ namespace SeleniumFixture
         public string PageSource => Driver != null ? Driver.PageSource : string.Empty;
 
         ///<summary>Url of the current page</summary>
-        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "FitSharp needs it as a string")]
         public string Url => Driver.Url;
 
         /// <summary>Closes the current browser page. Does not close the browser itself if it's not the last page</summary>
@@ -58,7 +57,10 @@ namespace SeleniumFixture
             return true;
         }
 
-        ///<summary>Long press a key on an Android via a keycode (number or field name). Returns false if not run on an Android or the keycode is not recognised</summary>
+        /// <summary>
+        ///     Long press a key on an Android via a keycode (number or field name). Returns false if not run on an Android or the
+        ///     keycode is not recognised
+        /// </summary>
         public bool LongPressKeyCode(string keyCodeIn)
         {
             if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
@@ -68,12 +70,15 @@ namespace SeleniumFixture
             return true;
         }
 
-        ///<summary>Send keys using the .Net Framework Forms.SendKeys.SendWait function. Executes locally, so does not work on remote Selenium servers.
-        /// Can be useful for context menus, although the Chrome driver does not send keypresses there.
-        /// The syntax of the keys is slightly different than the Selenium syntax used in Send Keys To Element. 
-        /// Primarily, control, alt and shift do not toggle, but only work on the following item. See MSDN SendKeys documentation</summary>
-        public static void NativeSendKeys(string keys) => System.Windows.Forms.SendKeys.SendWait(keys);
-
+        // disabling because the dependency on System.Windows.Forms is cumbersome. Alternative is using UI AUtomation fixture.
+        /// <summary>
+        ///     Send keys using the .Net Framework Forms.SendKeys.SendWait function. Executes locally, so does not work on remote Selenium
+        ///     servers.
+        ///     Can be useful for context menus, although the Chrome driver does not send keypresses there.
+        ///     The syntax of the keys is slightly different than the Selenium syntax used in Send Keys To Element.
+        ///     Primarily, control, alt and shift do not toggle, but only work on the following item. See MSDN SendKeys documentation
+        /// </summary>
+        /// public static void NativeSendKeys(string keys) => System.Windows.Forms.SendKeys.SendWait(keys);
         /// <summary>Opens the specified URL in the browser and wait for it to load.</summary>
         public bool Open(Uri url)
         {
@@ -85,7 +90,10 @@ namespace SeleniumFixture
         }
 
         //TODO implement metastates
-        /// <summary>Press a key on an Android via a keycode (number/field name). Returns false if not run on an Android or the keycode is not recognised</summary>
+        /// <summary>
+        ///     Press a key on an Android via a keycode (number/field name). Returns false if not run on an Android or the keycode is
+        ///     not recognised
+        /// </summary>
         public bool PressKeyCode(string keyCodeIn)
         {
             if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
@@ -102,19 +110,16 @@ namespace SeleniumFixture
             return true;
         }
 
-        /// <summary>Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a service</summary>
-        public static string Screenshot()
-        {
-            var snap = BrowserDriverContainer.TakeScreenshot();
-            return snap.Rendering;
-        }
+        /// <summary>
+        ///     Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a
+        ///     service
+        /// </summary>
+        public static string Screenshot() => ScreenshotObject().Rendering;
 
         /// <summary>Take a screenshot and return it as an object</summary>
-        public static Snapshot ScreenshotObject() => BrowserDriverContainer.TakeScreenshot();
+        public static Image ScreenshotObject() => BrowserDriverContainer.TakeScreenshot();
 
         /// <summary>Scroll up, down, left or right</summary>
-        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive")]
-        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
         public bool Scroll(string direction)
         {
             var screenSize = Driver.Manage().Window.Size;
@@ -144,7 +149,7 @@ namespace SeleniumFixture
             {
                 case IOSDriver<IOSElement> iosDriver:
                 {
-                    var scrollObject = new Dictionary<string, string> {{"direction", direction.ToLowerInvariant()}};
+                    var scrollObject = new Dictionary<string, string> { { "direction", direction.ToLowerInvariant() } };
                     iosDriver.ExecuteScript("mobile: scroll", scrollObject);
                     return true;
                 }
@@ -172,15 +177,15 @@ namespace SeleniumFixture
                 // includes not found and invalid 'by'. So, we now assume we're on native mobile.
                 // Find all elements with text attributes or text nodes, and aggregate these values
                 // This caters for all Android texts I could think of, and probably for iOS too (still to be tested)
-                var textElements = Driver.FindElements(By.XPath("//*[string(@text) or string(text())]"));
-                foreach (var entry in textElements)
-                {
-                    textOnPage += entry.Text + "\r\n";
-                }
+                var textElements = Driver.FindElements(By.XPath("/" +
+                                                                "/*" +
+                                                                "[string(@text) or string(text())]"));
+                textOnPage = textElements.Aggregate(textOnPage, (current, entry) => current + entry.Text + "\r\n");
             }
             return Regex.IsMatch(
                 textOnPage,
-                "^[\\s\\S]*" + Regex.Escape(textToSearch) + "[\\s\\S]*$", caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
+                "^[\\s\\S]*" + Regex.Escape(textToSearch) + "[\\s\\S]*$",
+                caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
         }
 
         /// <summary>Check if a certain text exists on the page</summary>
@@ -196,13 +201,13 @@ namespace SeleniumFixture
         public bool WaitForPageSourceToChange()
         {
             var currentSource = PageSource;
-            return WaitFor(drv => PageSource != currentSource);
+            return WaitFor(_ => PageSource != currentSource);
         }
 
         /// <summary>Waits for a page to load, using default timeout</summary>
         public bool WaitForPageToLoad() => WaitUntilElementIsVisible("XPath://*[not (.='')]");
 
-        private bool WaitForText(string textToSearch, bool caseInsensitive) => WaitFor(drv => TextExists(textToSearch, caseInsensitive));
+        private bool WaitForText(string textToSearch, bool caseInsensitive) => WaitFor(_ => TextExists(textToSearch, caseInsensitive));
 
         /// <summary>Waits for a certain text to be present (case sensitive search)</summary>
         public bool WaitForText(string textToSearch) => WaitForText(textToSearch, false);
@@ -211,10 +216,10 @@ namespace SeleniumFixture
         public bool WaitForTextIgnoringCase(string textToSearch) => WaitForText(textToSearch, true);
 
         /// <summary>Wait until the page source has the specified minimum length. Useful when pages are built dynamically and asynchronously</summary>
-        public bool WaitUntilPageSourceIsLargerThan(int thresholdLength) => WaitFor(drv => LengthOfPageSource > thresholdLength);
+        public bool WaitUntilPageSourceIsLargerThan(int thresholdLength) => WaitFor(_ => LengthOfPageSource > thresholdLength);
 
         /// <summary>Wait until a called JavaScript function returns a value that is not false or null</summary>
-        public bool WaitUntilScriptReturnsTrue(string script) => WaitFor(drv => ExecuteScript(script) is bool result && result);
+        public bool WaitUntilScriptReturnsTrue(string script) => WaitFor(_ => ExecuteScript(script) is true);
 
         /// <summary>Wait for a title to appear, using a regular expression to search</summary>
         public bool WaitUntilTitleMatches(string regexPattern) => WaitFor(d => new Regex(regexPattern).IsMatch(d.Title));

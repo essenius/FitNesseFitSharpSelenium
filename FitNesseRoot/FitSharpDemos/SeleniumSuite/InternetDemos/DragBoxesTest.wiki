@@ -1,0 +1,38 @@
+!*> Defines, Imports and Scenarios
+we are using variables here since these are resolved by the wiki. The references to scenario parameters remain.
+
+!define AnyBox    {CssSelector:div.box}
+!define BoxNumber {CssSelector:div.box:nth-child(@number) > p}
+!define BoxFrom   {XPath://div[@class='box' and header='@boxFrom']}
+!define BoxTo     {XPath://div[@class='box' and header='@boxTo']}
+
+!|scenario|check if text in box|number      |equals|value|
+|check    |text in element     |${BoxNumber}|@value      |
+
+!|scenario           |check values|box1  ||box2||box3||box4||box5|
+|check if text in box|1           |equals|@box1                  |
+|check if text in box|2           |equals|@box2                  |
+|check if text in box|3           |equals|@box3                  |
+|check if text in box|4           |equals|@box4                  |
+|check if text in box|5           |equals|@box5                  |
+
+!|scenario   |Drag box  |boxFrom            |to|boxTo|
+|drag element|${BoxFrom}|and drop on element|${BoxTo}|
+*!
+!|Script         |selenium                        |
+|set browser     |chrome                          |
+|open            |${DRAGBOXESPAGE}                |
+|window size     |770x370                         |
+|wait for element|${AnyBox}                       |
+|check values    |order!||Put me||right||into||the|
+|show            |screenshot                      |
+
+!|script                                        |
+|Drag box    |A     |to|E                       |
+|Drag box    |C     |to|D                       |
+|Drag box    |E     |to|D                       |
+|Drag box    |B     |to|D                       |
+|check values|Put me|  |into||the||right||order!|
+|show        |screenshot                        |
+|close                                          |
+

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -14,7 +14,7 @@ using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model
 {
-    internal class NoBrowserDriverCreator: BrowserDriverCreator
+    internal class NoBrowserDriverCreator : BrowserDriverCreator
     {
         public NoBrowserDriverCreator() : base(null, TimeSpan.Zero)
         {
@@ -23,6 +23,6 @@ namespace SeleniumFixture.Model
         public override string Name { get; } = "NONE";
         public override IWebDriver LocalDriver() => null;
 
-        public override DriverOptions Options() => null;
+        protected override DriverOptions Options() => null;
     }
 }

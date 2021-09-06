@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -161,12 +161,13 @@ namespace SeleniumFixture
         }
 
         /// <summary>Drag an element to an X,Y location. Only works for mobile platforms</summary>
-        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive")]
         public bool DragElementAndDropAt(string dragElementLocator, Coordinate location)
         {
             var dragElement = FindElement(dragElementLocator);
             if (!Driver.IsAndroid() && !Driver.IsIos())
+            {
                 throw new NotImplementedException(ErrorMessages.NoDragDropToCoordinates);
+            }
             if (!(Driver is IPerformsTouchActions driver)) return false;
             var touchAction = new TouchAction(driver);
             Debug.Assert(location != null, nameof(location) + " != null");
@@ -245,9 +246,10 @@ namespace SeleniumFixture
             // if this is an integer, use it. Otherwise, look if we can convert via an AndroidKeyCode field name
             if (int.TryParse(keyCodeIn, out var keyCode)) return keyCode;
             var myType = typeof(AndroidKeyCode);
+            if (keyCodeIn == null) throw new ArgumentNullException(nameof(keyCodeIn));
             var myFieldInfo = myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
             if (myFieldInfo == null) return null;
-            var success = int.TryParse(myFieldInfo.GetValue(null).ToString(), out keyCode);
+            var success = int.TryParse(myFieldInfo.GetValue(null)?.ToString(), out keyCode);
             if (!success) return null;
             return keyCode;
         }
@@ -266,17 +268,17 @@ namespace SeleniumFixture
             // Android and WinApp don't support these.
             try
             {
-                ((IJavaScriptExecutor) Driver).ExecuteScript(
+                ((IJavaScriptExecutor)Driver).ExecuteScript(
                     "arguments[0].scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});", element);
             }
             catch (NotImplementedException)
             {
                 // ignore
             }
-            catch (WebDriverException e) when (e.Message.Contains("not implemented" ))
+            catch (WebDriverException e) when (e.Message.Contains("not implemented"))
             {
                 // ignore
-            } 
+            }
             try
             {
                 new Actions(Driver).MoveToElement(element).Build().Perform();
@@ -304,7 +306,7 @@ namespace SeleniumFixture
         });
 
         /// <summary>Scroll in a direction until an element is found. Return true if found, false if not.</summary>
-        /// <remarks>Mobile only, uses MoveToElement with browsers (ignoring direction).</remarks> 
+        /// <remarks>Mobile only, uses MoveToElement with browsers (ignoring direction).</remarks>
         public bool ScrollToElement(string direction, string searchCriterion)
         {
             if (!Driver.IsAndroid() && !Driver.IsIos()) return MoveToElement(searchCriterion);
@@ -412,8 +414,10 @@ namespace SeleniumFixture
         public bool SendKeysToElement(string keys, string searchCriterion) =>
             DoOperationOnElement(searchCriterion, element => SendKeysTo(element, keys));
 
-        /// <summary>Emulate typing keys into an element, to be used for input elements that are potentially unknown by browsers
-        /// (e.g. date, time) and for which a fallback to basic text elements may be done</summary>
+        /// <summary>
+        ///     Emulate typing keys into an element, to be used for input elements that are potentially unknown by browsers
+        ///     (e.g. date, time) and for which a fallback to basic text elements may be done
+        /// </summary>
         /// <returns>true if successful, null if type not recognized</returns>
         public object SendKeysToElementIfTypeIs(string keys, string searchCriterion, string expectedType)
         {
@@ -539,24 +543,24 @@ namespace SeleniumFixture
         });
 
         /// <summary>Wait until an element does not exist on the page (e.g. got deleted)</summary>
-        public bool WaitUntilElementDoesNotExist(string searchCriterion) => WaitFor(drv => !ElementExists(searchCriterion));
+        public bool WaitUntilElementDoesNotExist(string searchCriterion) => WaitFor(_ => !ElementExists(searchCriterion));
 
         /// <summary>Wait until an element is clickable</summary>
-        public bool WaitUntilElementIsClickable(string searchCriterion) => WaitFor(drv => ElementIsClickable(searchCriterion)).ToBool();
+        public bool WaitUntilElementIsClickable(string searchCriterion) => WaitFor(_ => ElementIsClickable(searchCriterion)).ToBool();
 
         /// <summary>Wait until an element is invisible</summary>
-        public bool WaitUntilElementIsInvisible(string searchCriterion) => WaitFor(drv => !ElementIsVisible(searchCriterion));
+        public bool WaitUntilElementIsInvisible(string searchCriterion) => WaitFor(_ => !ElementIsVisible(searchCriterion));
 
         /// <summary>Wait until an element is not clickable (e.g. made read-only)</summary>
-        public bool WaitUntilElementIsNotClickable(string searchCriterion) => WaitFor(drv => !ElementIsClickable(searchCriterion)).ToBool();
+        public bool WaitUntilElementIsNotClickable(string searchCriterion) => WaitFor(_ => !ElementIsClickable(searchCriterion)).ToBool();
 
         /// <summary>Wait until an element is visible</summary>
-        public bool WaitUntilElementIsVisible(string searchCriterion) => WaitFor(drv => ElementIsVisible(searchCriterion));
+        public bool WaitUntilElementIsVisible(string searchCriterion) => WaitFor(_ => ElementIsVisible(searchCriterion));
 
-        private bool WaitUntilIsClickable(IWebElement element) => WaitFor(drv => IsClickable(element)).ToBool();
+        private bool WaitUntilIsClickable(IWebElement element) => WaitFor(_ => IsClickable(element)).ToBool();
 
         /// <summary>Wait until the text in an element matches the regular expression provided</summary>
         public bool WaitUntilTextInElementMatches(string searchCriterion, string regexPattern) =>
-            WaitFor(drv => TextInElementMatches(searchCriterion, regexPattern));
+            WaitFor(_ => TextInElementMatches(searchCriterion, regexPattern));
     }
 }

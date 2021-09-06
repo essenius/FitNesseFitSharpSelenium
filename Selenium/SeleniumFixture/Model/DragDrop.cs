@@ -207,15 +207,15 @@ namespace SeleniumFixture.Model
         /// </summary>
         public class Position
         {
-            public static readonly Position Bottom = new Position();
-            public static readonly Position BottomLeft = new Position();
-            public static readonly Position BottomRight = new Position();
-            public static readonly Position Center = new Position();
-            public static readonly Position Left = new Position();
-            public static readonly Position Right = new Position();
-            public static readonly Position Top = new Position();
-            public static readonly Position TopLeft = new Position();
-            public static readonly Position TopRight = new Position();
+            public static readonly Position Bottom = new();
+            public static readonly Position BottomLeft = new();
+            public static readonly Position BottomRight = new();
+            public static readonly Position Center = new();
+            public static readonly Position Left = new();
+            public static readonly Position Right = new();
+            public static readonly Position Top = new();
+            public static readonly Position TopLeft = new();
+            public static readonly Position TopRight = new();
 
             /// <summary>
             ///     Calculate relative X coordinate corresponding to a position

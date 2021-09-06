@@ -1,6 +1,3 @@
-!| import       |
-|SeleniumFixture|
-
 !| Script                |selenium                                                          |
 |set proxy type          |System                                                            |
 |set browser             |${BROWSER}                                                        |
@@ -15,5 +12,3 @@
 |switch to frame         |name : content                                                    |
 |wait for element        |PartialLinkText : Load white page                                 |
 |close                                                                                      |
-
-http://www.quackit.com/html/templates/frames/frames_example_6.html

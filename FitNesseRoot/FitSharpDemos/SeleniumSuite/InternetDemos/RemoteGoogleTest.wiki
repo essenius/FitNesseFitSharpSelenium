@@ -1,13 +1,14 @@
 !define SearchCriterion {Test Automation}
+!define AcceptCookies {id:L2AGLb}
+!define ResultStats {id:result-stats}
+!define SearchBar {name:q}
 
-!| import       |
-|SeleniumFixture|
-
-|Script                     |selenium                               |
-|set remote browser         |${BROWSER}|at address|${SeleniumServer}|
-|open                       |!-http://www.google.com?hl=en-!        |
-|wait until title matches   |Google                                 |
-|set element                |name : q |to        |${SearchCriterion}|
-|submit element             |name : q                               |
-|wait until title matches|^(?i)(${SearchCriterion})                 |
-|close                                                              |
+|Script                  |selenium                                      |
+|set remote browser      |${BROWSER}      |at address|${SeleniumServer} |
+|open                    |!-http://www.google.com?hl=en-!               |
+|wait until title matches|Google                                        |
+|click element           |${AcceptCookies}|if visible                   |
+|set element             |${SearchBar}    |to        |${SearchCriterion}|
+|submit element          |${SearchBar}                                  |
+|wait until title matches|^(?i)(${SearchCriterion})                     |
+|close                                                                  |

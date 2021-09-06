@@ -20,8 +20,8 @@ namespace SeleniumFixture.Model
 {
     internal abstract class BrowserDriverCreator
     {
+        protected readonly Proxy Proxy;
         protected readonly TimeSpan Timeout;
-        protected Proxy Proxy;
 
         protected BrowserDriverCreator(Proxy proxy, TimeSpan timeout)
         {
@@ -31,30 +31,7 @@ namespace SeleniumFixture.Model
 
         public abstract string Name { get; }
 
-        // I tried to make these methods smarter (eliminate redundancy) e.g. via generics, but that is not easy with all the hard dependencies
-        // that browser drivers have on their services and options. So I decided to live with the redundancy for now.
-        // so all the driver creators currently have their own implementation.
-        public abstract IWebDriver LocalDriver();
-
-        public abstract DriverOptions Options();
-
-        // This is a workaround for the absence of an IDriverService interface, using reflection
-        // T is the driver service to be instantiated (e.g. ChromeDriverService)
-        internal static T GetDefaultService<T>(string driverFolder = null)
-        {
-            var serviceType = typeof(T);
-            var typeList = new List<Type>();
-            var parameterList = new List<object>();
-            if (!string.IsNullOrEmpty(driverFolder))
-            {
-                typeList.Add(typeof(string));
-                parameterList.Add(driverFolder);
-            }
-
-            var methodInfo = serviceType.GetMethod("CreateDefaultService", typeList.ToArray());
-            Debug.Assert(methodInfo != null, nameof(methodInfo) + " != null");
-            return (T) methodInfo.Invoke(serviceType, parameterList.ToArray());
-        }
+        protected virtual Uri BaseUri(string baseAddress) => new(baseAddress + "/wd/hub");
 
         // We cannot stop using the deprecated DesiredCapabilities at this point (hence the pragma disable 618) because
         // we want the flexibility to specify non-predefined capabilities to enable external services as BrowserStack.
@@ -91,6 +68,31 @@ namespace SeleniumFixture.Model
             return desiredCapabilities;
         }
 
+        // This is a workaround for the absence of an IDriverService interface, using reflection
+        // T is the driver service to be instantiated (e.g. ChromeDriverService)
+        internal static T GetDefaultService<T>(string driverFolder = null)
+        {
+            var serviceType = typeof(T);
+            var typeList = new List<Type>();
+            var parameterList = new List<object>();
+            if (!string.IsNullOrEmpty(driverFolder))
+            {
+                typeList.Add(typeof(string));
+                parameterList.Add(driverFolder);
+            }
+
+            var methodInfo = serviceType.GetMethod("CreateDefaultService", typeList.ToArray());
+            Debug.Assert(methodInfo != null, nameof(methodInfo) + " != null");
+            return (T)methodInfo.Invoke(serviceType, parameterList.ToArray());
+        }
+
+        // I tried to make these methods smarter (eliminate redundancy) e.g. via generics, but that is not easy with all the hard dependencies
+        // that browser drivers have on their services and options. So I decided to live with the redundancy for now.
+        // So, all the driver creators currently have their own implementation.
+        public abstract IWebDriver LocalDriver();
+
+        protected abstract DriverOptions Options();
+
         public virtual IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
             var uri = BaseUri(baseAddress);
@@ -108,7 +110,5 @@ namespace SeleniumFixture.Model
             options.AddAdditionalCapabilities(capabilities);
             return options;
         }
-
-        protected virtual Uri BaseUri(string baseAddress) => new Uri(baseAddress + "/wd/hub");
     }
 }

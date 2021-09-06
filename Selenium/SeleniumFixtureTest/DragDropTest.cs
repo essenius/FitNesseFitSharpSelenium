@@ -21,11 +21,12 @@ namespace SeleniumFixtureTest
     {
         private Selenium _selenium;
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void DragDropAcrossWindowsTest()
         {
             var driverHandle1 = _selenium.NewBrowser("chrome");
-            var url = SeleniumBaseTest.CreateTestPageUri();
+            var url = EndToEndTest.CreateTestPageUri();
             _selenium.Open(url);
             Assert.IsTrue(_selenium.WaitForElement("dragSource"), "Wait for DragSource in browser 1");
             Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"), "Source not dropped in target in driver 1");
@@ -50,7 +51,8 @@ namespace SeleniumFixtureTest
             _selenium.Close();
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [TestMethod]
+        [TestCategory("Unit")]
         public void DragDropPositionGetXTest()
         {
             Assert.AreEqual(1, DragDrop.Position.BottomLeft.GetX(100));
@@ -64,7 +66,8 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(99, DragDrop.Position.TopRight.GetX(100));
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [TestMethod]
+        [TestCategory("Unit")]
         public void DragDropPositionGetYTest()
         {
             Assert.AreEqual(99, DragDrop.Position.BottomLeft.GetY(100));

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,7 @@ namespace SeleniumFixtureTest
         {
             return new ShimRegistryKey
             {
-                OpenSubKeyStringBoolean = (key, isWritable) =>
+                OpenSubKeyStringBoolean = (key, _) =>
                     key.ToUpperInvariant().Contains("POLICIES")
                         ? CreateZoneKey(policiesValue)
                         : CreateZoneKey(value)
@@ -33,7 +33,7 @@ namespace SeleniumFixtureTest
                 ? null
                 : new ShimRegistryKey
                 {
-                    GetValueString = key => value
+                    GetValueString = _ => value
                 };
         }
     }

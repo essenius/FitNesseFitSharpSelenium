@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,7 @@ namespace SeleniumFixture
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
     public class JavaScriptFunction
     {
-        private readonly ArrayList _paramList = new ArrayList();
+        private readonly ArrayList _paramList = new();
 
         /// <summary>Dynamic Decision Table Interface (get column value)</summary>
         public object Get(string requestedValue)

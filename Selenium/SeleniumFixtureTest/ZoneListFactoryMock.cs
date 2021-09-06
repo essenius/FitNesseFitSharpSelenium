@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,10 +10,12 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest
 {
+    [SupportedOSPlatform("windows")]
     internal class ZoneListFactoryMock : IZoneListFactory
     {
         private readonly bool[] _isProtected;
@@ -23,7 +25,10 @@ namespace SeleniumFixtureTest
         public List<IZone> CreateZoneList()
         {
             var zoneList = new List<IZone>();
-            for (var zone = Zone.MinValue; zone <= Zone.MaxValue; zone++) zoneList.Add(Create(zone));
+            for (var zone = Zone.MinValue; zone <= Zone.MaxValue; zone++)
+            {
+                zoneList.Add(Create(zone));
+            }
             return zoneList;
         }
 

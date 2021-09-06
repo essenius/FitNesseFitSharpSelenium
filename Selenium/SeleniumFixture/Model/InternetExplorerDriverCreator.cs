@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -16,15 +16,39 @@ using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
-    internal class InternetExplorerDriverCreator: BrowserDriverCreator
+    internal class InternetExplorerDriverCreator : BrowserDriverCreator
     {
+        private readonly NativeMethods _nativeMethods = new();
+
         public InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
         }
 
-        private readonly NativeMethods _nativeMethods = new NativeMethods();
-
         public override string Name { get; } = "IE";
+
+        private static string EdgePath() => AppConfig.Get("InternetExplorer.EdgePath");
+
+        private static bool IgnoreProtectedModeSetting()
+        {
+            var ignoreProtectedModeSettingsString = AppConfig.Get("InternetExplorer.IgnoreProtectedModeSettings");
+            return !string.IsNullOrEmpty(ignoreProtectedModeSettingsString) &&
+                   bool.Parse(ignoreProtectedModeSettingsString);
+        }
+
+        private InternetExplorerOptions InternetExplorerOptions()
+        {
+            var options = new InternetExplorerOptions
+            {
+                Proxy = Proxy,
+                IntroduceInstabilityByIgnoringProtectedModeSettings = IgnoreProtectedModeSetting()
+            };
+            var edgePath = EdgePath();
+
+            if (string.IsNullOrEmpty(edgePath)) return options;
+            options.AddAdditionalCapability("ie.edgechromium", true);
+            options.AddAdditionalCapability("ie.edgepath", edgePath);
+            return options;
+        }
 
         public override IWebDriver LocalDriver()
         {
@@ -46,23 +70,6 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        public override DriverOptions Options() => InternetExplorerOptions();
-
-        private InternetExplorerOptions InternetExplorerOptions()
-        {
-            var options = new InternetExplorerOptions
-            {
-                Proxy = Proxy,
-                IntroduceInstabilityByIgnoringProtectedModeSettings = IgnoreProtectedModeSetting()
-            };
-            return options;
-        }
-
-        private static bool IgnoreProtectedModeSetting()
-        {
-            var ignoreProtectedModeSettingsString = AppConfig.Get("InternetExplorer.IgnoreProtectedModeSettings");
-            return !string.IsNullOrEmpty(ignoreProtectedModeSettingsString) &&
-                   bool.Parse(ignoreProtectedModeSettingsString);
-        }
+        protected override DriverOptions Options() => InternetExplorerOptions();
     }
 }

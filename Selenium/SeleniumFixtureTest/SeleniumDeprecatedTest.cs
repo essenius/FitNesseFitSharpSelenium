@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -22,10 +22,7 @@ namespace SeleniumFixtureTest
         private Selenium _selenium;
 
         [TestInitialize]
-        public void SeleniumDeprecatedTestInitialize()
-        {
-            _selenium = new Selenium();
-        }
+        public void SeleniumDeprecatedTestInitialize() => _selenium = new Selenium();
 
         [TestCleanup]
         public void SeleniumTestCleanup()
@@ -37,7 +34,8 @@ namespace SeleniumFixtureTest
 #pragma warning disable 612,618
 // we don't want the warnings about obsolete functions here. They also need to be tested
 
-        [TestMethod, TestCategory("Deprecated")]
+        [TestMethod]
+        [TestCategory("Deprecated")]
         public void SeleniumDeprecatedTests()
         {
             Selenium.ExceptionOnDeprecatedFunctions = false;
@@ -51,20 +49,21 @@ namespace SeleniumFixtureTest
             Selenium.ExceptionOnDeprecatedFunctions = true;
         }
 
-        [TestMethod, TestCategory("Deprecated"), ExpectedException(typeof(NotSupportedException))]
-        public void SeleniumDeprecatedNewRemoteBrowserAtAddressWithNameTest()
-        {
-            Selenium.NewRemoteBrowserAtAddressWithName("irrelevant", "irrelevant", "irrelevant");
-        }
+        [TestMethod]
+        [TestCategory("Deprecated")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void SeleniumDeprecatedNewRemoteBrowserAtAddressWithNameTest() =>
+            _ = Selenium.NewRemoteBrowserAtAddressWithName("irrelevant", "irrelevant", "irrelevant");
 
-        [TestMethod, TestCategory("Deprecated"), ExpectedException(typeof(NotSupportedException))]
-        public void SeleniumDeprecatedSetRemoteBrowserAtAddressWithNameTest()
-        {
-            Selenium.SetRemoteBrowserAtAddressWithName("irrelevant", "irrelevant", "irrelevant");
-        }
+        [TestMethod]
+        [TestCategory("Deprecated")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void SeleniumDeprecatedSetRemoteBrowserAtAddressWithNameTest() =>
+            _ = Selenium.SetRemoteBrowserAtAddressWithName("irrelevant", "irrelevant", "irrelevant");
 
-        [TestMethod, TestCategory("Deprecated"),
-         ExpectedExceptionWithMessage(typeof(WarningException), "Use of deprecated function 'HTML Source'. Replace by 'Page Source'")]
+        [TestMethod]
+        [TestCategory("Deprecated")]
+        [ExpectedExceptionWithMessage(typeof(WarningException), "Use of deprecated function 'HTML Source'. Replace by 'Page Source'")]
         public void SeleniumDeprecatedExceptionTest()
         {
             Selenium.ExceptionOnDeprecatedFunctions = true;

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -21,8 +21,8 @@ namespace SeleniumFixture
 {
     // Window and frame handling methods of the Selenium script table fixture for FitNesse
 
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional parameters")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
+    [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional parameters")]
     public sealed partial class Selenium
     {
         private string _mainWindowHandle;
@@ -35,6 +35,22 @@ namespace SeleniumFixture
 
         /// <returns>s the window handles (debugging purposes)</returns>
         internal ReadOnlyCollection<string> WindowHandles => Driver.WindowHandles;
+
+        /// <summary>Get or set the location of a window</summary>
+        public Coordinate WindowPosition
+        {
+            get
+            {
+                var position = Driver.Manage().Window.Position;
+                return new Coordinate(position.X, position.Y);
+            }
+            set
+            {
+                var window = Driver.Manage().Window;
+                if (value == null) throw new ArgumentNullException(nameof(WindowPosition), ErrorMessages.SizeIsNoPair);
+                window.Position = new Point(value.X, value.Y);
+            }
+        }
 
         /// <summary>The dimensions of the browser window (width, height)</summary>
         public Coordinate WindowSize
@@ -85,33 +101,19 @@ namespace SeleniumFixture
         /// <summary>Maximize window</summary>
         public void MaximizeWindow() => Driver.Manage().Window.Maximize();
 
-        /// <summary>Get or set the location of a window</summary>
-        public Coordinate WindowPosition
-        {
-            get
-            {
-                var position = Driver.Manage().Window.Position;
-                return new Coordinate(position.X, position.Y);
-            }
-            set
-            {
-                var window = Driver.Manage().Window;
-                if (value == null) throw new ArgumentNullException(nameof(WindowPosition), ErrorMessages.SizeIsNoPair);
-                window.Position = new Point(value.X, value.Y);
-            }
-        }
-
         /// <summary>Provide a text response to a prompt and confirm (press OK)</summary>
         public bool RespondToAlert(string text)
         {
             if (!WaitForAlert()) return false;
             Driver.SwitchTo().Alert().SendKeys(text);
             Driver.SwitchTo().Alert().Accept();
-            return WaitFor(drv => !AlertIsPresent());
+            return WaitFor(_ => !AlertIsPresent());
         }
 
-        ///<summary>"Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name).
-        ///If no handle is specified, it will select the window that was used for the Open command.</summary>
+        /// <summary>
+        ///     "Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name).
+        ///     If no handle is specified, it will select the window that was used for the Open command.
+        /// </summary>
         public bool SelectWindow(string windowName)
         {
             if (string.IsNullOrEmpty(windowName)) windowName = _mainWindowHandle;
@@ -140,9 +142,9 @@ namespace SeleniumFixture
             return true;
         });
 
-        internal bool WaitForAlert() => WaitFor(drv => AlertIsPresent());
+        internal bool WaitForAlert() => WaitFor(_ => AlertIsPresent());
 
-        internal bool WaitForAlertToClose() => WaitFor(drv => !AlertIsPresent());
+        internal bool WaitForAlertToClose() => WaitFor(_ => !AlertIsPresent());
 
         /// <summary>After clicking a link that is known to open a new window, wait for that new window to appear. Returns the window name</summary>
         public string WaitForNewWindowName()

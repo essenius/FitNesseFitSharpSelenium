@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using static System.Globalization.CultureInfo;
 using System.Reflection;
-using ImageHandler;
+using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model
 {
@@ -29,9 +29,9 @@ namespace SeleniumFixture.Model
     internal static class BrowserDriverContainer
     {
         private static int _idCounter = 1;
-        private static Proxy _proxy = new Proxy {Kind = ProxyKind.System};
+        private static Proxy _proxy = new() { Kind = ProxyKind.System };
         private static TimeSpan _timeout = TimeSpan.FromSeconds(60);
-        private static readonly Dictionary<string, IWebDriver> Drivers = new Dictionary<string, IWebDriver>();
+        private static readonly Dictionary<string, IWebDriver> Drivers = new();
 
         public static double CommandTimeoutSeconds
         {
@@ -56,7 +56,10 @@ namespace SeleniumFixture.Model
 
         internal static void CloseAllDrivers()
         {
-            foreach (var webDriver in Drivers) webDriver.Value?.Quit();
+            foreach (var webDriver in Drivers)
+            {
+                webDriver.Value?.Quit();
+            }
 
             Drivers.Clear();
             CurrentId = string.Empty;
@@ -84,8 +87,6 @@ namespace SeleniumFixture.Model
             }
         }
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types",
-            Justification = "Desired behavior. Returning exception to FitSharp")]
         public static string NewRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
             try
@@ -101,7 +102,8 @@ namespace SeleniumFixture.Model
                 throw new StopTestException(message, e);
             }
             ((RemoteWebDriver)Current).FileDetector = new LocalFileDetector();
-
+            // Workaround for the encoding 437 error, see https://githubmemory.com/repo/aquality-automation/aquality-selenium-dotnet/issues/198
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             CurrentId = AddDriver(Current);
             return CurrentId;
         }
@@ -131,7 +133,7 @@ namespace SeleniumFixture.Model
         {
             if (!Enum.TryParse(proxyType, true, out ProxyKind proxyKind)) throw new ArgumentException($"Unrecognized proxy type '{proxyType}'");
             // can't update proxy in all cases, so create a new one.
-            _proxy = new Proxy {Kind = proxyKind};
+            _proxy = new Proxy { Kind = proxyKind };
             return proxyKind != ProxyKind.Unspecified;
         }
 
@@ -154,10 +156,10 @@ namespace SeleniumFixture.Model
             }
         }
 
-        public static Snapshot TakeScreenshot()
+        public static Image TakeScreenshot()
         {
             var screenshot = ((ITakesScreenshot)Current).GetScreenshot();
-            return new Snapshot(screenshot.AsByteArray);
+            return new Image(screenshot.AsBase64EncodedString);
         }
     }
 }

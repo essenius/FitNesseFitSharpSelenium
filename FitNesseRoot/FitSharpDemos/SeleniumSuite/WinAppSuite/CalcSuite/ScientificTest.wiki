@@ -8,6 +8,8 @@
 |Click Element   |Clear                                                                              |
 |Assert Result   |0                                                                                  |
 |Click Element   |One                                                                                |
+|Click ELement   |Trigonometry                                                                       |
+|Wait For Element|Sine                                                                               |
 |Click Element   |Sine                                                                               |
 |Assert Result   |0.8414709848078965066525023216303                                                  |
 |Check           |Text In Element|AccessibilityId:CalculatorExpression|Expression is sine radians (1)|
