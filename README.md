@@ -31,7 +31,7 @@ git clone  https://github.com/essenius/FitNesseFitSharpSelenium .
     2. If you use a different port for WinApp than 4727, update ```WinAppServer```.
     3. If you use a different port for Selenium Server than 6667, update ```SeleniumServer```.
     4. Configure the name of your Android device  in ```AndroidDevice```.
-    5. Configure the URL of the demo test page in ```TESTPAGE```.
+    5. Configure the URL of the demo test page in ```TESTSITE```.
     6. If you want to run the demo on a different default browser than Chrome Headless, update ```BROWSER```.
     7. If you installed FitSharp somwewhere else, Update ```FITSHARP_HOME``` accordingly.
    
