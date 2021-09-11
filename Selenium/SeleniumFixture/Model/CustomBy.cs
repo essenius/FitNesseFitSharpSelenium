@@ -69,7 +69,14 @@ namespace SeleniumFixture.Model
             var webElementList = new List<IWebElement>();
             foreach (var by in ByList)
             {
-                webElementList.AddRange(by.FindElements(context));
+                try
+                {
+                    webElementList.AddRange(by.FindElements(context));
+                }
+                catch (NoSuchElementException)
+                {
+                    // ignore
+                }
             }
             return webElementList.AsReadOnly();
         }
