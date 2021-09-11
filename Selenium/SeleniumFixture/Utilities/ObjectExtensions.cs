@@ -37,7 +37,7 @@ namespace SeleniumFixture.Utilities
         public static string RegexPattern(this string input)
         {
             Debug.Assert(input.IsRegex());
-            return input.Substring(1, input.Length - 2);
+            return input[1..^1];
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SeleniumFixture.Utilities
         public static string ToMethodName(this string gracefulName)
         {
             if (string.IsNullOrEmpty(gracefulName)) return gracefulName;
-            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CurrentCulture) + gracefulName.Substring(1);
+            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CurrentCulture) + gracefulName[1..];
             var textInfo = CurrentCulture.TextInfo;
             var result = string.Empty;
             var sections = gracefulName.Split(' ');

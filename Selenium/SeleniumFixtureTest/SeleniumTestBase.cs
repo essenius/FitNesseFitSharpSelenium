@@ -24,6 +24,7 @@ namespace SeleniumFixtureTest
         protected static readonly EndToEndTest Test = new();
 
         [TestMethod]
+        [TestCategory("Browser")]
         [EndToEndTestCases]
         public void RunTest(MethodInfo testCase)
         {

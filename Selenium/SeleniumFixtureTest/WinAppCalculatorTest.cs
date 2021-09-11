@@ -10,7 +10,6 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
@@ -59,8 +58,7 @@ namespace SeleniumFixtureTest
         private static bool ResultOk(string expectedResult, string rawResult)
         {
             var result = new Regex(@".*\s([-+]?[0-9]*\.?[0-9]+)\s.*").Matches(rawResult);
-            if (result[0].Groups.Count <= 1) return false;
-            return result[0].Groups[1].Value.Equals(expectedResult);
+            return result[0].Groups.Count > 1 && result[0].Groups[1].Value.Equals(expectedResult);
         }
 
         [TestMethod]

@@ -63,7 +63,7 @@ namespace SeleniumFixture
         /// </summary>
         public bool LongPressKeyCode(string keyCodeIn)
         {
-            if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
+            if (Driver is not AndroidDriver<AppiumWebElement> androidDriver) return false;
             var keyCode = KeyCode(keyCodeIn);
             if (keyCode == null) return false;
             androidDriver.LongPressKeyCode(keyCode.Value);
@@ -96,7 +96,7 @@ namespace SeleniumFixture
         /// </summary>
         public bool PressKeyCode(string keyCodeIn)
         {
-            if (!(Driver is AndroidDriver<AppiumWebElement> androidDriver)) return false;
+            if (Driver is not AndroidDriver<AppiumWebElement> androidDriver) return false;
             var keyCode = KeyCode(keyCodeIn);
             if (keyCode == null) return false;
             androidDriver.PressKeyCode(keyCode.Value);

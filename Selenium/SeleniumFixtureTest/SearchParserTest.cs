@@ -30,6 +30,14 @@ namespace SeleniumFixtureTest
 
         [TestMethod]
         [TestCategory("Unit")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SearchParserCustomByExceptionTest()
+        {
+            _ = new SearchParser("trial", "").By;
+        }
+
+        [TestMethod]
+        [TestCategory("Unit")]
         public void SearchParserByFunctionTest()
         {
             const string locator = "abc";

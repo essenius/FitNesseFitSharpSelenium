@@ -59,9 +59,9 @@ namespace SeleniumFixtureTest
             if (_skippedTests.Count == 0) return;
 
             Debug.WriteLine("Skipped Tests:");
-            foreach (var skippedTest in _skippedTests)
+            foreach (var (key, value) in _skippedTests)
             {
-                Debug.WriteLine(" " + skippedTest.Key + ": " + skippedTest.Value);
+                Debug.WriteLine(" " + key + ": " + value);
             }
         }
 
@@ -191,8 +191,8 @@ namespace SeleniumFixtureTest
             var ok = _selenium.WaitForTextIgnoringCase("data load completed");
             Assert.IsTrue(ok, "Wait for data load completed");
             Assert.IsFalse(_selenium.AlertIsPresent());
-            Assert.IsTrue(_selenium.ElementExists("id:alertButton"));
-            _selenium.ClickElement("id:alertButton");
+            Assert.IsTrue(_selenium.ElementExists("trial:alertButton"));
+            _selenium.ClickElement("content:Alert");
             Assert.IsTrue(_selenium.AlertIsPresent(), "Alert present");
             Assert.IsTrue(_selenium.DismissAlert(), "Dismissed alert");
             Assert.IsFalse(_selenium.AlertIsPresent(), "Alert not present");
@@ -207,16 +207,16 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert (2)");
             Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"), "Pressed OK");
 
-            _selenium.ClickElement("id:confirmButton");
+            _selenium.ClickElement("partialcontent:Confir");
             Assert.IsTrue(_selenium.DismissAlert(), "Dismiss alert");
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss succeeded");
 
-            _selenium.ClickElement("id:promptButton");
+            _selenium.ClickElement("Content:Prompt");
             Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert present");
             _selenium.AcceptAlert();
             Assert.AreEqual("You returned: sure", _selenium.TextInElement("status"), "Prompt alert accepted");
 
-            _selenium.ClickElement("id:promptButton");
+            _selenium.ClickElement("trial:Prompt");
             _selenium.DismissAlert();
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss prompt alert succeeded");
 
@@ -266,9 +266,9 @@ namespace SeleniumFixtureTest
 
         private void ClearTest()
         {
-            var originalValue = _selenium.AttributeOfElement("value", "text1");
+            var originalValue = _selenium.AttributeOfElement("value", "Label:Text 1");
             Assert.IsTrue(_selenium.ClearElement("text1"));
-            Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", "text1")));
+            Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", "id:text1")));
             _selenium.SetElementTo("text1", originalValue);
         }
 
@@ -529,10 +529,25 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)), "actual options contains all expected options - value");
         }
 
+        private void SelectByLabelTest()
+        {
+            Assert.AreEqual("7", _selenium.AttributeOfElement("value", "label:Meter:"), "Select by label before element, specifying colon");
+            Assert.AreEqual("32", _selenium.AttributeOfElement("value", "label:Progress:"), "Select by parent label ignoring colon");
+            Assert.IsTrue(_selenium.TextInElement("label:Text Area").StartsWith("Sample text area"),
+                "Select by label after element, withouts specifying colon");
+        }
+
+        private void SelectByPartialContentlTest()
+        {
+            Assert.IsTrue(_selenium.TextInElement("PartialContent:allows for checking").StartsWith("Sample text area"),
+                "Select text area by partial content");
+            Assert.AreEqual("7", _selenium.AttributeOfElement("value", "partialcontent:7 of"), "Select by partial content");
+        }
+
         private void SelectMultiElementTest()
         {
             // taking default methods for options, which should use text (via id)
-            _selenium.SelectOptionInElement("item 1", "id:multi-select");
+            _selenium.SelectOptionInElement("item 1", "label:Multi Select");
             _selenium.SelectOptionInElement("item 3", "id:multi-select");
             _selenium.SelectOptionInElement("item 5", "id:multi-select");
 
@@ -566,7 +581,7 @@ namespace SeleniumFixtureTest
         private void SendKeysToElementTest()
         {
             // Chrome Headless does not seem to like to copy (^c fails) -- seems fixed now.
-            var originalValue1 = _selenium.AttributeOfElement("value", "text1");
+            var originalValue1 = _selenium.AttributeOfElement("value", "label:Text 1");
             var originalValue2 = _selenium.AttributeOfElement("value", "text2");
             Assert.IsTrue(_selenium.SendKeysToElement("^ac^{DEL}New Value", "text1"));
             Assert.IsTrue(_selenium.SendKeysToElement("^a^{DEL}", "text2"));
@@ -633,7 +648,7 @@ namespace SeleniumFixtureTest
             VerifySendKeysToElementWithFallback("2409{RIGHT}2014{RIGHT}0123", "datetime-local", "datetime-local", "2014-09-24T01:23");
 
             // The color picker is a pain since it opens a system dialog which Selenium can't get to
-            // So we cheat here and directly set the value
+            // So we 'cheat' here and directly set the value. We don't have to test the color picker.
 
             _selenium.SetAttributeOfElementTo("value", "color", "#ff7f00");
             Assert.AreEqual("#ff7f00", _selenium.AttributeOfElement("value", "color"));

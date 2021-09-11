@@ -168,7 +168,7 @@ namespace SeleniumFixture
             {
                 throw new NotImplementedException(ErrorMessages.NoDragDropToCoordinates);
             }
-            if (!(Driver is IPerformsTouchActions driver)) return false;
+            if (Driver is not IPerformsTouchActions driver) return false;
             var touchAction = new TouchAction(driver);
             Debug.Assert(location != null, nameof(location) + " != null");
             touchAction.LongPress(dragElement).MoveTo(location.X, location.Y).Release().Perform();
@@ -183,7 +183,7 @@ namespace SeleniumFixture
             // We do the drop element resolution as late as possible since it may only appear during LongPress
             if (Driver.IsAndroid() || Driver.IsIos())
             {
-                if (!(Driver is IPerformsTouchActions driver)) return false;
+                if (Driver is not IPerformsTouchActions driver) return false;
                 // first we long press and find the element. It might only show up during longpress
                 var checkAction = new TouchAction(driver);
                 checkAction.LongPress(dragElement).Perform();
@@ -257,7 +257,7 @@ namespace SeleniumFixture
         /// <summary>Long press an element (mobile only)</summary>
         public bool LongPressElementForSeconds(string searchCriterion, double seconds) => DoOperationOnElement(searchCriterion, element =>
         {
-            if (!(Driver is IPerformsTouchActions driver)) return false;
+            if (Driver is not IPerformsTouchActions driver) return false;
             var action = new TouchAction(driver);
             action.LongPress(element).Wait(Convert.ToInt64(TimeSpan.FromSeconds(seconds).TotalMilliseconds)).Release().Perform();
             return true;
@@ -459,6 +459,7 @@ namespace SeleniumFixture
                     // ignore
                 }
 
+                // not using SendKeysTo here as we don't want +% etc. to get interpreted as special keys
                 element.SendKeys(value);
                 return element;
             });
@@ -482,7 +483,7 @@ namespace SeleniumFixture
         /// <summary>Single tap an element (mobile only)</summary>
         public bool TapElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
         {
-            if (!(Driver is IPerformsTouchActions driver)) return false;
+            if (Driver is not IPerformsTouchActions driver) return false;
             var action = new TouchAction(driver);
             action.Tap(element).Perform();
             return true;

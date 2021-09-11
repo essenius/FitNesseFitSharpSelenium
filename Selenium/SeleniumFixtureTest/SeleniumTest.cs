@@ -177,10 +177,31 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")), "Open Uri");
             Assert.IsTrue(_selenium.WaitForElement(CookiesOkButton));
             _selenium.ClickElement(CookiesOkButton);
-            Assert.IsTrue(_selenium.WaitForElement("name:q"));
+            Assert.IsTrue(_selenium.WaitForElement("trial:gLFqf"));
             Assert.IsTrue(_selenium.Url.Contains("google."), "URL contains google");
             Assert.IsTrue(_selenium.SetElementTo(SearchBar, "Cheese"), "Set q to Cheese");
             Assert.IsTrue(_selenium.SubmitElement(SearchBar), "Submit");
+        }
+
+        [TestMethod]
+        [TestCategory("Experiments")]
+        public void SeleniumLocalChromeNsTest()
+        {
+            Selenium.DefaultSearchMethod = "trial";
+            const string cookiesOkButton = "cssSelector:button.cookie-notice__btn-accept.hide-in-settings";
+            Assert.IsTrue(Selenium.SetProxyType("System"), "Set Proxy System");
+            Assert.IsTrue(_selenium.SetBrowser("Chrome"), "Set Browser Chrome");
+            Assert.IsTrue(_selenium.Open(new Uri("http://www.ns.nl")), "Open Uri");
+            Assert.IsTrue(_selenium.WaitForElement(cookiesOkButton));
+            _selenium.ClickElement(cookiesOkButton);
+            Assert.IsTrue(_selenium.WaitForElement("van"));
+            _selenium.SetElementTo("naar", "Den Haag HS");
+            _selenium.SendKeysToElement("Rotterdam Centraal{Enter}", "van");
+            _selenium.WaitUntilElementIsClickable("Plannen en aanmelden");
+            _selenium.ClickElement("Plannen en aanmelden");
+            _selenium.WaitForElement("trial:rio-jp-advice-container-wrapper");
+
+            _selenium.Close();
         }
 
         [TestMethod]

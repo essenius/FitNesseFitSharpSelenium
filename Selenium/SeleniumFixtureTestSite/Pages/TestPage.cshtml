@@ -87,6 +87,7 @@
                 <input id="fm" name="radio" type="radio" checked/>
                 <label for="fm">FM</label> 
             </fieldset>
+            <label for="single-select">Single Select</label>
             <select name="single-select" id="single-select" size="6">
                 <option>item 1</option>
                 <option>item 2</option>
@@ -95,6 +96,7 @@
                 <option>item 5</option>
                 <option>item</option>
             </select>
+            <label for="multi-select">Multi Select:</label>
             <select name="multi-select" id="multi-select" size="6" multiple="multiple">
                 <option>item 1</option>
                 <option>item 2</option>
@@ -103,6 +105,7 @@
                 <option>item 5</option>
                 <option>item</option>
             </select>
+            <label for="drop">DropDown</label>
             <select name="dropdown" id="dropdown">
                 <option value="item1">item 1</option>
                 <option value="item2">item 2</option>
@@ -120,6 +123,17 @@
         <button id="toggleHideButton" type="button" onclick="toggleHideButtonClick()">Toggle Hide/Unhide button</button>
         <button type="submit" id="submitButton">Submit Form</button>
     </form>
+</section>
+<section id="sectionOtherElements">
+    <label for="meterId">Meter:</label>
+    <meter id="meterId" value="7" min="0" max="9">7 of 9</meter><br/>
+    <label>Progress
+    <progress id="progressId" value="32" max="100">32%</progress><br/>
+    </label>
+    <textarea id="textAreaId" name="textAreaaName" rows="3" cols="50">
+Sample text area for testing the Selenium Fixture. It doesn't do anything special but allows for checking if the fixture works.     
+    </textarea>
+    <label for="textAreaId">Text Area:</label>
 </section>
 <section id="sectionDragAndDrop">
     <h1>Drag and drop</h1>
