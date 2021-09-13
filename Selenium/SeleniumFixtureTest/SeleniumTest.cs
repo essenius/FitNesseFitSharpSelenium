@@ -85,7 +85,7 @@ namespace SeleniumFixtureTest
         [TestCategory("Unit")]
         public void SeleniumDefaultSearchMethodTest()
         {
-            Assert.AreEqual("id", Selenium.DefaultSearchMethod, "Starting default is id");
+            Assert.AreEqual("trial", Selenium.DefaultSearchMethod, "Starting default is trial");
             Selenium.DefaultSearchMethod = "CssSelector";
             Assert.AreEqual("CssSelector", Selenium.DefaultSearchMethod, "New default is CssSelector");
             Selenium.DefaultSearchMethod = "id";
@@ -177,7 +177,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")), "Open Uri");
             Assert.IsTrue(_selenium.WaitForElement(CookiesOkButton));
             _selenium.ClickElement(CookiesOkButton);
-            Assert.IsTrue(_selenium.WaitForElement("trial:gLFqf"));
+            Assert.IsTrue(_selenium.WaitForElement("trial:q"));
             Assert.IsTrue(_selenium.Url.Contains("google."), "URL contains google");
             Assert.IsTrue(_selenium.SetElementTo(SearchBar, "Cheese"), "Set q to Cheese");
             Assert.IsTrue(_selenium.SubmitElement(SearchBar), "Submit");

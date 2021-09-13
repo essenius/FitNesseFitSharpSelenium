@@ -43,7 +43,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.Scroll("right"), "Scroll to the right");
             Assert.IsTrue(Fixture.TextExistsIgnoringCase("Widget Preview"), "Check if the text 'Widget Preview' is there");
             Assert.IsTrue(Fixture.Scroll("left"), "Scroll to the left");
-            Assert.IsTrue(Fixture.TextExists("Music"), "Check if the text 'Music't is there");
+            Assert.IsTrue(Fixture.WaitForText("Music"), "Wait for text 'Music'");
             Assert.IsTrue(Fixture.PressKeyCode("Back"), "Press the Back button");
             Assert.IsTrue(Fixture.WaitForElement(Browser), "Check if back at the home page");
         }
@@ -67,8 +67,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:56"), "Wait for answer (also checks value)");
             Assert.AreEqual("56", Fixture.TextInElement(resultBox), "Check the calculation result");
             var screenshot = Selenium.Screenshot();
-            Assert.IsTrue(screenshot.StartsWith("<img alt=\"Screenshot\" src=\"data: image / png; base64,iVBORw0KGgoAAAANSUhEUgAAAtIAAAUCCAY"), "Screenshot starts OK");
             Debug.Print(Selenium.Screenshot());
+            Assert.IsTrue(screenshot.StartsWith("<img alt=\"Screenshot\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtIAAAUCCAY"), "Screenshot starts OK");
 
             // Now we test the LongPressKeyCode with Home. Something strange happening here. It does something else from Appium than on the device emulator itself:
             // it goes to the recent apps. But it is consistent with long pressing the circle button on the emulator menu (which should be Home).
@@ -183,6 +183,8 @@ namespace SeleniumFixtureTest
             Fixture.WaitForElement(okButton);
             Fixture.ClickElementIfVisible(okButton);
             Assert.IsTrue(Fixture.PressKeyCode("Home"));
+            Assert.IsTrue(Fixture.WaitForElement(Apps), "Wait for the Apps button");
+
         }
 
         [TestCleanup]

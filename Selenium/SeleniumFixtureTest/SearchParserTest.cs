@@ -78,7 +78,7 @@ namespace SeleniumFixtureTest
 
         [DataTestMethod]
         [TestCategory("Unit")]
-        [DataRow("  abc  ", "id", "abc")]
+        [DataRow("  abc  ", "trial", "abc")]
         [DataRow("abc:def", "abc", "def")]
         [DataRow("abc : def", "abc", "def")]
         [DataRow("abc:def:ghi", "abc", "def:ghi")]
@@ -87,7 +87,7 @@ namespace SeleniumFixtureTest
         [DataRow(":abc", "", "abc")]
         [DataRow("abc:", "abc", "")]
         [DataRow(":", "", "")]
-        [DataRow("", "id", "")]
+        [DataRow("", "trial", "")]
         public void SearchParserFindElement1Test(string input, string expectedMethod, string expectedLocator)
         {
             var searchParser = new SearchParser(input);
@@ -103,8 +103,8 @@ namespace SeleniumFixtureTest
         [DataTestMethod]
         [TestCategory("Unit")]
         [DataRow("filled", "abc", "def", "abc", "def")]
-        [DataRow("null", null, "def", "id", "def")]
-        [DataRow("empty", "", "def", "id", "def")]
+        [DataRow("null", null, "def", "trial", "def")]
+        [DataRow("empty", "", "def", "trial", "def")]
         public void SearchParserFindElement2Test(string testId, string methodIn, string locatorIn, string expectedMethod, string expectedLocator)
         {
             var searchParser = new SearchParser(methodIn, locatorIn);

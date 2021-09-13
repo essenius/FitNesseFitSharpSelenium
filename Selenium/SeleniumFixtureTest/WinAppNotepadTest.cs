@@ -69,7 +69,7 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(desiredLocation, Fixture.WindowPosition, "Position OK");
             var snapshot = Selenium.Screenshot();
             const string expectedPart =
-                "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAACMCAIAAADdvmjPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAB";
+                "<img alt=\"Screenshot\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAACMCAIAAADdvmjPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAB";
             Assert.IsTrue(snapshot.StartsWith(expectedPart), "Snapshot starts OK");
         }
     }

@@ -79,7 +79,7 @@ namespace SeleniumFixture.Model
             }
         }
 
-        public static string DefaultMethod { get; set; } = "id";
+        public static string DefaultMethod { get; set; } = "trial";
 
         public static string Delimiter { get; set; } = ":";
 
