@@ -69,7 +69,7 @@ WinAppServer=!-http://127.0.0.1:4727-!
 If you want to enable integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you wnat to enable it for.
 
 ```
-Firefos.IntegratedAuthentication=mydomain.com
+Firefox.IntegratedAuthentication=mydomain.com
 ```
 
 # Running the unit tests
