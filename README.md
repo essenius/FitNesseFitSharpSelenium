@@ -6,14 +6,14 @@ The steps to install are very similar to that of installing the [FibonacciDemo](
 
 Differences are:
 * Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium`. 
-* Build command becomes: `dotnet build %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture.sln`
-* Install browser drivers and Selenium Server (see below).
-* Go to folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\debug\net5.0`
+* You will need to use Visual Studio Enterprise to build the solution since the test prooject uses Fakes. You can work around that by building SeleniumFixture only, and manually copying in the package libraries to the dll folder (and then using that one as go to folder below).
+* Install browser drivers and other dependencies (see below).
+* Go to folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixtureTest\bin\debug\net5.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
 # Installing dependencies
 
-All the settings mentioned in this sectio can be configured both in `plugins.properties` and on FitNesse pages (e.g. `!define BROWSER {chrome}`).
+All the settings mentioned in this section can be configured both in `plugins.properties` and on FitNesse pages (e.g. `!define BROWSER {chrome}`).
 Settings on test pages overrule the settings in plugins.properties.
 
 ## browser drivers
@@ -82,5 +82,3 @@ See the [Wiki](../../wiki)
 
 # Contribute
 Enter an issue or provide a pull request. 
-
-      
