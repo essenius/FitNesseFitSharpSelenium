@@ -16,8 +16,9 @@ Differences are:
 All the settings mentioned in this section can be configured both in `plugins.properties` and on FitNesse pages (e.g. `!define BROWSER {chrome}`).
 Settings on test pages overrule the settings in plugins.properties.
 
-## browser drivers
 We'll give the instructions for Windows here, for Mac it should be quite similar.
+
+## Browser Drivers
 
 * Choose a suitable folder that is already in the Path, or create new folder %LOCALAPPDATA%\BrowserDrivers and add that to the Path.
 * [Download the ChromeDriver version](https://chromedriver.chromium.org/downloads) that corresponds to the version of Chrome that you use. 
@@ -66,7 +67,7 @@ WinAppServer=!-http://127.0.0.1:4727-!
 
 ## Firefox integrated authentication
 
-If you want to enable integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you wnat to enable it for.
+If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you wnat to enable it for.
 
 ```
 Firefox.IntegratedAuthentication=mydomain.com
