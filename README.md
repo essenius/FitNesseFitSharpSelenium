@@ -1,29 +1,6 @@
 # FitNesseFitSharpSelenium
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages
 
-# Installing the fixture and the examplesn
-The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
-
-Differences are:
-* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium`. 
-* Build command becomes: `dotnet build %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture.sln`
-* Install browser drivers and Selenium Server (see below).
-* Go to folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\debug\net5.0`
-* Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
-
-# Installing browser drivers
-We'll give the instructions for Windows here, for Mac it should be quite similar.
-
-* Choose a suitable folder that is already in the Path, or create new folder %LOCALAPPDATA%\BrowserDrivers and add that to the Path.
-* [Download the ChromeDriver version](https://chromedriver.chromium.org/downloads) that corresponds to the version of Chrome that you use. 
-* Unblock the ZIP file and extract the contents into that folder.
-* Repeat the process to download drivers for [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), [Firefox (GeckoDriver)](https://github.com/mozilla/geckodriver/releases) and [Internet Explorer](https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver) (if you still need that)
-
-# Tutorial and Reference
-See the [Wiki](../../wiki)
-
-# Contribute
-Enter an issue or provide a pull request. 
 # Getting Started
 1. Download FitNesse (http://fitnesse.org) and install it to C:\Apps\FitNesse
 1. Download FitSharp (https://github.com/jediwhale/fitsharp) and install it to C:\Apps\FitNesse\FitSharp. Note: at this point there seems to be a compatibility issue with FitSharp 2.7.1, so use 2.7.0 for now.
