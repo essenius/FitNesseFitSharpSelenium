@@ -59,5 +59,8 @@
 3.1.0    Added CustomBy for By Content, By Label, By Partial Content and By Trial
 3.1.1    Exception handling in CustomBy.FindElements to ignore missing elements
 3.1.2    Made SearchParser default to 'trial'; fixed a few broken tests.
+3.2.0    Eliminated (Windows specific) check for screen scaling (IE only, and didn't add much value).
+         Eliminated _skippedTests in EndToEndTest and replaced by Debug.WriteLine().
+         Eliminated SeleniumBaseTests; moved to Experiments and EndToEndTest.
 
 Note: we can't upgrade to Webdriver 4 until Appium and WinApp support it.

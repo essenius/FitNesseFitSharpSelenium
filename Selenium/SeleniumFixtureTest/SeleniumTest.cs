@@ -42,22 +42,6 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Experiment")]
-        public void InternetExplorerTrial()
-        {
-            var ieService = InternetExplorerDriverService.CreateDefaultService("C:\\Apps\\BrowserDrivers", "IEDriverServer.exe");
-            ieService.LoggingLevel = InternetExplorerDriverLogLevel.Trace;
-            ieService.LogFile = "C:\\Data\\Selenium\\IEDriverServer.log";
-            var ieOptions = new InternetExplorerOptions();
-            ieOptions.AddAdditionalCapability("ie.edgechromium", true);
-            ieOptions.AddAdditionalCapability("ie.edgepath", @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe");
-            var driver = new InternetExplorerDriver(ieService, ieOptions, TimeSpan.FromSeconds(10));
-            driver.Navigate().GoToUrl("https://google.com");
-            Thread.Sleep(1000);
-            driver.FindElement(By.Id("L2AGLb")).Click();
-        }
-
-        [TestMethod]
         [TestCategory("Integration")]
         public void SeleniumCommandTimeoutSecondsTest()
         {
@@ -215,7 +199,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.SetBrowser("Firefox"));
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")));
             Assert.IsTrue(_selenium.WaitUntilTitleMatches("Google"));
-            Assert.IsTrue(_selenium.ClickElementIfVisible(CookiesOkButton) ?? false);
+            Assert.IsTrue(_selenium.ClickElementIfVisible(CookiesOkButton) ?? true);
             Assert.IsTrue(_selenium.WaitForElement(SearchBar));
             Assert.IsTrue(_selenium.Url.Contains("www.google."), "url is something like www.google.");
             Assert.IsTrue(_selenium.SetElementTo(SearchBar, "Cheese"));
@@ -229,8 +213,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Selenium.SetProxyType("System"), "Set Proxy System");
             Assert.IsTrue(_selenium.SetBrowser("IE"), "Set Browser IE");
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")), "Open Uri");
-            Assert.IsTrue(_selenium.WaitForElement(CookiesOkButton));
-            _selenium.ClickElement(CookiesOkButton);
+            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Google"));
+            Assert.IsTrue(_selenium.ClickElementIfVisible(CookiesOkButton) ?? true);
             Assert.IsTrue(_selenium.WaitForElement("name:q"));
             Assert.IsTrue(_selenium.Url.Contains("google."), "URL contains google");
             Assert.IsTrue(_selenium.SetElementTo(SearchBar, "Cheese"), "Set q to Cheese");

@@ -46,7 +46,7 @@ namespace SeleniumFixtureTest
         [ExpectedExceptionWithMessage(typeof(StopTestException),
             "Can't run browser 'Opera' on Selenium server '*'")]
         public void BrowserDriverNonInstalledRemoteDriverRaisesStopTestException() =>
-            BrowserDriverContainer.NewRemoteDriver("Opera", SeleniumBaseTest.RemoteSelenium, new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("Opera", EndToEndTest.RemoteSelenium, new Dictionary<string, object>());
 
         [TestMethod]
         [TestCategory("Unit")]

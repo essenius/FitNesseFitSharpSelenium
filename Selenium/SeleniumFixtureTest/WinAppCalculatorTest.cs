@@ -37,9 +37,6 @@ namespace SeleniumFixtureTest
         [ClassInitialize]
         public static void ClassInitialize(TestContext _)
         {
-            /*_testsToDo = typeof(WinAppCalculatorTest)
-                .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
-                .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);*/
             var caps = new Dictionary<string, object>
             {
                 { "app", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App" }
@@ -47,7 +44,8 @@ namespace SeleniumFixtureTest
             Selenium.DefaultSearchMethod = "name";
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
+                Assert.IsTrue(
+                    Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
             }
             catch (StopTestException)
             {
@@ -95,7 +93,9 @@ namespace SeleniumFixtureTest
 
             Assert.IsTrue(Fixture.ClickElement("Sine"), "Click Sin");
             AssertResult("0.8414709848078965066525023216303");
-            Assert.AreEqual("Expression is sine radians (1)", Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
+            Assert.AreEqual(
+                "Expression is sine radians (1)",
+                Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
         }
 
         [TestMethod]

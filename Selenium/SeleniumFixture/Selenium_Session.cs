@@ -68,7 +68,8 @@ namespace SeleniumFixture
             set => FireFoxDriverCreator.IntegratedAuthenticationDomain = value;
         }
 
-        [SupportedOSPlatform("windows")] private ProtectedMode ProtectedMode => _protectedMode ??= new ProtectedMode(new ZoneListFactory());
+        [SupportedOSPlatform("windows")]
+        private ProtectedMode ProtectedMode => _protectedMode ??= new ProtectedMode(new ZoneListFactory());
 
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 
@@ -151,7 +152,8 @@ namespace SeleniumFixture
 
         /// <summary>Execute JavaScript using parameters. No substitution of elements is attempted</summary>
         /// <remarks>You can refer to them via arguments[0-i] in the script</remarks>
-        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "Would not be visible to FitSharp")]
+        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global",
+            Justification = "Would not be visible to FitSharp")]
         public object ExecuteScriptWithPlainParameters(string script, Collection<object> args)
         {
             var scriptExecutor = (IJavaScriptExecutor)Driver;
@@ -182,7 +184,8 @@ namespace SeleniumFixture
 
         /// <summary>See <see cref="SetRemoteBrowserAtAddressWithCapabilities" /></summary>
         /// <returns>the driver ID</returns>
-        public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress, Dictionary<string, object> capabilities)
+        public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
+            Dictionary<string, object> capabilities)
         {
             DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, capabilities);
             Driver = BrowserDriverContainer.Current;
@@ -201,7 +204,7 @@ namespace SeleniumFixture
         /// <param name="condition">ON, OFF or EQUAL</param>
         public bool ProtectedModesAre(string condition)
         {
-            // if we are not on Windows, we don't care about protected modes (no Internet Explorer)
+            // if we are not on Windows, we don't care about protected modes (no Internet Explorer) so all is good
             if (!OperatingSystem.IsWindows()) return true;
             var ok = condition?.ToUpperInvariant() switch
             {
@@ -249,7 +252,8 @@ namespace SeleniumFixture
         /// </summary>
         /// <param name="proxyType">Manual or ProxyAutoConfigure</param>
         /// <param name="proxyValue">hostname.com:8080 with Manual, or http://host/pacfile withProxyAutoConfigure</param>
-        public static bool SetProxyTypeValue(string proxyType, string proxyValue) => BrowserDriverContainer.SetProxyValue(proxyType, proxyValue);
+        public static bool SetProxyTypeValue(string proxyType, string proxyValue) =>
+            BrowserDriverContainer.SetProxyValue(proxyType, proxyValue);
 
         /// <summary>Use a remote Selenium server (address including port). Raises a StopTestException if unable to connect</summary>
         /// <returns>true</returns>
@@ -267,7 +271,8 @@ namespace SeleniumFixture
         public void SetTimeoutSeconds(double timeoutInSeconds) => TimeoutInSeconds = timeoutInSeconds;
 
         /// <summary>Select either Local or Session storage (to work on other Web Storage functions)</summary>
-        public void UseWebStorage(StorageType storageType) => _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
+        public void UseWebStorage(StorageType storageType) =>
+            _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
 
         /// <param name="qualifier">SHORT, EXTENDED or empty</param>
         /// <returns>

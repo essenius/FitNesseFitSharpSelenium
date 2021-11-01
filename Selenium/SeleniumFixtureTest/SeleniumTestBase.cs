@@ -30,5 +30,6 @@ namespace SeleniumFixtureTest
         {
             testCase.Invoke(Test, BindingFlags.DoNotWrapExceptions, null, null, null);
         }
+
     }
 }

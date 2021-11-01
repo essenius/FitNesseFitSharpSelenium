@@ -12,14 +12,11 @@
 using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.IE;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
     internal class InternetExplorerDriverCreator : BrowserDriverCreator
     {
-        private readonly NativeMethods _nativeMethods = new();
-
         public InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
         }
@@ -52,8 +49,6 @@ namespace SeleniumFixture.Model
 
         public override IWebDriver LocalDriver()
         {
-            if (!_nativeMethods.ScreenScalingIs1()) throw new StopTestException(ErrorMessages.IEScreenScalingIssue);
-
             var driverFolder = Environment.GetEnvironmentVariable("IEWebDriver");
             InternetExplorerDriverService driverService = null;
             IWebDriver driver;

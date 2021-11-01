@@ -27,16 +27,25 @@ using SeleniumFixture.Utilities;
 namespace SeleniumFixtureTest
 {
     /// <summary>
-    ///     This class is the template for tests ran on different browsers, remote or local
+    ///     This class is the template for tests ran on different browsers, remote or local.
+    ///     Since we can't make class initialization and class cleanup data driven, we make different test classes per
+    ///     browser configuration, and we use one test method in those classes with a test data source attribute to
+    ///     define which tests we are going to run. We use reflection because the test data needs to be static,
+    ///     and because it allows simplification: just add a new test method here and it will be added in all browser tests.
+    ///     Test methods are defined as private instance methods without parameters or return values, ending in "Test"
     /// </summary>
+    /// <remarks>
+    ///     It's a bit bigger than I would like, but splitting it in partial classes doesn't make it much better.
+    /// </remarks>
     [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Used via reflection calls")]
     public class EndToEndTest
     {
         #region Support fields and properties
 
         private const string TestPage = "TestPage";
+
         private readonly Selenium _selenium = new();
-        private readonly Collection<KeyValuePair<string, string>> _skippedTests = new();
+
         private string _browser;
         private bool _runningHeadless;
 
@@ -46,31 +55,18 @@ namespace SeleniumFixtureTest
 
         private static Uri CreateUri(string page) => new(new Uri(BaseUrl), page);
 
-        private static string RemoteSelenium { get; } = AppConfig.Get("RemoteSelenium");
+        public static string RemoteSelenium { get; } = AppConfig.Get("RemoteSelenium");
 
         #endregion
 
         #region Test suite administration
 
-        public void ClassCleanup()
-        {
-            Debug.WriteLine($"Closed {_browser}");
-            _selenium.Close();
-            if (_skippedTests.Count == 0) return;
-
-            Debug.WriteLine("Skipped Tests:");
-            foreach (var (key, value) in _skippedTests)
-            {
-                Debug.WriteLine(" " + key + ": " + value);
-            }
-        }
+        public void ClassCleanup() => _selenium.Close();
 
         public void ClassInitialize(string browser, bool isRemote)
         {
             _browser = browser;
-            /* _isRemote = isRemote; */
             _runningHeadless = browser.EndsWith("Headless", StringComparison.OrdinalIgnoreCase);
-            _skippedTests.Clear();
             try
             {
                 if (isRemote)
@@ -79,7 +75,8 @@ namespace SeleniumFixtureTest
                     {
                         { "testCapability", "testValue" }
                     };
-                    Assert.IsTrue(_selenium.SetRemoteBrowserAtAddressWithCapabilities(_browser, RemoteSelenium, capabilities),
+                    Assert.IsTrue(
+                        _selenium.SetRemoteBrowserAtAddressWithCapabilities(_browser, RemoteSelenium, capabilities),
                         "Set isRemote browser " + _browser);
                 }
                 else
@@ -97,24 +94,20 @@ namespace SeleniumFixtureTest
             }
             catch (StopTestException se)
             {
-                var message = $"{_browser} not available for {(isRemote ? "isRemote" : "local")}. Inner exception: {se.InnerException?.Message}";
+                var message =
+                    $"{_browser} not available for {(isRemote ? "isRemote" : "local")}. Inner exception: {se.InnerException?.Message}";
                 MarkSkipped(nameof(ClassInitialize), message);
                 Assert.Inconclusive(message);
             }
         }
 
-        // We need a mechanism to run these tests in different browser configurations. 
-        // Since we can't make class initialization and class cleanup data driven, we make different test classes per 
-        // browser configuration, and we use one test method in those classes with a test data source attribute to
-        // define which tests we are going to run. We use reflection because the test data needs to be static,
-        // and because it allows simplification: just add a new test method here and it will be added in all browser tests.
-        // Test methods are defined as private instance methods without parameters or return values, ending in "Test"
         private static IEnumerable<MethodInfo> TestMethods() =>
             typeof(EndToEndTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(x => x.Name.EndsWith("Test") && x.ReturnType == typeof(void) && x.GetParameters().Length == 0);
 
         // Data source for the Test Data attribute.
-        public static IEnumerable<object[]> TestCases => TestMethods().Select(method => new object[] { method }).ToList();
+        public static IEnumerable<object[]> TestCases =>
+            TestMethods().Select(method => new object[] { method }).ToList();
 
         #endregion
 
@@ -134,6 +127,38 @@ namespace SeleniumFixtureTest
             {
                 Assert.IsFalse(selected.Contains(item), message + ": '" + item + "' deselected");
             }
+        }
+
+        private void CheckStorageFunctioning(string tag)
+        {
+            Assert.IsNotNull(_selenium.WebStorage, "WebStorage supported");
+            Assert.IsTrue(_selenium.ClearWebStorage());
+            Assert.AreEqual(0, _selenium.WebStorage.Count, $"{tag}: Item Count == 0 after opening page");
+            _selenium.SetInWebStorageTo(@"testkey", @"testvalue");
+            Assert.AreEqual(
+                @"testvalue",
+                _selenium.GetFromWebStorage("tes*ey"),
+                $"{tag}: Can retrieve added test value");
+            Assert.AreEqual(1, _selenium.WebStorage.Count, $"{tag}: Item Count == 1 after adding a value");
+            _selenium.SetInWebStorageTo(@"testkey", @"testvalue2");
+            Assert.AreEqual(
+                @"testvalue2",
+                _selenium.GetFromWebStorage(@"testkey"),
+                $"{tag}: Can retrieve changed test value");
+            Assert.AreEqual(1, _selenium.WebStorage.Count, $"{tag}: Item Count == 1 after changing a value");
+            _selenium.SetInWebStorageTo("testkey1", @"testvalue1");
+            Assert.AreEqual(
+                @"testvalue1",
+                _selenium.GetFromWebStorage("testkey1"),
+                $"{tag}: Can retrieve 2nd added test value");
+            Assert.AreEqual(2, _selenium.WebStorage.Count, $"{tag}: Item Count == 2 after adding 2nd value");
+            Assert.AreEqual("testkey1", _selenium.GetKeyLikeFromWebStorage(@"testkey?"));
+            _selenium.RemoveFromWebStorage(@"testkey");
+            Assert.AreEqual(
+                @"testvalue1",
+                _selenium.GetFromWebStorage(@"testkey1"),
+                $"{tag}: Can retrieve changed test value");
+            Assert.AreEqual(1, _selenium.WebStorage.Count, $"{tag}: Item Count == 1 after removing an item");
         }
 
         private static bool ExpectNoSuchElementExceptionFor<T>(Func<T> functionToExecute)
@@ -157,11 +182,12 @@ namespace SeleniumFixtureTest
             return input.Equals(rgba) || input.Equals(rgb);
         }
 
-        private void MarkSkipped(string key, string value) => _skippedTests.Add(new KeyValuePair<string, string>(key, value));
+        private static void MarkSkipped(string key, string value) => Debug.WriteLine("Skipped {0}: {1}", key, value);
 
         public bool ProtectedModesAreEqual() => _selenium.ProtectedModesAre("EQUAL");
 
-        private void VerifySendKeysToElementWithFallback(string keys, string element, string typeAttribute, string fallbackKeys)
+        private void VerifySendKeysToElementWithFallback(
+            string keys, string element, string typeAttribute, string fallbackKeys)
         {
             if (typeAttribute is "date" or "time" && _selenium.Driver.IsFirefox())
             {
@@ -172,13 +198,17 @@ namespace SeleniumFixtureTest
                 _ = _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
                 _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
             }
-            Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element), "SendKeys value is correct for '{0}'", element);
+            Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element),
+                "SendKeys value is correct for '{0}'", element);
         }
 
         private void VerifySetElementTo(string element, string value)
         {
             Assert.IsTrue(_selenium.SetElementTo(element, value), "Set '{0}' to '{1}'", element, value);
-            Assert.AreEqual(value, _selenium.AttributeOfElement("value", element), "value of '{0}' is '{1}", element, value);
+            Assert.AreEqual(
+                value,
+                _selenium.AttributeOfElement("value", element),
+                "value of '{0}' is '{1}", element, value);
         }
 
         #endregion
@@ -229,7 +259,7 @@ namespace SeleniumFixtureTest
 
         private void AsyncTest()
         {
-            // source delays 2 second, so 2.1 should be enough
+            // source delays 1 second, so 1.1 should be enough
             _selenium.SetTimeoutSeconds(1.1);
             Assert.IsTrue(_selenium.ReloadPage(), "reload page");
             Assert.IsTrue(_selenium.WaitForPageToLoad(), "Waiting for page load");
@@ -239,7 +269,9 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitForPageSourceToChange(), "wait for page source to change");
             var source2 = _selenium.PageSource;
             Assert.AreNotEqual(source1, source2, "Sources are not equal after wait for change");
-            Assert.AreEqual("0,1,1,2,3,5,8,13,21,34,55,89", _selenium.TextInElement("divAsyncLoad"),
+            Assert.AreEqual(
+                "0,1,1,2,3,5,8,13,21,34,55,89",
+                _selenium.TextInElement("divAsyncLoad"),
                 "output element has the expected values");
         }
 
@@ -248,18 +280,27 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(CreateUri("iframe1.html"), _selenium.AttributeOfElement("src", "id:iframe1"));
             var originalClass = _selenium.AttributeOfElement("class", "status");
             Assert.IsTrue(_selenium.SetAttributeOfElementTo("class", "status", "fail"), "Set class to fail");
-            Assert.IsTrue(IsRgb(_selenium.CssPropertyOfElement("background-color", "status"), 204, 0, 0), "Color of fail class is red");
+            Assert.IsTrue(
+                IsRgb(_selenium.CssPropertyOfElement("background-color", "status"), 204, 0, 0),
+                "Color of fail class is red");
             Assert.IsTrue(_selenium.SetAttributeOfElementTo("class", "status", "success"), "Set class to success");
-            Assert.IsTrue(IsRgb(_selenium.CssPropertyOfElement("background-color", "status"), 0, 204, 0),
+            Assert.IsTrue(
+                IsRgb(_selenium.CssPropertyOfElement("background-color", "status"), 0, 204, 0),
                 "Color of success class is green");
             Assert.IsTrue(_selenium.SetAttributeOfElementTo("class", "status", originalClass));
         }
 
         private void CheckBrokenImageTest()
         {
-            Assert.IsFalse(_selenium.ExecuteScript("return brokenImage.naturalWidth!=\"undefined\" && brokenImage.naturalWidth>0;").ToBool(),
+            Assert.IsFalse(
+                _selenium.ExecuteScript(
+                        "return brokenImage.naturalWidth!=\"undefined\" && brokenImage.naturalWidth>0;")
+                    .ToBool(),
                 "Test broken image");
-            Assert.IsTrue(_selenium.ExecuteScript("return dragSource.naturalWidth!=\"undefined\" && dragSource.naturalWidth>0;").ToBool(),
+            Assert.IsTrue(
+                _selenium.ExecuteScript(
+                        "return dragSource.naturalWidth!=\"undefined\" && dragSource.naturalWidth>0;")
+                    .ToBool(),
                 "Test OK image");
             Assert.IsTrue(_selenium.ElementHasAttribute("id:brokenImage", "Alt"), "Alt attribute exists");
         }
@@ -304,8 +345,13 @@ namespace SeleniumFixtureTest
             AssertOptionValues("id:multi-select", new Collection<string>(), "all deselected at start");
             Assert.IsTrue(_selenium.ClickElement("CssSelector:#multi-select option:nth-child(2)"), "click item 2");
             AssertOptionValues("id:multi-select", new Collection<string> { "item 2" }, "item 2 selected");
-            Assert.IsTrue(_selenium.ClickElementWithModifier("CssSelector:#multi-select option:nth-child(3)", "+"), "Shift click item 3");
-            AssertOptionValues("id:multi-select", new Collection<string> { "item 2", "item 3" }, "items 2 and 3 selected");
+            Assert.IsTrue(
+                _selenium.ClickElementWithModifier("CssSelector:#multi-select option:nth-child(3)", "+"),
+                "Shift click item 3");
+            AssertOptionValues(
+                "id:multi-select",
+                new Collection<string> { "item 2", "item 3" },
+                "items 2 and 3 selected");
             _ = _selenium.DeselectOptionInElement("item 2", "id:multi-select");
             AssertOptionValues("id:multi-select", new Collection<string> { "item 3" }, "Only item 3 selected");
             _selenium.DeselectOptionInElement("item 3", "id:multi-select");
@@ -324,7 +370,8 @@ namespace SeleniumFixtureTest
         {
             _selenium.ReloadPage();
             Assert.IsTrue(_selenium.WaitForElement("dragSource"), "Wait for DragSource in current (target) browser");
-            Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
+            Assert.IsFalse(
+                _selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
                 "Source not dropped in target in driver 1");
             var targetHandle = _selenium.DriverId;
             var sourceHandle = _selenium.NewBrowser("chrome");
@@ -332,13 +379,16 @@ namespace SeleniumFixtureTest
             {
                 _selenium.Open(CreateTestPageUri());
                 Assert.IsTrue(_selenium.WaitForElement("dragSource"), "Wait for DragSource in source browser");
-                Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
+                Assert.IsFalse(
+                    _selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
                     "Source not dropped in target in driver 2");
                 _ = _selenium.DragElementAndDropOnElementInDriver("dragSource", "dropTarget", targetHandle);
-                Assert.IsFalse(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
+                Assert.IsFalse(
+                    _selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
                     "Source not dropped in target in driver 2");
                 Assert.IsTrue(_selenium.SetDriver(targetHandle), "Switch back to original driver");
-                Assert.IsTrue(_selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
+                Assert.IsTrue(
+                    _selenium.ElementExists("CssSelector: div#dropTarget > #dragSource"),
                     "Source was dropped in target in driver 1");
             }
             finally
@@ -352,16 +402,21 @@ namespace SeleniumFixtureTest
         private void DragDropTest()
         {
             _selenium.ReloadPage();
-            Assert.IsTrue(_selenium.WaitForElement("CssSelector: section > #dragSource"),
+            Assert.IsTrue(
+                _selenium.WaitForElement("CssSelector: section > #dragSource"),
                 "Wait for dragSource on section level 1");
-            Assert.IsTrue(_selenium.DragElementAndDropOnElement("dragSource", "dropTarget"),
+            Assert.IsTrue(
+                _selenium.DragElementAndDropOnElement("dragSource", "dropTarget"),
                 "drag/drop dragSource to dropTarget");
-            Assert.IsTrue(_selenium.ElementExists("CssSelector: div#dropTarget >  #dragSource"),
+            Assert.IsTrue(
+                _selenium.ElementExists("CssSelector: div#dropTarget >  #dragSource"),
                 "check if dragSource is now in dropTarget");
-            Assert.IsFalse(_selenium.ElementExists("CssSelector: section > #dragSource"),
+            Assert.IsFalse(
+                _selenium.ElementExists("CssSelector: section > #dragSource"),
                 "check if dragSource is no longer on section level");
             Assert.IsTrue(_selenium.ReloadPage(), "Reload page");
-            Assert.IsTrue(_selenium.WaitForElement("CssSelector: section > #dragSource"),
+            Assert.IsTrue(
+                _selenium.WaitForElement("CssSelector: section > #dragSource"),
                 "Wait for dragSource on section level 2");
             try
             {
@@ -381,9 +436,13 @@ namespace SeleniumFixtureTest
             Assert.IsFalse(_selenium.ElementIsClickable("id:disabledButton"), "Disabled button is not clickable");
 
             Assert.IsTrue(_selenium.ClickElement("toggleDisabledButton"), "Toggle disable button 1");
-            Assert.IsTrue(_selenium.WaitUntilElementIsClickable("id:disabledButton"), "Wait until disabled button is clickable");
+            Assert.IsTrue(
+                _selenium.WaitUntilElementIsClickable("id:disabledButton"),
+                "Wait until disabled button is clickable");
             Assert.IsTrue(_selenium.ClickElement("toggleDisabledButton"), "Toggle disable button 2");
-            Assert.IsTrue(_selenium.WaitUntilElementIsNotClickable("id:disabledButton"), "Wait until disabled button is not clickable");
+            Assert.IsTrue(
+                _selenium.WaitUntilElementIsNotClickable("id:disabledButton"),
+                "Wait until disabled button is not clickable");
         }
 
         private void ElementIsVisibleTest()
@@ -396,7 +455,8 @@ namespace SeleniumFixtureTest
         }
 
         private void ExecuteAsyncJavaScriptTest() =>
-            Assert.IsTrue((bool)_selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
+            Assert.IsTrue(
+                (bool)_selenium.ExecuteAsyncScript("var callback = arguments[arguments.length - 1];callback(true);"));
 
         private void FrameTest()
         {
@@ -419,10 +479,13 @@ namespace SeleniumFixtureTest
         {
             Assert.IsTrue(_selenium.ReloadPage(), "Reload page");
             Assert.IsTrue(_selenium.WaitForPageToLoad(), "Wait for page to load");
+
             // only needed for IE, but does not harm the others
             var initialLength = _selenium.LengthOfPageSource;
             Assert.IsTrue(_selenium.WaitUntilPageSourceIsLargerThan(initialLength), "Wait until HTML became larger");
-            Assert.IsTrue(_selenium.TextInElementMatches("divAsyncLoad", "0,1,1,2"), "Check if output contains 0,1,1,2");
+            Assert.IsTrue(
+                _selenium.TextInElementMatches("divAsyncLoad", "0,1,1,2"),
+                "Check if output contains 0,1,1,2");
         }
 
         private void MoveToElementTest()
@@ -436,17 +499,28 @@ namespace SeleniumFixtureTest
             // usually status is 'Hovering..", but Chrome may be too fast
             var statusOk = status.Equals("Hovering over image") || status.Equals("OK");
             Assert.IsTrue(statusOk, "Status is 'Hovering' or 'OK'");
-            Assert.IsTrue(_selenium.ScrollToElement("ignored", @"paragraphLightbulb"), "Scroll to paragraph (uses Move under the hood");
+            Assert.IsTrue(
+                _selenium.ScrollToElement("ignored", @"paragraphLightbulb"),
+                "Scroll to paragraph (uses Move under the hood");
             Assert.IsTrue(_selenium.WaitUntilTextInElementMatches("status", ""), "Wait until text in status is empty");
         }
 
         private void NonExistingElementsTest()
         {
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.ClickElement("NonExistingElement")), "ClickElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.MoveToElement("NonExistingElement")), "MoveToElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.SubmitElement("NonExistingElement")), "SubmitElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.TextInElement("NonExistingElement")), "TextInElement");
-            Assert.IsTrue(ExpectNoSuchElementExceptionFor(() => _selenium.UploadFileInElement("zip", "nonExistingElement")),
+            Assert.IsTrue(
+                ExpectNoSuchElementExceptionFor(() => _selenium.ClickElement("NonExistingElement")),
+                "ClickElement");
+            Assert.IsTrue(
+                ExpectNoSuchElementExceptionFor(() => _selenium.MoveToElement("NonExistingElement")),
+                "MoveToElement");
+            Assert.IsTrue(
+                ExpectNoSuchElementExceptionFor(() => _selenium.SubmitElement("NonExistingElement")),
+                "SubmitElement");
+            Assert.IsTrue(
+                ExpectNoSuchElementExceptionFor(() => _selenium.TextInElement("NonExistingElement")),
+                "TextInElement");
+            Assert.IsTrue(
+                ExpectNoSuchElementExceptionFor(() => _selenium.UploadFileInElement("zip", "nonExistingElement")),
                 "UploadFileInElement");
         }
 
@@ -459,6 +533,7 @@ namespace SeleniumFixtureTest
             }
             catch (NoSuchWindowException)
             {
+                // pass
             }
             _selenium.SelectWindow(string.Empty);
         }
@@ -469,16 +544,22 @@ namespace SeleniumFixtureTest
             _selenium.ClickElement("id:fm");
             var shot1 = Selenium.Screenshot();
             var shotObject = Selenium.ScreenshotObject();
-            Assert.IsTrue(Regex.IsMatch(shot1, "<img alt=\\\"Screenshot\\\" src=\\\"data:image\\/png;base64,(\\S+)\\s\\/>"));
+            Assert.IsTrue(
+                Regex.IsMatch(shot1,
+                    "<img alt=\\\"Screenshot\\\" src=\\\"data:image\\/png;base64,(\\S+)\\s\\/>"));
             Assert.IsTrue(shot1.Length > 100);
             Assert.AreEqual(shot1, shotObject.Rendering);
         }
 
         private void ScriptWithNullParametersTest()
         {
-            Assert.IsTrue(_selenium.ExecuteScriptWithParameters("return true;", null).ToBool(), "Execute script with null param");
+            Assert.IsTrue(
+                _selenium.ExecuteScriptWithParameters("return true;", null).ToBool(),
+                "Execute script with null param");
 
-            var elementType = _selenium.ExecuteScript("var i=document.createElement('input');i.setAttribute('type','month');return i.type;");
+            var elementType =
+                _selenium.ExecuteScript(
+                    "var i=document.createElement('input');i.setAttribute('type','month');return i.type;");
             Assert.IsTrue(elementType.Equals("text") || elementType.Equals("month"));
         }
 
@@ -493,20 +574,30 @@ namespace SeleniumFixtureTest
                 @"xpath://*[contains(@id, 'paragr')]",
                 "Replaced paragraph text"
             };
-            Assert.IsTrue(_selenium.ExecuteScriptWithParameters(
-                "arguments[0].innerHTML = arguments[1];arguments[2].innerHTML = arguments[3];return true;", parameters).ToBool(), "Execute script");
+            Assert.IsTrue(
+                _selenium.ExecuteScriptWithParameters(
+                        "arguments[0].innerHTML = arguments[1];arguments[2].innerHTML = arguments[3];return true;",
+                        parameters)
+                    .ToBool(), "Execute script");
             Assert.AreEqual("New div text", _selenium.TextInElement("id:div"), "Replace div text");
-            Assert.AreEqual("Replaced paragraph text", _selenium.TextInElement("id:paragraph"), "Replace paragraph text");
+            Assert.AreEqual(
+                "Replaced paragraph text", _selenium.TextInElement("id:paragraph"),
+                "Replace paragraph text");
             Assert.IsTrue(_selenium.SetTextInElementTo("id:div", originalDivText), "Set original div text back");
-            Assert.IsTrue(_selenium.SetTextInElementTo("id:paragraph", originalParagraphText), "Set original paragraph text back");
+            Assert.IsTrue(
+                _selenium.SetTextInElementTo("id:paragraph", originalParagraphText),
+                "Set original paragraph text back");
         }
 
         private void ScriptWithPlainParametersTest()
         {
             var driver = _selenium.Driver;
             var parameters = new Collection<object> { driver.FindElement(By.Id("dragSource")) };
-            Assert.IsTrue(_selenium.ExecuteScriptWithPlainParameters(
-                "return arguments[0].naturalWidth!=\"undefined\" && arguments[0].naturalWidth>0;", parameters).ToBool(), "image is not broken");
+            Assert.IsTrue(
+                _selenium.ExecuteScriptWithPlainParameters(
+                        "return arguments[0].naturalWidth!=\"undefined\" && arguments[0].naturalWidth>0;", parameters)
+                    .ToBool(),
+                "image is not broken");
         }
 
         private void SelectDropDownElementTest()
@@ -525,23 +616,38 @@ namespace SeleniumFixtureTest
 
             var allSingleValueListboxOptions = _selenium.AllOptionsOfElementBy("id:dropdown", "value");
             var expected = new Collection<string> { "item1", "item2", "item3", "item4", "item5", "item0" };
-            Assert.IsTrue(allSingleValueListboxOptions.All(s => expected.Contains(s)), "expected options contains all actual options - value");
-            Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)), "actual options contains all expected options - value");
+            Assert.IsTrue(
+                allSingleValueListboxOptions.All(s => expected.Contains(s)),
+                "expected options contains all actual options - value");
+            Assert.IsTrue(
+                expected.All(s => allSingleValueListboxOptions.Contains(s)),
+                "actual options contains all expected options - value");
         }
 
         private void SelectByLabelTest()
         {
-            Assert.AreEqual("7", _selenium.AttributeOfElement("value", "label:Meter:"), "Select by label before element, specifying colon");
-            Assert.AreEqual("32", _selenium.AttributeOfElement("value", "label:Progress:"), "Select by parent label ignoring colon");
-            Assert.IsTrue(_selenium.TextInElement("label:Text Area").StartsWith("Sample text area"),
+            Assert.AreEqual(
+                "7",
+                _selenium.AttributeOfElement("value", "label:Meter:"),
+                "Select by label before element, specifying colon");
+            Assert.AreEqual(
+                "32",
+                _selenium.AttributeOfElement("value", "label:Progress:"),
+                "Select by parent label ignoring colon");
+            Assert.IsTrue(
+                _selenium.TextInElement("label:Text Area").StartsWith("Sample text area"),
                 "Select by label after element, withouts specifying colon");
         }
 
         private void SelectByPartialContentlTest()
         {
-            Assert.IsTrue(_selenium.TextInElement("PartialContent:allows for checking").StartsWith("Sample text area"),
+            Assert.IsTrue(
+                _selenium.TextInElement("PartialContent:allows for checking").StartsWith("Sample text area"),
                 "Select text area by partial content");
-            Assert.AreEqual("7", _selenium.AttributeOfElement("value", "partialcontent:7 of"), "Select by partial content");
+            Assert.AreEqual(
+                "7",
+                _selenium.AttributeOfElement("value", "partialcontent:7 of"),
+                "Select by partial content");
         }
 
         private void SelectMultiElementTest()
@@ -551,9 +657,15 @@ namespace SeleniumFixtureTest
             _selenium.SelectOptionInElement("item 3", "id:multi-select");
             _selenium.SelectOptionInElement("item 5", "id:multi-select");
 
-            AssertOptionValues("id:multi-select", new Collection<string> { "item 1", "item 3", "item 5" }, "first test");
+            AssertOptionValues(
+                "id:multi-select",
+                new Collection<string> { "item 1", "item 3", "item 5" },
+                "first test");
             _selenium.SelectOptionInElement("item", "id:multi-select");
-            AssertOptionValues("id:multi-select", new Collection<string> { "item 1", "item 3", "item 5", "item" }, "second test");
+            AssertOptionValues(
+                "id:multi-select",
+                new Collection<string> { "item 1", "item 3", "item 5", "item" },
+                "second test");
             _selenium.DeselectOptionInElement("item 1", "id:multi-select");
             AssertOptionValues("id:multi-select", new Collection<string> { "item 3", "item 5", "item" }, "third test");
             _selenium.DeselectOptionInElement("item 1", "id:multi-select");
@@ -570,12 +682,19 @@ namespace SeleniumFixtureTest
             Assert.AreEqual("item 1", _selenium.AttributeOfElement("value", "id:single-select"));
             AssertOptionValues("id:single-select", new Collection<string> { "item 1" }, "single select test");
             Assert.AreEqual("item 1", _selenium.SelectedOptionInElement("id:single-select"), "SelectedOptionInElement");
-            Assert.AreEqual("item 1", _selenium.SelectedOptionInElementBy("id:single-select", "text"), "SelectedOptionInElementBy");
+            Assert.AreEqual(
+                "item 1",
+                _selenium.SelectedOptionInElementBy("id:single-select", "text"),
+                "SelectedOptionInElementBy");
 
             var allSingleValueListboxOptions = _selenium.AllOptionsOfElementBy("id:single-select", "text");
             var expected = new Collection<string> { "item 1", "item 2", "item 3", "item 4", "item 5", "item" };
-            Assert.IsTrue(allSingleValueListboxOptions.All(s => expected.Contains(s)), "expected options contains all actual options - text");
-            Assert.IsTrue(expected.All(s => allSingleValueListboxOptions.Contains(s)), "actual options contains all expected options - text");
+            Assert.IsTrue(
+                allSingleValueListboxOptions.All(s => expected.Contains(s)),
+                "expected options contains all actual options - text");
+            Assert.IsTrue(
+                expected.All(s => allSingleValueListboxOptions.Contains(s)),
+                "actual options contains all expected options - text");
         }
 
         private void SendKeysToElementTest()
@@ -596,17 +715,23 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(@"ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "Shift toggling worked");
             Assert.IsTrue(_selenium.SendKeysToElement("^ac", "text1"), "Send Select All-Copy All to text1");
             Assert.IsTrue(_selenium.MoveToElement("text2"), "Move to text2");
-            _selenium.ExecuteScriptWithParameters("document.getElementById(arguments[0]).focus(); ", new Collection<string> { "text2" });
+            _selenium.ExecuteScriptWithParameters(
+                "document.getElementById(arguments[0]).focus(); ",
+                new Collection<string> { "text2" });
             Assert.IsTrue(_selenium.SendKeys("^av"), "Send Select All-Paste to text2");
             Assert.AreEqual(@"ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "text 1 didn't change");
-            Assert.AreEqual(@"ABCdefGHI", _selenium.AttributeOfElement("value", "text2"),
+            Assert.AreEqual(
+                @"ABCdefGHI", _selenium.AttributeOfElement("value", "text2"),
                 "text 2 now contains the value of text 1");
 
             // Initially the test had "-+" instead of "+_" to test whether shift"-" is seen as "_" but that fails in Firefox. 
             // This looks like a bug in the Firefox driver.
-            Assert.IsTrue(_selenium.SendKeysToElement("{END}+{LEFT}{LEFT}{LEFT}+_-^v", "text1"),
+            Assert.IsTrue(
+                _selenium.SendKeysToElement("{END}+{LEFT}{LEFT}{LEFT}+_-^v", "text1"),
                 "Type _- over the last 3 characters in text 1 and paste");
-            Assert.AreEqual(@"ABCdef_-ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "check final value of test1");
+            Assert.AreEqual(
+                @"ABCdef_-ABCdefGHI", _selenium.AttributeOfElement("value", "text1"),
+                "check final value of test1");
         }
 
         private void SetElementCheckedTest()
@@ -645,7 +770,11 @@ namespace SeleniumFixtureTest
             VerifySendKeysToElementWithFallback("472014", "week", "week", "2014-W47");
             VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
             VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
-            VerifySendKeysToElementWithFallback("2409{RIGHT}2014{RIGHT}0123", "datetime-local", "datetime-local", "2014-09-24T01:23");
+            VerifySendKeysToElementWithFallback(
+                "2409{RIGHT}2014{RIGHT}0123",
+                "datetime-local",
+                "datetime-local",
+                "2014-09-24T01:23");
 
             // The color picker is a pain since it opens a system dialog which Selenium can't get to
             // So we 'cheat' here and directly set the value. We don't have to test the color picker.
@@ -654,11 +783,52 @@ namespace SeleniumFixtureTest
             Assert.AreEqual("#ff7f00", _selenium.AttributeOfElement("value", "color"));
         }
 
+        private void StorageTest()
+        {
+            // setting storage type to Local by default
+            CheckStorageFunctioning("Local");
+            _selenium.SetInWebStorageTo("testkey2", @"testvalue3");
+            var dict = new Dictionary<string, string>();
+            Assert.AreEqual(2, _selenium.WebStorage.Count, "Item Count == 2 after adding SetInWebStorageTo");
+            dict.Add("testkey4", @"testvalue5");
+            _selenium.AddToWebStorage(dict);
+            Assert.AreEqual(
+                3,
+                _selenium.WebStorage.Count,
+                "Item Count == 3 after AddToWebStorage, before switching to Session");
+            _selenium.UseWebStorage(StorageType.Session);
+            CheckStorageFunctioning("Session");
+            Assert.AreEqual(1, _selenium.WebStorage.Count, "Item Count after adding one item to session storage");
+            _selenium.UseWebStorage(StorageType.Local);
+            Assert.AreEqual(3, _selenium.WebStorage.Count, "Item Count after switching back to local storage");
+            Assert.IsTrue(_selenium.ClearWebStorage(), "Can clear local storage");
+            Assert.AreEqual(0, _selenium.WebStorage.Count, "Item Count after clearing local storage");
+            _selenium.UseWebStorage(StorageType.Session);
+            Assert.AreEqual(1, _selenium.WebStorage.Count, "Item Count after switching back to session storage");
+            var backupStorage = _selenium.WebStorage;
+            Assert.IsTrue(_selenium.ClearWebStorage(), "Can clear session storage");
+            Assert.AreEqual(0, _selenium.WebStorage.Count, "Item Count after clearing session storage");
+            dict.Add("testkey6", @"testvalue7");
+            _selenium.AddToWebStorage(dict);
+            Assert.AreEqual(
+                2,
+                _selenium.WebStorage.Count,
+                "Item Count after adding 2 items to cleared session storage");
+            _selenium.WebStorage = backupStorage;
+            Assert.AreEqual(1, _selenium.WebStorage.Count, "Item Count after restoring session storage");
+        }
+
         private void TextInElementMatchesTest()
         {
-            Assert.IsTrue(_selenium.TextInElementMatches("paragraph", "piece of text"), "Search for 'piece of text' anywhere in element");
-            Assert.IsFalse(_selenium.TextInElementMatches("paragraph", "^piece of text$"), "Search for exact 'piece of text'");
-            Assert.IsTrue(_selenium.TextInElementMatches("paragraph", "piece .* elements"), "Search for 'piece' and later 'elements'");
+            Assert.IsTrue(
+                _selenium.TextInElementMatches("paragraph", "piece of text"),
+                "Search for 'piece of text' anywhere in element");
+            Assert.IsFalse(
+                _selenium.TextInElementMatches("paragraph", "^piece of text$"),
+                "Search for exact 'piece of text'");
+            Assert.IsTrue(
+                _selenium.TextInElementMatches("paragraph", "piece .* elements"),
+                "Search for 'piece' and later 'elements'");
         }
 
         private void UploadTest()
@@ -672,14 +842,17 @@ namespace SeleniumFixtureTest
             var testFile = Path.GetFullPath("uploadTestFile.txt");
             Assert.IsTrue(File.Exists(testFile), "Test file exists");
             Assert.IsTrue(_selenium.UploadFileInElement(testFile, "name:fileToUpload"));
-            Assert.IsTrue(_selenium.TextInElement("fileContent").Contains("Small text file used for upload tests."),
+            Assert.IsTrue(
+                _selenium.TextInElement("fileContent").Contains("Small text file used for upload tests."),
                 "content contains expected value");
         }
 
         private void WaitForTextTest()
         {
             Assert.IsTrue(_selenium.ReloadPage());
-            Assert.IsFalse(_selenium.TextExistsIgnoringCase("data load completed"), "data load completed does not exist yet");
+            Assert.IsFalse(
+                _selenium.TextExistsIgnoringCase("data load completed"),
+                "data load completed does not exist yet");
             Assert.IsTrue(_selenium.WaitForTextIgnoringCase("data load completed"), "Wait for data load completed");
             Assert.IsTrue(_selenium.WaitForText("0,1,1,2"), "Wait for 0,1,1,2");
         }
@@ -692,7 +865,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitUntilTitleMatches("Test Page"));
         }
 
-        private void WaitUntilScriptReturnsTrueTest() => Assert.IsTrue(_selenium.WaitUntilScriptReturnsTrue("return true;").ToBool());
+        private void WaitUntilScriptReturnsTrueTest() =>
+            Assert.IsTrue(_selenium.WaitUntilScriptReturnsTrue("return true;").ToBool());
 
         private void WaitWithTimeoutTest()
         {
@@ -735,6 +909,12 @@ namespace SeleniumFixtureTest
 
         private void WindowSwitchingTest()
         {
+            if (_selenium.Driver.IsIe())
+            {
+                MarkSkipped(nameof(WindowSwitchingTest),
+                    "Bug in Edge in IE mode: see https://github.com/SeleniumHQ/selenium/issues/8868");
+                return;
+            }
             var pageCount = _selenium.PageCount;
             var currentPage = _selenium.CurrentWindowName;
             _selenium.ClickElement("linkTab");
@@ -746,7 +926,9 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitForElement(@"tagname:h1"));
             Assert.AreEqual("Test site for Selenium Fixture", _selenium.TextInElement(@"tagname:h1"), "on new page");
             _selenium.SelectWindow(string.Empty);
-            Assert.AreEqual("Selenium Fixture Test Page", _selenium.TextInElement(@"tagname:h1"), "switched back successfully");
+            Assert.AreEqual(
+                "Selenium Fixture Test Page", _selenium.TextInElement(@"tagname:h1"),
+                "switched back successfully");
             _selenium.SelectWindow(handle);
             _selenium.ClosePage();
             Assert.IsTrue(_selenium.PageCount == pageCount, "Page count reduced");
