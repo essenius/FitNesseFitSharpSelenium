@@ -12,9 +12,9 @@
 namespace SeleniumFixture.Model
 {
     /// <summary>
-    /// Finds element on text, id or the name attribute has the specified value.
+    ///     Finds element on text, id or the name attribute has the specified value.
     /// </summary>
-internal class ByTrial : CustomBy
+    internal class ByTrial : CustomBy
     {
         public ByTrial(string elementIdentifier) : base(elementIdentifier)
         {

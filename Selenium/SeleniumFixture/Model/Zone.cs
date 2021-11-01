@@ -112,6 +112,7 @@ namespace SeleniumFixture.Model
             _isProtected = true;
         }
 
-        private RegistryKey RootKeyOf(string keyString) => keyString.StartsWith(@"HKLM", StringComparison.Ordinal) ? Hklm : Hkcu;
+        private RegistryKey RootKeyOf(string keyString) =>
+            keyString.StartsWith(@"HKLM", StringComparison.Ordinal) ? Hklm : Hkcu;
     }
 }

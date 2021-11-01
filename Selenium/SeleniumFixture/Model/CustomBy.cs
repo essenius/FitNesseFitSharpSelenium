@@ -18,27 +18,21 @@ using OpenQA.Selenium.Support.PageObjects;
 
 namespace SeleniumFixture.Model
 {
-    internal class CustomBy: By
+    internal class CustomBy : By
     {
-        protected readonly string ElementIdentifier;
         protected readonly List<By> ByList = new();
-            
+        protected readonly string ElementIdentifier;
+
         protected string DisplayName;
 
-        public static By IdOrName(string selector) => new ByIdOrName(selector);
-
-        public static By Label(string selector) => new ByLabel(selector);
-        public static By Content(string selector) => new ByContent(selector);
-        public static By PartialContent(string selector) => new ByPartialContent(selector);
-        public static By Trial(string selector) => new ByTrial(selector);
-
         /// <summary>Make this a virtual class by making its constructor protected</summary>
-        protected CustomBy(string elementIdentifier)
-        {
-            ElementIdentifier = !string.IsNullOrEmpty(elementIdentifier) 
-                ? elementIdentifier 
-                : throw new ArgumentException(@"element identifier cannot be null or the empty string", nameof(elementIdentifier));
-        }
+        protected CustomBy(string elementIdentifier) =>
+            ElementIdentifier = !string.IsNullOrEmpty(elementIdentifier)
+                ? elementIdentifier
+                : throw new ArgumentException(@"element identifier cannot be null or the empty string",
+                    nameof(elementIdentifier));
+
+        public static By Content(string selector) => new ByContent(selector);
 
         /// <summary>Find a single element.</summary>
         /// <param name="context">Context used to find the element.</param>
@@ -81,9 +75,16 @@ namespace SeleniumFixture.Model
             return webElementList.AsReadOnly();
         }
 
+        public static By IdOrName(string selector) => new ByIdOrName(selector);
+
+        public static By Label(string selector) => new ByLabel(selector);
+
+        public static By PartialContent(string selector) => new ByPartialContent(selector);
+
         /// <summary>Writes out a description of this By object.</summary>
         /// <returns>Converts the value of this instance to a <see cref="T:System.String" /></returns>
         public override string ToString() => $"{DisplayName}({ElementIdentifier})";
+
+        public static By Trial(string selector) => new ByTrial(selector);
     }
 }
-

@@ -22,7 +22,8 @@ namespace SeleniumFixture.Utilities
     {
         private static double _lastSetImplicitWaitSeconds;
 
-        public static void AddAdditionalCapabilities(this DriverOptions options, Dictionary<string, object> capabilities)
+        public static void AddAdditionalCapabilities(this DriverOptions options,
+            Dictionary<string, object> capabilities)
         {
             if (capabilities == null) return;
             foreach (var entry in capabilities.Keys)
@@ -61,7 +62,8 @@ namespace SeleniumFixture.Utilities
 
         private static bool IsBrowser(this IWebDriver driver, string browserName) =>
             driver is IHasCapabilities driverWithCapabilities &&
-            browserName.Equals(driverWithCapabilities.Capabilities.GetCapability("browserName").ToString(), StringComparison.OrdinalIgnoreCase);
+            browserName.Equals(driverWithCapabilities.Capabilities.GetCapability("browserName").ToString(),
+                StringComparison.OrdinalIgnoreCase);
 
         public static bool IsChrome(this IWebDriver driver) => driver.IsBrowser("chrome");
 
@@ -75,7 +77,8 @@ namespace SeleniumFixture.Utilities
 
         private static bool IsPlatform(this IWebDriver driver, string platformName) =>
             driver is IHasCapabilities driverWithCapabilities &&
-            platformName.Equals(driverWithCapabilities.Capabilities.GetCapability("platformName")?.ToString(), StringComparison.OrdinalIgnoreCase);
+            platformName.Equals(driverWithCapabilities.Capabilities.GetCapability("platformName")?.ToString(),
+                StringComparison.OrdinalIgnoreCase);
 
         public static bool SetAttribute(this IWebElement element, string attributeName, string value)
         {

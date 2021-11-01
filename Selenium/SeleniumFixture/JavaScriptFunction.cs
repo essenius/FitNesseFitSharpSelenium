@@ -36,7 +36,8 @@ namespace SeleniumFixture
         /// <summary>Dynamic Decision Table Interface (reset row so it's ready for the next line)</summary>
         public void Reset()
         {
-            if (BrowserDriverContainer.Current == null) throw new NoNullAllowedException("Set browser first using the Selenium script");
+            if (BrowserDriverContainer.Current == null)
+                throw new NoNullAllowedException("Set browser first using the Selenium script");
             _paramList.Clear();
         }
 

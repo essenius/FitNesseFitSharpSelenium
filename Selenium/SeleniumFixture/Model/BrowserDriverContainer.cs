@@ -66,7 +66,8 @@ namespace SeleniumFixture.Model
             Current = null;
         }
 
-        private static IWebDriver GetDriver(string driverId) => !Drivers.ContainsKey(driverId) ? null : Drivers[driverId];
+        private static IWebDriver GetDriver(string driverId) =>
+            !Drivers.ContainsKey(driverId) ? null : Drivers[driverId];
 
         // this works for all drivers that implement RemoteWebDriver, which is the case for all drivers we use
         private static bool HasQuit(IWebDriver driver) => ((RemoteWebDriver)driver).SessionId == null;
@@ -79,19 +80,24 @@ namespace SeleniumFixture.Model
                 CurrentId = AddDriver(Current);
                 return CurrentId;
             }
-            catch (Exception exception) when (exception is WebDriverException || exception is Win32Exception ||
-                                              exception is InvalidOperationException || exception is TargetInvocationException)
+            catch (Exception exception) when (
+                exception is WebDriverException || 
+                exception is Win32Exception ||
+                exception is InvalidOperationException ||
+                exception is TargetInvocationException)
             {
                 CloseAllDrivers();
                 throw new StopTestException("Could not start browser: " + browserName, exception);
             }
         }
 
-        public static string NewRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
+        public static string NewRemoteDriver(
+            string browserName, string baseAddress, Dictionary<string, object> capabilities)
         {
             try
             {
-                Current = new BrowserDriverFactory(_proxy, _timeout).CreateRemoteDriver(browserName, baseAddress, capabilities);
+                Current = new BrowserDriverFactory(_proxy, _timeout).CreateRemoteDriver(browserName, baseAddress,
+                    capabilities);
             }
             catch (Exception e)
             {
@@ -131,17 +137,20 @@ namespace SeleniumFixture.Model
 
         public static bool SetProxyType(string proxyType)
         {
-            if (!Enum.TryParse(proxyType, true, out ProxyKind proxyKind)) throw new ArgumentException($"Unrecognized proxy type '{proxyType}'");
+            if (!Enum.TryParse(proxyType, true, out ProxyKind proxyKind))
+                throw new ArgumentException($"Unrecognized proxy type '{proxyType}'");
             // can't update proxy in all cases, so create a new one.
             _proxy = new Proxy { Kind = proxyKind };
             return proxyKind != ProxyKind.Unspecified;
         }
 
-        [SuppressMessage("ReSharper", "SwitchStatementMissingSomeCases", Justification = "no need to process the others")]
+        [SuppressMessage("ReSharper", "SwitchStatementMissingSomeCases",
+            Justification = "no need to process the others")]
         public static bool SetProxyValue(string proxyType, string proxyValue)
         {
             if (!SetProxyType(proxyType)) return false;
-            if (string.IsNullOrEmpty(proxyValue)) throw new ArgumentException($"No value specified for proxy type '{proxyType}'");
+            if (string.IsNullOrEmpty(proxyValue))
+                throw new ArgumentException($"No value specified for proxy type '{proxyType}'");
             switch (_proxy.Kind)
             {
                 case ProxyKind.Manual:

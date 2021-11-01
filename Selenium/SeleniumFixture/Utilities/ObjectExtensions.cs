@@ -29,7 +29,8 @@ namespace SeleniumFixture.Utilities
             Matches(input, "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$");
 
         public static bool IsRegex(this string input) =>
-            input.StartsWith("/", StringComparison.CurrentCulture) && input.EndsWith("/", StringComparison.CurrentCulture);
+            input.StartsWith("/", StringComparison.CurrentCulture) &&
+            input.EndsWith("/", StringComparison.CurrentCulture);
 
         public static bool Matches(this string input, string pattern) =>
             new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline).IsMatch(input);
@@ -66,7 +67,8 @@ namespace SeleniumFixture.Utilities
             var textInfo = CurrentCulture.TextInfo;
             var result = string.Empty;
             var sections = gracefulName.Split(' ');
-            return sections.Select(section => textInfo.ToTitleCase(textInfo.ToLower(section)))
+            return sections
+                .Select(section => textInfo.ToTitleCase(textInfo.ToLower(section)))
                 .Aggregate(result, (current, capitalizedSection) => current + capitalizedSection);
         }
     }

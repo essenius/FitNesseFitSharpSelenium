@@ -53,7 +53,8 @@ namespace SeleniumFixture
         /// <returns>a list of all options in a select element. Method can be value or text</returns>
         public ReadOnlyCollection<string> AllOptionsOfElementBy(string searchCriterion, string method) =>
             DoOperationOnElement(searchCriterion, element =>
-                new ReadOnlyCollection<string>(new SelectElement(element).Options.Select(option => option.GetValueBy(method)).ToList()));
+                new ReadOnlyCollection<string>(new SelectElement(element).Options
+                    .Select(option => option.GetValueBy(method)).ToList()));
 
         /// <returns>an attribute value of a certain element</returns>
         public string AttributeOfElement(string attribute, string searchCriterion) =>
@@ -88,7 +89,10 @@ namespace SeleniumFixture
         /// <summary>Click a specific element if it is visible. Useful for e.g.cookie confirmations</summary>
         public bool? ClickElementIfVisible(string searchCriterion)
         {
-            if (ElementExists(searchCriterion) && ElementIsVisible(searchCriterion)) return ClickElement(searchCriterion);
+            if (ElementExists(searchCriterion) && ElementIsVisible(searchCriterion))
+            {
+                return ClickElement(searchCriterion);
+            }
             return null;
         }
 
@@ -111,7 +115,8 @@ namespace SeleniumFixture
             DoOperationOnElement(searchCriterion, element => element.GetCssValue(cssProperty));
 
         /// <summary>Deselect an option in a select element (list bos or dropdown). Option method can be text, value, id (default=text)</summary>
-        public bool DeselectOptionInElement(string item, string searchCriterion) => SelectOrDeselectOptionInElement(false, item, searchCriterion);
+        public bool DeselectOptionInElement(string item, string searchCriterion) =>
+            SelectOrDeselectOptionInElement(false, item, searchCriterion);
 
         private T DoOperationOnElement<T>(string searchCriterion, Func<IWebElement, T> operation)
         {
@@ -155,8 +160,9 @@ namespace SeleniumFixture
 
         private void DoubleClickWithJavascript(IWebElement element)
         {
-            const string script = "var myEvent = new MouseEvent('dblclick', {bubbles: true, cancelable: true, view: window});"
-                                  + "arguments[0].dispatchEvent(myEvent);";
+            const string script =
+                "var myEvent = new MouseEvent('dblclick', {bubbles: true, cancelable: true, view: window});"
+                + "arguments[0].dispatchEvent(myEvent);";
             ((IJavaScriptExecutor)Driver).ExecuteScript(script, element);
         }
 
@@ -187,7 +193,10 @@ namespace SeleniumFixture
                 // first we long press and find the element. It might only show up during longpress
                 var checkAction = new TouchAction(driver);
                 checkAction.LongPress(dragElement).Perform();
-                if (!WaitForElement(dropElementLocator)) throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
+                if (!WaitForElement(dropElementLocator))
+                {
+                    throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
+                }
                 var target = FindElement(dropElementLocator);
                 // Now do the actual drag and drop. Not using MoveTo(Element) as element may still be invisible.
                 var position = target.Location;
@@ -200,12 +209,20 @@ namespace SeleniumFixture
                 action.LongPress(dragElement).MoveTo(moveX, moveY).Release().Perform();
                 return true;
             }
-            DragDrop.Html5DragAndDrop(Driver, dragElement, FindElement(dropElementLocator), DragDrop.Position.Center, DragDrop.Position.Center);
+            DragDrop.Html5DragAndDrop(
+                Driver,
+                dragElement,
+                FindElement(dropElementLocator),
+                DragDrop.Position.Center,
+                DragDrop.Position.Center);
             return true;
         }
 
         /// <summary>Drag an element and drop it onto another element in another driver</summary>
-        public bool DragElementAndDropOnElementInDriver(string dragElementLocator, string dropElementLocator, string dropDriverHandle)
+        public bool DragElementAndDropOnElementInDriver(
+            string dragElementLocator,
+            string dropElementLocator,
+            string dropDriverHandle)
         {
             var dragElement = FindElement(dragElementLocator);
             var dragDriverHandle = DriverId;
@@ -222,22 +239,26 @@ namespace SeleniumFixture
         public bool ElementExists(string searchCriterion) => Driver != null && ElementsMatching(searchCriterion).Any();
 
         /// <returns>whether a certain element has the specified attribute</returns>
-        public bool ElementHasAttribute(string searchCriterion, string attribute) => AttributeOfElement(attribute, searchCriterion) != null;
+        public bool ElementHasAttribute(string searchCriterion, string attribute) =>
+            AttributeOfElement(attribute, searchCriterion) != null;
 
         /// <returns>whether the element is selected/checked</returns>
-        public bool ElementIsChecked(string searchCriterion) => DoOperationOnElement(searchCriterion, element => element.Selected);
+        public bool ElementIsChecked(string searchCriterion) =>
+            DoOperationOnElement(searchCriterion, element => element.Selected);
 
         /// <returns>whether a certain element can be clicked (i.e. is enabled and displayed)</returns>
         public bool ElementIsClickable(string searchCriterion) => DoOperationOnElement(searchCriterion, IsClickable);
 
         /// <returns>whether a certain element is visible on the page</returns>
-        public bool ElementIsVisible(string searchCriterion) => DoOperationOnElement(searchCriterion, element => element.Displayed);
+        public bool ElementIsVisible(string searchCriterion) =>
+            DoOperationOnElement(searchCriterion, element => element.Displayed);
 
         private IReadOnlyCollection<IWebElement> ElementsMatching(string searchCriterion) =>
             Driver?.FindElements(new SearchParser(searchCriterion).By);
 
         /// <summary>Find a Web element</summary>
-        public IWebElement FindElement(string searchCriterion) => Driver.FindElement(new SearchParser(searchCriterion).By);
+        public IWebElement FindElement(string searchCriterion) =>
+            Driver.FindElement(new SearchParser(searchCriterion).By);
 
         private static bool IsClickable(IWebElement element) => element.Displayed && element.Enabled;
 
@@ -247,7 +268,8 @@ namespace SeleniumFixture
             if (int.TryParse(keyCodeIn, out var keyCode)) return keyCode;
             var myType = typeof(AndroidKeyCode);
             if (keyCodeIn == null) throw new ArgumentNullException(nameof(keyCodeIn));
-            var myFieldInfo = myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
+            var myFieldInfo =
+                myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
             if (myFieldInfo == null) return null;
             var success = int.TryParse(myFieldInfo.GetValue(null)?.ToString(), out keyCode);
             if (!success) return null;
@@ -255,13 +277,15 @@ namespace SeleniumFixture
         }
 
         /// <summary>Long press an element (mobile only)</summary>
-        public bool LongPressElementForSeconds(string searchCriterion, double seconds) => DoOperationOnElement(searchCriterion, element =>
-        {
-            if (Driver is not IPerformsTouchActions driver) return false;
-            var action = new TouchAction(driver);
-            action.LongPress(element).Wait(Convert.ToInt64(TimeSpan.FromSeconds(seconds).TotalMilliseconds)).Release().Perform();
-            return true;
-        });
+        public bool LongPressElementForSeconds(string searchCriterion, double seconds) => 
+            DoOperationOnElement(searchCriterion, element =>
+            {
+                if (Driver is not IPerformsTouchActions driver) return false;
+                var action = new TouchAction(driver);
+                action.LongPress(element).Wait(Convert.ToInt64(TimeSpan.FromSeconds(seconds).TotalMilliseconds))
+                    .Release().Perform();
+                return true;
+            });
 
         private void MoveTo(IWebElement element)
         {
@@ -269,7 +293,8 @@ namespace SeleniumFixture
             try
             {
                 ((IJavaScriptExecutor)Driver).ExecuteScript(
-                    "arguments[0].scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});", element);
+                    "arguments[0].scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});",
+                    element);
             }
             catch (NotImplementedException)
             {
@@ -353,7 +378,8 @@ namespace SeleniumFixture
         }
 
         /// <returns>the selected item texts of a multi-select listbox</returns>
-        public ReadOnlyCollection<string> SelectedOptionsInElement(string searchCriterion) => SelectedOptionsInElementBy(searchCriterion, "text");
+        public ReadOnlyCollection<string> SelectedOptionsInElement(string searchCriterion) =>
+            SelectedOptionsInElementBy(searchCriterion, "text");
 
         /// <returns>the selected option for single-select elements, or the first selected option for multi-select elements</returns>
         /// <param name="searchCriterion">the element to use</param>
@@ -367,7 +393,8 @@ namespace SeleniumFixture
             });
 
         /// <summary>Select an option in a select element. item method can be text, value or id. Default is text</summary>
-        public bool SelectOptionInElement(string item, string searchCriterion) => SelectOrDeselectOptionInElement(true, item, searchCriterion);
+        public bool SelectOptionInElement(string item, string searchCriterion) =>
+            SelectOrDeselectOptionInElement(true, item, searchCriterion);
 
         private bool SelectOrDeselectOptionInElement(bool select, string item, string searchCriterion)
         {
@@ -381,14 +408,23 @@ namespace SeleniumFixture
                 switch (method.ToUpperInvariant())
                 {
                     case "VALUE":
-                        ChooseAction(select, () => { selector.SelectByValue(locator); }, () => { selector.DeselectByValue(locator); });
+                        ChooseAction(
+                            select, 
+                            () => { selector.SelectByValue(locator); },
+                            () => { selector.DeselectByValue(locator); });
                         break;
                     case "INDEX":
                         var index = int.Parse(locator, CultureInfo.InvariantCulture);
-                        ChooseAction(select, () => { selector.SelectByIndex(index); }, () => { selector.DeselectByIndex(index); });
+                        ChooseAction(
+                            select, 
+                            () => { selector.SelectByIndex(index); },
+                            () => { selector.DeselectByIndex(index); });
                         break;
                     default: // includes 'text', and 'id'  in case SearchParser doesn't get a method
-                        ChooseAction(select, () => { selector.SelectByText(locator); }, () => { selector.DeselectByText(locator); });
+                        ChooseAction(
+                            select, 
+                            () => { selector.SelectByText(locator); },
+                            () => { selector.DeselectByText(locator); });
                         break;
                 }
 
@@ -434,12 +470,13 @@ namespace SeleniumFixture
         public bool SetElementChecked(string searchCriterion) => SetElementChecked(searchCriterion, true);
 
         /// <summary>Check or uncheck an element (based on second parameter)</summary>
-        public bool SetElementChecked(string searchCriterion, bool selected) => DoOperationOnElement(searchCriterion, element =>
-        {
-            if (element.Selected == selected) return true;
-            element.Click();
-            return element.Selected == selected;
-        });
+        public bool SetElementChecked(string searchCriterion, bool selected) => 
+            DoOperationOnElement(searchCriterion, element =>
+            {
+                if (element.Selected == selected) return true;
+                element.Click();
+                return element.Selected == selected;
+            });
 
         /// <summary>Sets the value of a certain element (via SendKeys)</summary>
         public bool SetElementTo(string searchCriterion, string value)
@@ -474,23 +511,26 @@ namespace SeleniumFixture
             DoOperationOnElement(searchCriterion, element => element.SetInnerHtml(value));
 
         /// <summary>Submit a form via an element</summary>
-        public bool SubmitElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
-        {
-            element.Submit();
-            return true;
-        });
+        public bool SubmitElement(string searchCriterion) => 
+            DoOperationOnElement(searchCriterion, element =>
+            {
+                element.Submit();
+                return true;
+            });
 
         /// <summary>Single tap an element (mobile only)</summary>
-        public bool TapElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
-        {
-            if (Driver is not IPerformsTouchActions driver) return false;
-            var action = new TouchAction(driver);
-            action.Tap(element).Perform();
-            return true;
-        });
+        public bool TapElement(string searchCriterion) => 
+            DoOperationOnElement(searchCriterion, element =>
+            {
+                if (Driver is not IPerformsTouchActions driver) return false;
+                var action = new TouchAction(driver);
+                action.Tap(element).Perform();
+                return true;
+            });
 
         /// <returns>the text of a certain element</returns>
-        public string TextInElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element => element.Text);
+        public string TextInElement(string searchCriterion) =>
+            DoOperationOnElement(searchCriterion, element => element.Text);
 
         /// <summary>Check if the text in a certain element matches with a regular expression</summary>
         public bool TextInElementMatches(string searchCriterion, string regexPattern)
@@ -544,19 +584,24 @@ namespace SeleniumFixture
         });
 
         /// <summary>Wait until an element does not exist on the page (e.g. got deleted)</summary>
-        public bool WaitUntilElementDoesNotExist(string searchCriterion) => WaitFor(_ => !ElementExists(searchCriterion));
+        public bool WaitUntilElementDoesNotExist(string searchCriterion) =>
+            WaitFor(_ => !ElementExists(searchCriterion));
 
         /// <summary>Wait until an element is clickable</summary>
-        public bool WaitUntilElementIsClickable(string searchCriterion) => WaitFor(_ => ElementIsClickable(searchCriterion)).ToBool();
+        public bool WaitUntilElementIsClickable(string searchCriterion) =>
+            WaitFor(_ => ElementIsClickable(searchCriterion)).ToBool();
 
         /// <summary>Wait until an element is invisible</summary>
-        public bool WaitUntilElementIsInvisible(string searchCriterion) => WaitFor(_ => !ElementIsVisible(searchCriterion));
+        public bool WaitUntilElementIsInvisible(string searchCriterion) =>
+            WaitFor(_ => !ElementIsVisible(searchCriterion));
 
         /// <summary>Wait until an element is not clickable (e.g. made read-only)</summary>
-        public bool WaitUntilElementIsNotClickable(string searchCriterion) => WaitFor(_ => !ElementIsClickable(searchCriterion)).ToBool();
+        public bool WaitUntilElementIsNotClickable(string searchCriterion) =>
+            WaitFor(_ => !ElementIsClickable(searchCriterion)).ToBool();
 
         /// <summary>Wait until an element is visible</summary>
-        public bool WaitUntilElementIsVisible(string searchCriterion) => WaitFor(_ => ElementIsVisible(searchCriterion));
+        public bool WaitUntilElementIsVisible(string searchCriterion) =>
+            WaitFor(_ => ElementIsVisible(searchCriterion));
 
         private bool WaitUntilIsClickable(IWebElement element) => WaitFor(_ => IsClickable(element)).ToBool();
 

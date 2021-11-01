@@ -38,7 +38,8 @@ namespace SeleniumFixture
         private bool _wasCalculated;
 
         /// <summary>Extract table values from an HTML table, identified by an XPath query</summary>
-        [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional params")]
+        [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global",
+            Justification = "FitSharp can't handle optional params")]
         public ExtractTableValues(string tableLocation) : this(tableLocation, 0)
         {
         }
@@ -66,7 +67,8 @@ namespace SeleniumFixture
         /// <param name="rowLocation">absolute row location</param>
         /// <param name="relativeCellLocationInRow">cell locator relative from row</param>
         /// <param name="maxResults">maximum result count</param>
-        public ExtractTableValues(string headerLocation, string rowLocation, string relativeCellLocationInRow, int maxResults)
+        public ExtractTableValues(
+            string headerLocation, string rowLocation, string relativeCellLocationInRow, int maxResults)
         {
             _headerLocation = headerLocation;
             _rowLocation = rowLocation;
@@ -83,8 +85,12 @@ namespace SeleniumFixture
         /// <param name="relativeRowLocationInTable">data row locator relative to table</param>
         /// <param name="relativeCellLocationInRow">cell locator relative to row</param>
         /// <param name="maxResults">maximum result count</param>
-        public ExtractTableValues(string tableLocation, string relativeHeaderLocationInTable,
-            string relativeRowLocationInTable, string relativeCellLocationInRow, int maxResults)
+        public ExtractTableValues(
+            string tableLocation, 
+            string relativeHeaderLocationInTable,
+            string relativeRowLocationInTable, 
+            string relativeCellLocationInRow, 
+            int maxResults)
         {
             _tableLocation = tableLocation;
             _relativeHeaderLocationInTable = relativeHeaderLocationInTable;
@@ -113,12 +119,14 @@ namespace SeleniumFixture
             }
         }
 
-        private static string DefaultHeader(int columnNumber) => string.Format(CurrentCulture, "Column {0}", columnNumber + 1);
+        private static string DefaultHeader(int columnNumber) =>
+            string.Format(CurrentCulture, "Column {0}", columnNumber + 1);
 
         private void DoExtraction()
         {
             if (_wasCalculated) return;
-            if (BrowserDriverContainer.Current == null) throw new NoNullAllowedException("Browser Driver was not initialized");
+            if (BrowserDriverContainer.Current == null)
+                throw new NoNullAllowedException("Browser Driver was not initialized");
             ReadOnlyCollection<IWebElement> headerElements;
             IEnumerable<IWebElement> rowElements;
             if (string.IsNullOrEmpty(_tableLocation))

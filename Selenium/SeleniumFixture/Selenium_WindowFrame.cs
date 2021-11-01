@@ -22,7 +22,8 @@ namespace SeleniumFixture
     // Window and frame handling methods of the Selenium script table fixture for FitNesse
 
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp")]
-    [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global", Justification = "FitSharp can't handle optional parameters")]
+    [SuppressMessage("ReSharper", "IntroduceOptionalParameters.Global",
+        Justification = "FitSharp can't handle optional parameters")]
     public sealed partial class Selenium
     {
         private string _mainWindowHandle;

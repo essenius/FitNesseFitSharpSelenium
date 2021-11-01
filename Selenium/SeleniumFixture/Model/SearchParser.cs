@@ -52,7 +52,9 @@ namespace SeleniumFixture.Model
             if (searchCriterion.Contains(Delimiter))
             {
                 Method = searchCriterion[..searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal)].Trim();
-                Locator = searchCriterion[(searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal) + Delimiter.Length)..].Trim();
+                Locator =
+                    searchCriterion[(searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal) + Delimiter.Length)..]
+                        .Trim();
             }
             else
             {

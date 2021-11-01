@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -44,7 +44,8 @@ namespace SeleniumFixture.Model
         }
 
         private object CallViaJavascript(string scriptSnippet) =>
-            _javaScriptExecutor.ExecuteScript(FormattableString.Invariant($"return {_javaScriptStore}.{scriptSnippet};"));
+            _javaScriptExecutor.ExecuteScript(
+                FormattableString.Invariant($"return {_javaScriptStore}.{scriptSnippet};"));
 
         public override bool Clear()
         {
@@ -52,7 +53,8 @@ namespace SeleniumFixture.Model
             return true;
         }
 
-        public override string GetItem(string key) => CallViaJavascript(FormattableString.Invariant($"getItem('{key}')")).ToString();
+        public override string GetItem(string key) =>
+            CallViaJavascript(FormattableString.Invariant($"getItem('{key}')")).ToString();
 
         public override bool RemoveItem(string key)
         {

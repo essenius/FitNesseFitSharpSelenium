@@ -24,10 +24,12 @@ namespace SeleniumFixture
         public static string ApplicationName { get; } = ThisAssembly.GetName().Name;
 
         /// <summary>Copyright notice</summary>
-        public static string Copyright { get; } = ThisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
+        public static string Copyright { get; } =
+            ThisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
 
         /// <summary> Description of the fixture</summary>
-        public static string Description { get; } = ThisAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
+        public static string Description { get; } =
+            ThisAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
 
         /// <summary> Name, version, description and copyright</summary>
         public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");

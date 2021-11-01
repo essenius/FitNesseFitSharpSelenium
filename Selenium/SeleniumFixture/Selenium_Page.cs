@@ -31,7 +31,8 @@ namespace SeleniumFixture
     /// <summary>
     ///     Selenium Fixture for FitSharp
     /// </summary>
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "This is the interface class")]
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling",
+        Justification = "This is the interface class")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by Fitsharp")]
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by Fitsharp")]
     public sealed partial class Selenium
@@ -207,7 +208,8 @@ namespace SeleniumFixture
         /// <summary>Waits for a page to load, using default timeout</summary>
         public bool WaitForPageToLoad() => WaitUntilElementIsVisible("XPath://*[not (.='')]");
 
-        private bool WaitForText(string textToSearch, bool caseInsensitive) => WaitFor(_ => TextExists(textToSearch, caseInsensitive));
+        private bool WaitForText(string textToSearch, bool caseInsensitive) =>
+            WaitFor(_ => TextExists(textToSearch, caseInsensitive));
 
         /// <summary>Waits for a certain text to be present (case sensitive search)</summary>
         public bool WaitForText(string textToSearch) => WaitForText(textToSearch, false);
@@ -216,12 +218,14 @@ namespace SeleniumFixture
         public bool WaitForTextIgnoringCase(string textToSearch) => WaitForText(textToSearch, true);
 
         /// <summary>Wait until the page source has the specified minimum length. Useful when pages are built dynamically and asynchronously</summary>
-        public bool WaitUntilPageSourceIsLargerThan(int thresholdLength) => WaitFor(_ => LengthOfPageSource > thresholdLength);
+        public bool WaitUntilPageSourceIsLargerThan(int thresholdLength) =>
+            WaitFor(_ => LengthOfPageSource > thresholdLength);
 
         /// <summary>Wait until a called JavaScript function returns a value that is not false or null</summary>
         public bool WaitUntilScriptReturnsTrue(string script) => WaitFor(_ => ExecuteScript(script) is true);
 
         /// <summary>Wait for a title to appear, using a regular expression to search</summary>
-        public bool WaitUntilTitleMatches(string regexPattern) => WaitFor(d => new Regex(regexPattern).IsMatch(d.Title));
+        public bool WaitUntilTitleMatches(string regexPattern) =>
+            WaitFor(d => new Regex(regexPattern).IsMatch(d.Title));
     }
 }

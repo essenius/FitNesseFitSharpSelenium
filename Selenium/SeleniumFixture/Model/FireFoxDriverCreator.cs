@@ -21,7 +21,8 @@ namespace SeleniumFixture.Model
         {
         }
 
-        public static string IntegratedAuthenticationDomain { get; set; } = AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
+        public static string IntegratedAuthenticationDomain { get; set; } =
+            AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
 
         public override string Name { get; } = "FIREFOX";
 
@@ -59,7 +60,7 @@ namespace SeleniumFixture.Model
             try
             {
                 driverService = GetDefaultService<FirefoxDriverService>(driverFolder);
-                // Workaround for the issue making .NET COre networking slow with GeckoDriver.
+                // Workaround for the issue making .NET Core networking slow with GeckoDriver.
                 // see https://github.com/SeleniumHQ/selenium/issues/7840
                 driverService.Host = "::1";
                 driver = new FirefoxDriver(driverService, FirefoxOptions(), Timeout);

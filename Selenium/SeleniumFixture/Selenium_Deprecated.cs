@@ -53,7 +53,8 @@ namespace SeleniumFixture
         {
             if (ExceptionOnDeprecatedFunctions)
             {
-                throw new WarningException("Use of deprecated function '" + fixtureName + "'. Replace by '" + fixtureReplacement + "'");
+                throw new WarningException(
+                    "Use of deprecated function '" + fixtureName + "'. Replace by '" + fixtureReplacement + "'");
             }
         }
 
@@ -73,8 +74,8 @@ namespace SeleniumFixture
 
         [Obsolete(ApplicationNameObsoleteMessage)]
         public static string NewRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string name) =>
-            throw new NotSupportedException(ApplicationNameObsoleteMessage +
-                                            " (" + browserName + "," + baseAddress + "," + name + ")");
+            throw new NotSupportedException(
+                ApplicationNameObsoleteMessage + " (" + browserName + "," + baseAddress + "," + name + ")");
 
         [Obsolete("Use ProtectedModesAre")]
         public bool ProtectedModeIsOff()
@@ -98,9 +99,10 @@ namespace SeleniumFixture
         }
 
         [Obsolete(ApplicationNameObsoleteMessage)]
-        public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string applicationName) =>
-            throw new NotSupportedException(ApplicationNameObsoleteMessage +
-                                            " (" + browserName + "," + baseAddress + "," + applicationName + ")");
+        public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress,
+            string applicationName) =>
+            throw new NotSupportedException(
+                ApplicationNameObsoleteMessage + " (" + browserName + "," + baseAddress + "," + applicationName + ")");
 
         [Obsolete("Use WindowSize")]
         public bool SetWindowSizeX(int width, int height)
