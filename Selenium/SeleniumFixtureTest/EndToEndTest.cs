@@ -71,7 +71,7 @@ namespace SeleniumFixtureTest
             {
                 if (isRemote)
                 {
-                    var capabilities = new Dictionary<string, object>
+                    var capabilities = new Dictionary<string, string>
                     {
                         { "testCapability", "testValue" }
                     };
@@ -538,7 +538,7 @@ namespace SeleniumFixtureTest
             _selenium.SelectWindow(string.Empty);
         }
 
-        public void ScreenshotTest()
+        private void ScreenshotTest()
         {
             // select a non-text element so we don't get a blinking cursor. 
             _selenium.ClickElement("id:fm");
@@ -549,6 +549,7 @@ namespace SeleniumFixtureTest
                     "<img alt=\\\"Screenshot\\\" src=\\\"data:image\\/png;base64,(\\S+)\\s\\/>"));
             Assert.IsTrue(shot1.Length > 100);
             Assert.AreEqual(shot1, shotObject.Rendering);
+            Assert.AreEqual("Screenshot", shotObject.ToString(), "Alt and ToString() OK");
         }
 
         private void ScriptWithNullParametersTest()

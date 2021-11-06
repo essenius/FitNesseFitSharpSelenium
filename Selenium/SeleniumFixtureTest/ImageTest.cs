@@ -9,18 +9,20 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-namespace SeleniumFixture.Model
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SeleniumFixture;
+
+namespace SeleniumFixtureTest
 {
-    /// <summary>Finds element on partial content of the element.</summary>
-    internal class ByPartialContent : CustomBy
+    [TestClass]
+    public class ImageTest
     {
-        public ByPartialContent(string elementIdentifier) : base(elementIdentifier)
+        [TestMethod]
+        [TestCategory("Unit")]
+        public void ImageParseTest()
         {
-            DisplayName = "ByPartialContent";
-            foreach (var element in new[] { "button", "input", "meter", "progress", "select", "textArea" })
-            {
-                ByList.Add(XPath($"//{element}[contains(normalize-space(.), '{ElementIdentifier}')]"));
-            }
+            var image = Image.Parse("ABC");
+            Assert.AreEqual("<img alt=\"Parsed image\" src=\"data:image/png;base64,ABC\" />", image.Rendering);
         }
     }
 }

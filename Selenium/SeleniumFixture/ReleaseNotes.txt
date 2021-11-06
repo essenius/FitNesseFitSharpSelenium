@@ -62,5 +62,8 @@
 3.2.0    Eliminated (Windows specific) check for screen scaling (IE only, and didn't add much value).
          Eliminated _skippedTests in EndToEndTest and replaced by Debug.WriteLine().
          Eliminated SeleniumBaseTests; moved to Experiments and EndToEndTest.
+3.2.1    Corrected API for *RemoteBrowserAtAddressWithCapabilities to use Dictionary<string,string> instead of <string,object>
+         Made Scroll more robust on Android by introducing a 200 ms delay between press and move.
+         Introduced Map fixture to make hash maps more convenient to enter.
 
 Note: we can't upgrade to Webdriver 4 until Appium and WinApp support it.

@@ -154,7 +154,7 @@ namespace SeleniumFixtureTest
             _testsToDo = typeof(AppiumTest)
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
-            var caps = new Dictionary<string, object>
+            var caps = new Dictionary<string, string>
             {
                 { MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4" },
                 { "automationName", "UiAutomator1" },
@@ -162,9 +162,9 @@ namespace SeleniumFixtureTest
                 //{ "appActivity", ".Settings"},
                 { AndroidMobileCapabilityType.AppPackage, "com.android.launcher" },
                 { "appActivity", "com.android.launcher2.Launcher" },
-                { "newCommandTimeout", 300 },
-                { "clearSystemFiles", true },
-                { "adbExecTimeout", 30000 }
+                { "newCommandTimeout", "300" },
+                { "clearSystemFiles", "true" },
+                { "adbExecTimeout", "30000" }
             };
 
             Fixture.SetTimeoutSeconds(60);
@@ -200,6 +200,7 @@ namespace SeleniumFixtureTest
             else
             {
                 Assert.IsTrue(Fixture.PressKeyCode("Home"));
+                Assert.IsTrue(Fixture.WaitForElement(Apps));
             }
         }
     }

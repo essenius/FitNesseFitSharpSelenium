@@ -180,14 +180,18 @@ namespace SeleniumFixture
         /// <summary>See <see cref="SetRemoteBrowserAtAddress" /></summary>
         /// <returns>the driver ID </returns>
         public string NewRemoteBrowserAtAddress(string browserName, string baseAddress) =>
-            NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, object>());
+            NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, string>());
 
         /// <summary>See <see cref="SetRemoteBrowserAtAddressWithCapabilities" /></summary>
         /// <returns>the driver ID</returns>
-        public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
-            Dictionary<string, object> capabilities)
+        public string NewRemoteBrowserAtAddressWithCapabilities(
+            string browserName, 
+            string baseAddress,
+            Dictionary<string, string> capabilities)
         {
-            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, capabilities);
+            var caps = capabilities.ToDictionary(pair => pair.Key, pair => (object)pair.Value);
+
+            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, caps);
             Driver = BrowserDriverContainer.Current;
             _browserStorage = null;
             return DriverId;
@@ -263,8 +267,10 @@ namespace SeleniumFixture
         /// <summary>Use a remote Selenium server (address including port) with a dictionary of desired capabilities</summary>
         /// <remarks>Raises a StopTestException if unable to connect</remarks>
         /// <returns></returns>
-        public bool SetRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
-            Dictionary<string, object> capabilities) =>
+        public bool SetRemoteBrowserAtAddressWithCapabilities(
+            string browserName, 
+            string baseAddress, 
+            Dictionary<string, string> capabilities) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, capabilities));
 
         /// <summary>Set the default timeout for all wait commands (except page loads). Default value is 3 seconds</summary>

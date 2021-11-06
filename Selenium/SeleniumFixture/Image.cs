@@ -25,7 +25,6 @@ namespace SeleniumFixture
             Alt = alt;
         }
 
-
         /// <summary>Alt text for the img element, and text to use for ToString</summary>
         public string Alt { get; set; }
 

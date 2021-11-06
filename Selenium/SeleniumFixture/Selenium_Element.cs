@@ -177,7 +177,7 @@ namespace SeleniumFixture
             if (Driver is not IPerformsTouchActions driver) return false;
             var touchAction = new TouchAction(driver);
             Debug.Assert(location != null, nameof(location) + " != null");
-            touchAction.LongPress(dragElement).MoveTo(location.X, location.Y).Release().Perform();
+            touchAction.LongPress(dragElement).Wait(200).MoveTo(location.X, location.Y).Release().Perform();
             return true;
         }
 

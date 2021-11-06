@@ -36,7 +36,7 @@ namespace SeleniumFixtureTest
         [ClassInitialize]
         public static void ClassInitialize(TestContext _)
         {
-            var caps = new Dictionary<string, object>
+            var caps = new Dictionary<string, string>
             {
                 { "app", "notepad.exe" }
             };
