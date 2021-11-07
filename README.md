@@ -33,4 +33,4 @@ This repo contains a fixture to enable automated testing of web applications usi
 1. Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite?suite
 
 # Contribute
-Enter an issue or provide a pull request.
+Enter an [issue](issues) or provide a [pull request](pulls).
