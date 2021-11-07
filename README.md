@@ -1,5 +1,7 @@
 # FitNesseFitSharpSelenium
-This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages
+This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
+
+There is a [newer version using .NET 5.0](tree/net5_0). Once that is stable, it will supersede this version.
 
 # Getting Started
 1. Download FitNesse (http://fitnesse.org) and install it to C:\Apps\FitNesse
