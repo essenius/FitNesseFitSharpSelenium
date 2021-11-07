@@ -84,4 +84,4 @@ If you want to run the unit tests, configure `appsettings.json`:
 See the [Wiki](../../wiki)
 
 # Contribute
-Enter an issue or provide a pull request. 
+Enter an [issue](../../issues) or provide a [pull request](../../pulls). 
