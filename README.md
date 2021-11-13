@@ -1,12 +1,12 @@
 # FitNesseFitSharpSelenium
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages
 
-# Installing the fixture and the examplesn
+# Installing the fixture and the examples
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
 
 Differences are:
-* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium`. 
-* You will need to use Visual Studio Enterprise to build the solution since the test prooject uses Fakes. You can work around that by building SeleniumFixture only, and manually copying in the package libraries to the dll folder (and then using that one as go to folder below).
+* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-*`. 
+* You will need to use Visual Studio Enterprise to build the solution since the test project uses Fakes. You can work around that by building SeleniumFixture only, and manually copying in the package libraries to the dll folder (and then using that one as go to folder below).
 * Install browser drivers and other dependencies (see below).
 * Go to folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixtureTest\bin\debug\net5.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
