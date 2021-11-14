@@ -6,7 +6,7 @@ For the moment it still depends on Selenium 3 as it seems WinAppDriver can't cop
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
 
 Differences are:
-* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-*`. 
+* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
 * Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
 * Build fixture solution: `dotnet build --configuration release Selenium.sln`
 * Go to fixture folder: `cd SeleniumFixture`
