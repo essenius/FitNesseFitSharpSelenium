@@ -71,15 +71,6 @@ namespace SeleniumFixture
             return true;
         }
 
-        // disabling because the dependency on System.Windows.Forms is cumbersome. Alternative is using UI AUtomation fixture.
-        /// <summary>
-        ///     Send keys using the .Net Framework Forms.SendKeys.SendWait function. Executes locally, so does not work on remote Selenium
-        ///     servers.
-        ///     Can be useful for context menus, although the Chrome driver does not send keypresses there.
-        ///     The syntax of the keys is slightly different than the Selenium syntax used in Send Keys To Element.
-        ///     Primarily, control, alt and shift do not toggle, but only work on the following item. See MSDN SendKeys documentation
-        /// </summary>
-        /// public static void NativeSendKeys(string keys) => System.Windows.Forms.SendKeys.SendWait(keys);
         /// <summary>Opens the specified URL in the browser and wait for it to load.</summary>
         public bool Open(Uri url)
         {

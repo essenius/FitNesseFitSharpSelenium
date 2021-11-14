@@ -47,8 +47,6 @@ namespace SeleniumFixture.Model
 
         private readonly IRegistry _registry;
 
-        //private IRegistryKey Hklm { get; }
-
         public string FoundIn
         {
             get

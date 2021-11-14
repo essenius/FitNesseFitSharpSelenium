@@ -67,9 +67,6 @@ namespace SeleniumFixtureTest
         [TestCategory("Integration")]
         public void BrowserStorageTests()
         {
-            // Disabled the native tests as ChromeDriver (the only browser using it in the past) no longer seems to support it after 2.46.
-            // The flag IHasWebStorage.HasWebStorage returns false now.
-
             BrowserStorageJavaScriptFindFirstOnSessionTest();
             BrowserStorageNoTest();
             BrowserStorageJavaScriptFindFirstOnLocalTest();

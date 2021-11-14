@@ -98,7 +98,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory(@"Native")]
+        [TestCategory("Native")]
         public void AppiumLongPressElementForSecondsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");

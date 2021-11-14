@@ -18,12 +18,8 @@ namespace SeleniumFixture.Model
     [SupportedOSPlatform("windows")]
     internal class ZoneListFactory : IZoneListFactory
     {
-        public ZoneListFactory(IRegistry registry)
-        {
-            _registry = registry;
-        }
-        //private readonly RegistryKey _hkcu = Registry.CurrentUser;
-        //private readonly RegistryKey _hklm = Registry.LocalMachine;
+        public ZoneListFactory(IRegistry registry) => _registry = registry;
+
         private readonly IRegistry _registry;
 
         public List<IZone> CreateZoneList()
