@@ -20,8 +20,7 @@ namespace SeleniumFixtureTest
     public class BrowserStorageTest
     {
         // todo: fix issue of ChromeDriver not closing down
-        // todo: check why this test fails with new Chrome versions.
-        // No longer returns true for HasBrowserStorage
+
         private IWebDriver _driver;
         private string _driverHandle;
 

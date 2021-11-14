@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
+using DotNetWindowsRegistry;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
 
@@ -68,8 +69,10 @@ namespace SeleniumFixture
             set => FireFoxDriverCreator.IntegratedAuthenticationDomain = value;
         }
 
+        private readonly IRegistry _windowsRegistry = new WindowsRegistry();
+
         [SupportedOSPlatform("windows")]
-        private ProtectedMode ProtectedMode => _protectedMode ??= new ProtectedMode(new ZoneListFactory());
+        private ProtectedMode ProtectedMode => _protectedMode ??= new ProtectedMode(new ZoneListFactory(_windowsRegistry));
 
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 

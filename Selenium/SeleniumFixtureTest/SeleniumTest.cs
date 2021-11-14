@@ -13,10 +13,9 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Versioning;
-using System.Threading;
+using DotNetWindowsRegistry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using OpenQA.Selenium.IE;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 
@@ -377,7 +376,8 @@ namespace SeleniumFixtureTest
         public void SeleniumZoneTest()
         {
             // this test will fail if not all protected mode settings are the same
-            var protectedModes = new ProtectedMode(new ZoneListFactory());
+            var registry = new WindowsRegistry();
+            var protectedModes = new ProtectedMode(new ZoneListFactory(registry));
             var same = protectedModes.AllAreSame();
             Assert.IsTrue(same);
         }

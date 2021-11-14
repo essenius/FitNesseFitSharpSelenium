@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Versioning;
+using DotNetWindowsRegistry;
 using Microsoft.Win32;
 using static System.Globalization.CultureInfo;
 
@@ -38,15 +39,15 @@ namespace SeleniumFixture.Model
         private string _foundIn;
         private bool? _isProtected;
 
-        public Zone(int zoneId, RegistryKey hklm, RegistryKey hkcu)
+        public Zone(int zoneId, IRegistry registry)
         {
             Id = zoneId;
-            Hklm = hklm;
-            Hkcu = hkcu;
+            _registry = registry;
         }
 
-        private RegistryKey Hkcu { get; }
-        private RegistryKey Hklm { get; }
+        private readonly IRegistry _registry;
+
+        //private IRegistryKey Hklm { get; }
 
         public string FoundIn
         {
@@ -112,7 +113,10 @@ namespace SeleniumFixture.Model
             _isProtected = true;
         }
 
-        private RegistryKey RootKeyOf(string keyString) =>
-            keyString.StartsWith(@"HKLM", StringComparison.Ordinal) ? Hklm : Hkcu;
+        [SupportedOSPlatform("windows")]
+        private IRegistryKey RootKeyOf(string keyString) =>
+            keyString.StartsWith(@"HKLM", StringComparison.Ordinal)
+                ? _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
+                : _registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default);
     }
 }

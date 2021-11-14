@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace SeleniumFixture
@@ -24,19 +23,20 @@ namespace SeleniumFixture
         /// <param name="input">initial map</param>
         public Map(Dictionary<string, string> input) => _map = input;
 
-        /// <summary> Set key for key-value pair to be added</summary>
+        /// <summary>Set key for key-value pair to be added</summary>
         public void Key(string input) => _key = input;
 
-        /// <summary> Set value for key-value pair to be added</summary>
+        /// <summary>Set value for key-value pair to be added</summary>
         public void Value(string input) => _value = input;
 
-        /// <summary> Execute a line (part of FitNesse interface)</summary>
+        /// <summary>Execute a line (part of FitNesse interface)</summary>
         public void Execute()
         {
             if (_key == null) return;
-            _map.Add(_key, _value.ToString());
+            _map.Add(_key, _value);
         }
 
+        /// <summary>Prepare for next test case</summary>
         public void Reset()
         {
             _key = null;

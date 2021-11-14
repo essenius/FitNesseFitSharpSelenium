@@ -35,7 +35,7 @@ namespace SeleniumFixtureTest
         private static readonly Selenium Fixture = new();
 
         [TestMethod]
-        [TestCategory("Appium")]
+        [TestCategory("Native")]
         public void AppiumBasicOperationsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to Apps page");
@@ -49,7 +49,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Appium")]
+        [TestCategory("Native")]
         public void AppiumCalculatorTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Tap Apps element");
@@ -80,7 +80,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Appium")]
+        [TestCategory("Native")]
         public void AppiumDragDropTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
@@ -98,7 +98,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory(@"Appium")]
+        [TestCategory(@"Native")]
         public void AppiumLongPressElementForSecondsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
@@ -115,12 +115,12 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Appium")]
+        [TestCategory("Native")]
         [ExpectedExceptionWithMessage(typeof(ArgumentException), "Direction 'bogus' should be Up, Down, Left or Right")]
         public void AppiumScrollWrongTest() => Fixture.Scroll("bogus");
 
         [TestMethod]
-        [TestCategory("Appium")]
+        [TestCategory("Native")]
         public void AppiumSettingsAppTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps));

@@ -11,15 +11,20 @@
 
 using System.Collections.Generic;
 using System.Runtime.Versioning;
-using Microsoft.Win32;
+using DotNetWindowsRegistry;
 
 namespace SeleniumFixture.Model
 {
     [SupportedOSPlatform("windows")]
     internal class ZoneListFactory : IZoneListFactory
     {
-        private readonly RegistryKey _hkcu = Registry.CurrentUser;
-        private readonly RegistryKey _hklm = Registry.LocalMachine;
+        public ZoneListFactory(IRegistry registry)
+        {
+            _registry = registry;
+        }
+        //private readonly RegistryKey _hkcu = Registry.CurrentUser;
+        //private readonly RegistryKey _hklm = Registry.LocalMachine;
+        private readonly IRegistry _registry;
 
         public List<IZone> CreateZoneList()
         {
@@ -31,7 +36,7 @@ namespace SeleniumFixture.Model
             return zoneList;
         }
 
-        private IZone Create(int id) => new Zone(id, _hklm, _hkcu);
+        private IZone Create(int id) => new Zone(id, _registry);
     }
 
     internal interface IZoneListFactory

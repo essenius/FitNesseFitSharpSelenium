@@ -60,7 +60,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Integration")]
+        [TestCategory("Native")]
         public void WinAppCalcAddTest()
         {
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");
@@ -76,7 +76,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Integration")]
+        [TestCategory("Native")]
         public void WinAppCalcScientificTest()
         {
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");
@@ -99,7 +99,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Integration")]
+        [TestCategory("Native")]
         public void WinAppCalcVolumeTest()
         {
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");

@@ -45,7 +45,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
-        [TestCategory("Integration")]
+        [TestCategory("Native")]
         public void NotePadTest()
         {
             Fixture.SetTimeoutSeconds(2);

@@ -11,6 +11,7 @@
 
 using System.Linq;
 using System.Runtime.Versioning;
+using DotNetWindowsRegistry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture.Model;
 
@@ -24,7 +25,8 @@ namespace SeleniumFixtureTest
         [TestCategory("Unit")]
         public void ZoneListFactoryCreateTest()
         {
-            var zoneListFactory = new ZoneListFactory();
+            var registry = new InMemoryRegistry();
+            var zoneListFactory = new ZoneListFactory(registry);
             var zoneList = zoneListFactory.CreateZoneList();
             Assert.AreEqual(4, zoneList.Count, "count is 4");
             var index = 1;

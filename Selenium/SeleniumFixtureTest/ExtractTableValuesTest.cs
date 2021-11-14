@@ -66,7 +66,7 @@ namespace SeleniumFixtureTest
         public void ExtractTableValuesTestInitialize() => _selenium = new Selenium();
 
         [TestMethod]
-        [TestCategory("Integration")]
+        [TestCategory("Browser")]
         public void KendoTableTest()
         {
             Selenium.SetProxyType("system");

@@ -32,7 +32,7 @@ function Fibonacci(factor) {
     var previousNumber = 1;
     var currentNumber = 1;
 
-    for (var i = 2; i < factor; i++) {
+    for (let i = 2; i < factor; i++) {
         if (maxInt - currentNumber < previousNumber) return "Overflow";
         var nextNumber = previousNumber + currentNumber;
         previousNumber = currentNumber;

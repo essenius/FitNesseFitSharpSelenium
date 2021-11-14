@@ -65,5 +65,6 @@
 3.2.1    Corrected API for *RemoteBrowserAtAddressWithCapabilities to use Dictionary<string,string> instead of <string,object>
          Made Scroll more robust on Android by introducing a 200 ms delay between press and move.
          Introduced Map fixture to make hash maps more convenient to enter.
+3.2.2    Introduced DotNetWindowsRegisty to eliminate the need for Fakes (implements #7). Replaced trait Appium by Native.
 
-Note: we can't upgrade to Webdriver 4 until Appium and WinApp support it.
+Note: we can't upgrade to Webdriver 4 until WinApp supports it.
