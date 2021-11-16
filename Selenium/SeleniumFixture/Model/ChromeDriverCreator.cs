@@ -23,16 +23,9 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "CHROME";
 
-        protected virtual ChromeOptions ChromeOptions()
-        {
-            var options = new ChromeOptions { Proxy = Proxy };
-            // Get rid of the warning bar "You are using an unsupported command-line flag" 
-            options.AddArgument("test-type");
-            options.AddArgument("enable-automation");
-            return options;
-        }
+        protected virtual ChromeOptions ChromeOptions() => new() { Proxy = Proxy };
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             var driverFolder = Environment.GetEnvironmentVariable("ChromeWebDriver");
             ChromeDriverService driverService = null;
@@ -40,7 +33,8 @@ namespace SeleniumFixture.Model
             try
             {
                 driverService = GetDefaultService<ChromeDriverService>(driverFolder);
-                driver = new ChromeDriver(driverService, ChromeOptions(), Timeout);
+                var chromeOptions = options == null ? ChromeOptions() : (ChromeOptions)options;
+                driver = new ChromeDriver(driverService, chromeOptions, Timeout);
             }
             catch
             {
@@ -51,6 +45,6 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        protected override DriverOptions Options() => ChromeOptions();
+        public override DriverOptions Options() => ChromeOptions();
     }
 }

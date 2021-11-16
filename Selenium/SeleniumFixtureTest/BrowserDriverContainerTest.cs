@@ -27,12 +27,12 @@ namespace SeleniumFixtureTest
         public void BrowserDriverMissingBrowserCleansUpAndRaisesStopTestException()
         {
             var driverCount = BrowserDriverContainer.DriverCount;
-            BrowserDriverContainer.NewDriver("Chrome Headless");
+            BrowserDriverContainer.NewDriver("Chrome Headless", null);
             Assert.AreEqual(driverCount + 1, BrowserDriverContainer.DriverCount, "One more browser open");
             try
             {
                 // Safari should not be installed on this machine. Should not be an issue since it's no longer maintained
-                BrowserDriverContainer.NewDriver("Safari");
+                BrowserDriverContainer.NewDriver("Safari", null);
                 Assert.Fail("No StopTestException raised");
             }
             catch (StopTestException)
@@ -52,7 +52,7 @@ namespace SeleniumFixtureTest
         [TestCategory("Unit")]
         [ExpectedExceptionWithMessage(typeof(StopTestException),
             "Could not start browser: Safari")]
-        public void BrowserDriverNonPresentDriverRaisesStopTestException() => BrowserDriverContainer.NewDriver("Safari");
+        public void BrowserDriverNonPresentDriverRaisesStopTestException() => BrowserDriverContainer.NewDriver("Safari", null);
 
         [TestMethod]
         [TestCategory("Unit")]
@@ -62,8 +62,8 @@ namespace SeleniumFixtureTest
         [TestCategory("Integration")]
         public void BrowserDriverSetCurrentTest()
         {
-            var browser1 = BrowserDriverContainer.NewDriver("chrome headless");
-            var browser2 = BrowserDriverContainer.NewDriver("firefox headless");
+            var browser1 = BrowserDriverContainer.NewDriver("chrome headless", null);
+            var browser2 = BrowserDriverContainer.NewDriver("firefox headless", null);
             Assert.AreEqual(browser2, BrowserDriverContainer.CurrentId);
             BrowserDriverContainer.SetCurrent(browser1);
             Assert.AreEqual(browser1, BrowserDriverContainer.CurrentId);
@@ -103,7 +103,7 @@ namespace SeleniumFixtureTest
         [TestCategory("Unit")]
         [ExpectedExceptionWithMessage(typeof(StopTestException),
             "Unrecognized browser: WrongBrowser")]
-        public void BrowserDriverWrongDriverRaisesStopTestException() => BrowserDriverContainer.NewDriver("WrongBrowser");
+        public void BrowserDriverWrongDriverRaisesStopTestException() => BrowserDriverContainer.NewDriver("WrongBrowser", null);
 
         [TestMethod]
         [TestCategory("Integration")]

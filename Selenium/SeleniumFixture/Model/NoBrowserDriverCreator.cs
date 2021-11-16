@@ -21,8 +21,8 @@ namespace SeleniumFixture.Model
         }
 
         public override string Name { get; } = "NONE";
-        public override IWebDriver LocalDriver() => null;
+        public override IWebDriver LocalDriver(object options) => null;
 
-        protected override DriverOptions Options() => null;
+        public override DriverOptions Options() => null;
     }
 }

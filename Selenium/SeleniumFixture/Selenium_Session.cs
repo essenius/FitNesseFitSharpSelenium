@@ -30,9 +30,12 @@ namespace SeleniumFixture
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp")]
     [SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification =
         "Can't change the type name - would be a breaking change")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by FitSharp")]
     public sealed partial class Selenium
     {
         private const int DefaultTimeoutInSeconds = 3;
+
+        private readonly IRegistry _windowsRegistry = new WindowsRegistry();
 
         private BrowserStorage _browserStorage;
         private ProtectedMode _protectedMode;
@@ -69,10 +72,12 @@ namespace SeleniumFixture
             set => FireFoxDriverCreator.IntegratedAuthenticationDomain = value;
         }
 
-        private readonly IRegistry _windowsRegistry = new WindowsRegistry();
-
         [SupportedOSPlatform("windows")]
-        private ProtectedMode ProtectedMode => _protectedMode ??= new ProtectedMode(new ZoneListFactory(_windowsRegistry));
+        private ProtectedMode ProtectedMode =>
+            _protectedMode ??= new ProtectedMode(new ZoneListFactory(_windowsRegistry));
+
+        /// <summary>Set base path for remote server (default /wd/hub)</summary>
+        public string RemoteBrowserBasePath { get; set; } = "/wd/hub";
 
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 
@@ -172,13 +177,26 @@ namespace SeleniumFixture
         /// <summary>Creates a new browser instance and makes it current. See also <seealso cref="SetBrowser" /></summary>
         /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
         /// <returns>an ID</returns>
-        public string NewBrowser(string browserName)
+        public string NewBrowser(string browserName) => NewBrowserWithOptions(browserName, null);
+
+        /// <summary>
+        ///     Create a new browser instance with a predefined options object. Cab be useful in case additional options are needed.
+        /// </summary>
+        /// <param name="browserName"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public string NewBrowserWithOptions(string browserName, object options)
         {
-            DriverId = BrowserDriverContainer.NewDriver(browserName);
+            DriverId = BrowserDriverContainer.NewDriver(browserName, options);
             Driver = BrowserDriverContainer.Current;
             _browserStorage = null; // force re-initialization on next call
             return DriverId;
         }
+
+        /// <summary>Get a new options object for a browser type.</summary>
+        /// <param name="browser">the browser to get the options object for</param>
+        /// <returns>the options object</returns>
+        public static object NewOptionsFor(string browser) => BrowserDriverContainer.NewOptions(browser);
 
         /// <summary>See <see cref="SetRemoteBrowserAtAddress" /></summary>
         /// <returns>the driver ID </returns>
@@ -188,13 +206,26 @@ namespace SeleniumFixture
         /// <summary>See <see cref="SetRemoteBrowserAtAddressWithCapabilities" /></summary>
         /// <returns>the driver ID</returns>
         public string NewRemoteBrowserAtAddressWithCapabilities(
-            string browserName, 
+            string browserName,
             string baseAddress,
             Dictionary<string, string> capabilities)
         {
             var caps = capabilities.ToDictionary(pair => pair.Key, pair => (object)pair.Value);
 
-            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, caps);
+            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress + RemoteBrowserBasePath, caps);
+            Driver = BrowserDriverContainer.Current;
+            _browserStorage = null;
+            return DriverId;
+        }
+
+        /// <summary>See <see cref="SetRemoteBrowserAtAddressWithOptions" /></summary>
+        /// <returns>Driver ID</returns>
+        public string NewRemoteBrowserAtAddressWithOptions(string browserName, string baseAddress, object options)
+        {
+            DriverId = BrowserDriverContainer.NewRemoteDriver(
+                browserName, 
+                baseAddress + RemoteBrowserBasePath,
+                options);
             Driver = BrowserDriverContainer.Current;
             _browserStorage = null;
             return DriverId;
@@ -231,9 +262,16 @@ namespace SeleniumFixture
         public void ResetTimeout() => TimeoutInSeconds = DefaultTimeoutInSeconds;
 
         /// <summary>Sets the browser to be used</summary>
-        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
+        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Edge Headless, Firefox, Firefox Headless, Opera</param>
         /// <returns>whether the operation succeeded</returns>
         public bool SetBrowser(string browserName) => !string.IsNullOrEmpty(NewBrowser(browserName));
+
+        /// <summary>Sets the browser to be used</summary>
+        /// <param name="browserName">can be Chrome, Chrome Headless, Edge, Edge Headless, Firefox, Firefox Headless,IE, Opera</param>
+        /// <param name="options">options object (get via <seealso cref="NewOptionsFor" />)</param>
+        /// <returns>whether the operation succeeded</returns>
+        public bool SetBrowserWithOptions(string browserName, object options) =>
+            !string.IsNullOrEmpty(NewBrowserWithOptions(browserName, options));
 
         /// <summary>Set the current browser driver using its ID (returned earlier by NewBrowser)</summary>
         public bool SetDriver(string driverId)
@@ -269,12 +307,18 @@ namespace SeleniumFixture
 
         /// <summary>Use a remote Selenium server (address including port) with a dictionary of desired capabilities</summary>
         /// <remarks>Raises a StopTestException if unable to connect</remarks>
-        /// <returns></returns>
+        /// <returns>true</returns>
         public bool SetRemoteBrowserAtAddressWithCapabilities(
-            string browserName, 
-            string baseAddress, 
+            string browserName,
+            string baseAddress,
             Dictionary<string, string> capabilities) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, capabilities));
+
+        /// <summary>Use a remote Selenium server (address including port) with a driver options object</summary>
+        /// <remarks>Raises a StopTestException if unable to connect</remarks>
+        /// <returns>true</returns>
+        public bool SetRemoteBrowserAtAddressWithOptions(string browserName, string baseAddress, object options) =>
+            !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithOptions(browserName, baseAddress, options));
 
         /// <summary>Set the default timeout for all wait commands (except page loads). Default value is 3 seconds</summary>
         public void SetTimeoutSeconds(double timeoutInSeconds) => TimeoutInSeconds = timeoutInSeconds;

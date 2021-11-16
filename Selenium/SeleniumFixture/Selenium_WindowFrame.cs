@@ -38,6 +38,7 @@ namespace SeleniumFixture
         internal ReadOnlyCollection<string> WindowHandles => Driver.WindowHandles;
 
         /// <summary>Get or set the location of a window</summary>
+        [SuppressMessage("ReSharper", "SuspiciousParameterNameInArgumentNullException", Justification = "Intentional")]
         public Coordinate WindowPosition
         {
             get
@@ -54,6 +55,7 @@ namespace SeleniumFixture
         }
 
         /// <summary>The dimensions of the browser window (width, height)</summary>
+        [SuppressMessage("ReSharper", "SuspiciousParameterNameInArgumentNullException", Justification = "Intentional")]
         public Coordinate WindowSize
         {
             get

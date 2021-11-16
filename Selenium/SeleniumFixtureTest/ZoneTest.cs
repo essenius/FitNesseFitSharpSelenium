@@ -26,31 +26,34 @@ namespace SeleniumFixtureTest
         {
             if (string.IsNullOrEmpty(value.ToString())) return;
             const string zoneKeyTemplate = @"SOFTWARE\{0}Microsoft\Windows\CurrentVersion\Internet Settings\Zones\1";
-            var zoneKey = string.Format(zoneKeyTemplate, policy ? @"Policies\": "");
+            var zoneKey = string.Format(zoneKeyTemplate, policy ? @"Policies\" : "");
             var key = baseKey.CreateSubKey(zoneKey);
             key.SetValue("2500", value, RegistryValueKind.DWord);
         }
 
+        private const string Empty = "";
+
         [DataTestMethod]
-        [TestCategory("Unit")]
-        [DataRow("both policies", 0, 3, "", "", true)]
-        [DataRow("both hkcu", "", 0, 3, "", true)]
-        [DataRow("hkcuPolicies/hklm", "", 3, "", 0, false)]
-        [DataRow("hklmPolicies/hkcu", 3, "", 0, "", false)]
-        [DataRow("hkcu/hklm", "", "", 0, 3, true)]
-        [DataRow("hklm", "", "", "", 0, true)]
-        [DataRow("both hklm", 0, "", "", 3, true)]
-        public void ZoneInitialProtectedModeTest(string testId, object hklmPoliciesValue, object hkcuPoliciesValue, object hkcuValue,
+        [TestCategory("Unit")]                      
+        [DataRow("both policies", Zone.Enabled, Zone.Disabled, Empty, Empty, true)]
+        [DataRow("both hkcu", Empty, Zone.Enabled, Zone.Disabled, Empty, true)]
+        [DataRow("hkcuPolicies/hklm", Empty, Zone.Disabled, Empty, Zone.Enabled, false)]
+        [DataRow("hklmPolicies/hkcu", Zone.Disabled, Empty, Zone.Enabled, Empty, false)]
+        [DataRow("hkcu/hklm", Empty, Empty, Zone.Enabled, Zone.Disabled, true)]
+        [DataRow("hklm", Empty, Empty, Empty, Zone.Enabled, true)]
+        [DataRow("both hklm", Zone.Enabled, Empty, Empty, Zone.Disabled, true)]
+        public void ZoneInitialProtectedModeTest(string testId, object hklmPoliciesValue, object hkcuPoliciesValue,
+            object hkcuValue,
             object hklmValue, bool expectedProtected)
         {
             if (!OperatingSystem.IsWindows()) return;
             var registry = new InMemoryRegistry();
             var hkcu = registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default);
             var hklm = registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
-            AddValue(hklm, policy: true, hklmPoliciesValue);
-            AddValue(hklm, policy: false, hklmValue);
-            AddValue(hkcu, policy: true, hkcuPoliciesValue);
-            AddValue(hkcu, policy: false, hkcuValue);
+            AddValue(hklm, true, hklmPoliciesValue);
+            AddValue(hklm, false, hklmValue);
+            AddValue(hkcu, true, hkcuPoliciesValue);
+            AddValue(hkcu, false, hkcuValue);
 
             var zone = new Zone(1, registry);
             Assert.AreEqual(expectedProtected, zone.IsProtected, testId);

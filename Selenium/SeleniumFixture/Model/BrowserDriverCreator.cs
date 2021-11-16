@@ -31,15 +31,31 @@ namespace SeleniumFixture.Model
 
         public abstract string Name { get; }
 
-        protected virtual Uri BaseUri(string baseAddress) => new(baseAddress + "/wd/hub");
+        protected static Uri BaseUri(string baseAddress) => new(baseAddress);
 
         // We cannot stop using the deprecated DesiredCapabilities at this point (hence the pragma disable 618) because
         // we want the flexibility to specify non-predefined capabilities to enable external services as BrowserStack.
         // Using the AddAdditionalCapabilities adds to the options rather than a separate capability.
 #pragma warning disable 618
-        private DesiredCapabilities DesiredCapabilities()
-        {
+        private DesiredCapabilities DesiredCapabilities() => DesiredCapabilities(Options());
+        /*{
             var options = Options();
+            // We need to get a bit clever here. Different browsers return different underlying types, and ICapabilities has no way to iterate
+            // through the properties. So first we try DesiredCapabilities, and if that doesn't work we take the ReadOnlyDesiredCapabilities
+            // instead, and add all capabilities to a new DesiredCapabilities.
+            if (options?.ToCapabilities() is DesiredCapabilities desiredCapabilities) return desiredCapabilities;
+            var cap = (options?.ToCapabilities() as ReadOnlyDesiredCapabilities)?.ToDictionary();
+            if (cap == null) return null;
+            desiredCapabilities = new DesiredCapabilities();
+            foreach (var entry in cap.Keys)
+            {
+                desiredCapabilities.SetCapability(entry, cap[entry]);
+            }
+            return desiredCapabilities;
+        }*/
+
+        internal static DesiredCapabilities DesiredCapabilities(DriverOptions options)
+        {
             // We need to get a bit clever here. Different browsers return different underlying types, and ICapabilities has no way to iterate
             // through the properties. So first we try DesiredCapabilities, and if that doesn't work we take the ReadOnlyDesiredCapabilities
             // instead, and add all capabilities to a new DesiredCapabilities.
@@ -89,9 +105,9 @@ namespace SeleniumFixture.Model
         // I tried to make these methods smarter (eliminate redundancy) e.g. via generics, but that is not easy with all the hard dependencies
         // that browser drivers have on their services and options. So I decided to live with the redundancy for now.
         // So, all the driver creators currently have their own implementation.
-        public abstract IWebDriver LocalDriver();
+        public abstract IWebDriver LocalDriver(object options);
 
-        protected abstract DriverOptions Options();
+        public abstract DriverOptions Options();
 
         public virtual IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
@@ -100,6 +116,15 @@ namespace SeleniumFixture.Model
             var result = new RemoteWebDriver(uri, desiredCapabilities, Timeout);
             return result;
         }
+
+        public virtual IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+        {
+            var uri = BaseUri(baseAddress);
+            var desiredCapabilities = DesiredCapabilities(options);
+            var result = new RemoteWebDriver(uri, desiredCapabilities, Timeout);
+            return result;
+        }
+
 
         // AddAdditionalCapabilities adds to the goog:ChromeOptions (etc.) structure rather than creating its own capability.
         // This is aligned with W3C, but too many services don't adhere to that yet.

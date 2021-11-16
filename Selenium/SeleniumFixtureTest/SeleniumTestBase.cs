@@ -17,7 +17,7 @@ namespace SeleniumFixtureTest
     /// <summary>
     ///     Base class for end to end test classes on different browser configurations, containing the constant parts.
     ///     The child classes will be test classes with a ClassInitialize that differs per configuration
-    ///     We can't inherit static classes, so we need to put ClassCleanup in the child as well or it won't get run.
+    ///     We can't inherit static classes, so we need to put TestCleanup and ClassCleanup in the child as well or they won't get run.
     /// </summary>
     public class SeleniumTestBase
     {
@@ -31,5 +31,7 @@ namespace SeleniumFixtureTest
             testCase.Invoke(Test, BindingFlags.DoNotWrapExceptions, null, null, null);
         }
 
+        [TestCleanup]
+        public void TestCleanup() => Test.TestCleanup();
     }
 }

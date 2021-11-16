@@ -20,6 +20,6 @@ namespace SeleniumFixtureTest
         public static void ClassCleanup() => Test.ClassCleanup();
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _) => Test.ClassInitialize("firefox", true);
+        public static void ClassInitialize(TestContext _) => Test.ClassInitialize("firefox", true, true);
     }
 }

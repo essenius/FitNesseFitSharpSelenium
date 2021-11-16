@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.Appium;
 using SeleniumFixture;
 
 namespace SeleniumFixtureTest
@@ -36,12 +37,10 @@ namespace SeleniumFixtureTest
         [ClassInitialize]
         public static void ClassInitialize(TestContext _)
         {
-            var caps = new Dictionary<string, string>
-            {
-                { "app", "notepad.exe" }
-            };
+            var options = Selenium.NewOptionsFor("WinApp") as AppiumOptions;
+            options.AddAdditionalCapability("app", "notepad.exe");
             Selenium.DefaultSearchMethod = "name";
-            Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
+            Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("WinApp", "http://127.0.0.1:4727", options));
         }
 
         [TestMethod]

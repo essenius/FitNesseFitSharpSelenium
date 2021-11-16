@@ -41,7 +41,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to Apps page");
             Assert.IsTrue(Fixture.WaitForElement(Apps));
             Assert.IsTrue(Fixture.Scroll("right"), "Scroll to the right");
-            Assert.IsTrue(Fixture.TextExistsIgnoringCase("Widget Preview"), "Check if the text 'Widget Preview' is there");
+            Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Widget Preview"), "Wait for text 'Widget Preview'");
             Assert.IsTrue(Fixture.Scroll("left"), "Scroll to the left");
             Assert.IsTrue(Fixture.WaitForText("Music"), "Wait for text 'Music'");
             Assert.IsTrue(Fixture.PressKeyCode("Back"), "Press the Back button");
@@ -157,6 +157,7 @@ namespace SeleniumFixtureTest
             var caps = new Dictionary<string, string>
             {
                 { MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4" },
+                { "platformVersion", "4.4" },
                 { "automationName", "UiAutomator1" },
                 //{ "appPackage", "com.android.settings"},
                 //{ "appActivity", ".Settings"},

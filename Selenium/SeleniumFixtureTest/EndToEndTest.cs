@@ -48,22 +48,36 @@ namespace SeleniumFixtureTest
 
         private string _browser;
         private bool _runningHeadless;
+        private int _testsToDo;
 
         private static string BaseUrl { get; } = AppConfig.Get("TestSite");
 
         public static Uri CreateTestPageUri() => CreateUri(TestPage);
 
-        private static Uri CreateUri(string page) => new(new Uri(BaseUrl), page);
+        public static Uri CreateUri(string page) => new(new Uri(BaseUrl), page);
 
         public static string RemoteSelenium { get; } = AppConfig.Get("RemoteSelenium");
 
         #endregion
 
-        #region Test suite administration
+        #region Test suite administration, called from the unit test classes
+
+        public void TestCleanup()
+        {
+            // ClassCleanup is only executed after the whole test suite ends, so that would mean the fixture
+            // would stay open until the end of the suite if we would put the Close in there.
+            _testsToDo--;
+            if (_testsToDo == 0)
+            {
+                _selenium.Close();
+            }
+        }
+
+        // safety net
 
         public void ClassCleanup() => _selenium.Close();
 
-        public void ClassInitialize(string browser, bool isRemote)
+        public void ClassInitialize(string browser, bool isRemote, bool useOptions = false)
         {
             _browser = browser;
             _runningHeadless = browser.EndsWith("Headless", StringComparison.OrdinalIgnoreCase);
@@ -71,19 +85,30 @@ namespace SeleniumFixtureTest
             {
                 if (isRemote)
                 {
-                    var capabilities = new Dictionary<string, string>
+                    if (useOptions)
                     {
-                        { "testCapability", "testValue" }
-                    };
-                    Assert.IsTrue(
-                        _selenium.SetRemoteBrowserAtAddressWithCapabilities(_browser, RemoteSelenium, capabilities),
-                        "Set isRemote browser " + _browser);
+                        var options = Selenium.NewOptionsFor(_browser);
+                        Assert.IsTrue(
+                            _selenium.SetRemoteBrowserAtAddressWithOptions(_browser, RemoteSelenium, options),
+                            "Set Remote Browser with Options");
+                    }
+                    else
+                    {
+                        var capabilities = new Dictionary<string, string>
+                        {
+                            { "testCapability", "testValue" }
+                        };
+                        Assert.IsTrue(
+                            _selenium.SetRemoteBrowserAtAddressWithCapabilities(_browser, RemoteSelenium, capabilities),
+                            "Set Remote browser with Capabilities " + _browser);
+                    }
                 }
                 else
                 {
                     Assert.IsTrue(_selenium.SetBrowser(_browser), "Set local browser " + _browser);
                 }
                 Assert.IsTrue(_selenium.Open(CreateTestPageUri()), "Open page");
+                Assert.IsTrue(_selenium.WaitUntilTitleMatches("Selenium Fixture Test Page"));
                 var width = _selenium.WindowSize.X;
                 if (width < 800) width = 800;
                 _selenium.WindowSize = new Coordinate(width, _selenium.WindowSize.Y);
@@ -91,6 +116,7 @@ namespace SeleniumFixtureTest
                 // Some proxies intercept requests and e.g. attempt to sign on. So we need to wait until the real page shows up.
                 _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
                 _selenium.ResetTimeout();
+                _testsToDo = TestMethods().Count();
             }
             catch (StopTestException se)
             {

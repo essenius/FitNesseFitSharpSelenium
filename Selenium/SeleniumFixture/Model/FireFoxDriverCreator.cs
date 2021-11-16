@@ -52,7 +52,7 @@ namespace SeleniumFixture.Model
             return options;
         }
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             var driverFolder = Environment.GetEnvironmentVariable("GeckoWebDriver");
             FirefoxDriverService driverService = null;
@@ -63,7 +63,8 @@ namespace SeleniumFixture.Model
                 // Workaround for the issue making .NET Core networking slow with GeckoDriver.
                 // see https://github.com/SeleniumHQ/selenium/issues/7840
                 driverService.Host = "::1";
-                driver = new FirefoxDriver(driverService, FirefoxOptions(), Timeout);
+                var firefoxOptions = options == null ? FirefoxOptions() : (FirefoxOptions)options;
+                driver = new FirefoxDriver(driverService, firefoxOptions, Timeout);
             }
             catch
             {
@@ -73,6 +74,6 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        protected override DriverOptions Options() => FirefoxOptions();
+        public override DriverOptions Options() => FirefoxOptions();
     }
 }

@@ -25,14 +25,20 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "IOS";
 
-        public override IWebDriver LocalDriver() => null;
+        public override IWebDriver LocalDriver(object options) => null;
 
-        protected override DriverOptions Options() => new AppiumOptions { PlatformName = "iOS", Proxy = Proxy };
+        public override DriverOptions Options() => new AppiumOptions { PlatformName = "iOS", Proxy = Proxy };
 
         public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
             var uri = BaseUri(baseAddress);
             var options = RemoteOptions(capabilities);
+            return new IOSDriver<AppiumWebElement>(uri, options, Timeout);
+        }
+
+        public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+        {
+            var uri = BaseUri(baseAddress);
             return new IOSDriver<AppiumWebElement>(uri, options, Timeout);
         }
     }

@@ -9,7 +9,9 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.IE;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 
@@ -34,10 +36,26 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(selenium.RightClickElement(textboxLocator), "Show context menu");
             Selenium.WaitSeconds(0.2); // allow dropdown to expand
             const string selectAllInContextMenuSequence = "{DOWN}a";
-            selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat, textboxLocator);
+            selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat,
+                textboxLocator);
             selenium.SendKeysToElement("{DELETE}", textboxLocator);
-            Assert.IsFalse(string.IsNullOrEmpty(selenium.AttributeOfElement("value", textboxLocator)), "text 1 is empty");
+            Assert.IsFalse(string.IsNullOrEmpty(selenium.AttributeOfElement("value", textboxLocator)),
+                "text 1 is empty");
             selenium.Close();
+        }
+
+        [TestMethod]
+        [TestCategory("Experiments")]
+        public void SeleniumIeTest()
+        {
+            var selenium = new Selenium();
+            var options = Selenium.NewOptionsFor("ie") as InternetExplorerOptions;
+            Assert.IsNotNull(options, "Options is not null");
+            Console.WriteLine(options.ToString());
+            selenium.SetBrowserWithOptions("ie", options);
+            selenium.Open(new Uri("http://www.google.com?hl=en"));
+            selenium.Close();
+
         }
     }
 }

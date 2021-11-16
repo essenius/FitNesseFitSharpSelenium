@@ -24,14 +24,15 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "OPERA";
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             OperaDriverService driverService = null;
             IWebDriver driver;
             try
             {
                 driverService = GetDefaultService<OperaDriverService>();
-                driver = new OperaDriver(driverService, OperaOptions(), Timeout);
+                var operaOptions = options == null ? OperaOptions() : (OperaOptions)options;
+                driver = new OperaDriver(driverService, operaOptions, Timeout);
             }
             catch
             {
@@ -43,6 +44,6 @@ namespace SeleniumFixture.Model
 
         private OperaOptions OperaOptions() => new() { Proxy = Proxy };
 
-        protected override DriverOptions Options() => OperaOptions();
+        public override DriverOptions Options() => OperaOptions();
     }
 }

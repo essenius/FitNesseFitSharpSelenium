@@ -28,7 +28,7 @@ namespace SeleniumFixture.Model
                 : EdgeDriverService.CreateChromiumService(driverFolder);
         }
 
-        public override string Name { get; } = "EDGE";
+        public override string Name => "EDGE";
 
         protected virtual EdgeOptions EdgeOptions()
         {
@@ -38,12 +38,12 @@ namespace SeleniumFixture.Model
             return options;
         }
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
-            var options = EdgeOptions();
-            return new EdgeDriver(_driverService, options, Timeout);
+            var edgeOptions = options == null ? EdgeOptions() : (EdgeOptions)options;
+            return new EdgeDriver(_driverService, edgeOptions, Timeout);
         }
 
-        protected override DriverOptions Options() => EdgeOptions();
+        public override DriverOptions Options() => EdgeOptions();
     }
 }

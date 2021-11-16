@@ -25,14 +25,15 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "SAFARI";
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             SafariDriverService driverService = null;
             IWebDriver driver;
             try
             {
                 driverService = GetDefaultService<SafariDriverService>();
-                driver = new SafariDriver(driverService, SafariOptions(), Timeout);
+                var safariOptions = options == null ? SafariOptions() : (SafariOptions)options;
+                driver = new SafariDriver(driverService, safariOptions, Timeout);
             }
             catch
             {
@@ -42,7 +43,7 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        protected override DriverOptions Options() => SafariOptions();
+        public override DriverOptions Options() => SafariOptions();
 
         private static SafariOptions SafariOptions()
         {

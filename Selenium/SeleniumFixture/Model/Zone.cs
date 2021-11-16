@@ -21,7 +21,8 @@ namespace SeleniumFixture.Model
 {
     internal class Zone : IZone
     {
-        private const int Enabled = 0; // Disabled = 3; not necessary right now
+        public const int Enabled = 0;
+        public const int Disabled = 3; 
         public const int MaxValue = 4;
         public const int MinValue = 1;
         private const string ProtectedModeKeyName = "2500";

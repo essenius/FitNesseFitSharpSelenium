@@ -51,8 +51,8 @@ namespace SeleniumFixture
         }
 
         /// <summary>
-        ///     Extract table values from an HTML table; import the headers and data for the table from different parent tables and
-        ///     limit number of results
+        /// Extract table values from an HTML table; import the headers and data for the table from
+        /// different parent tables and limit number of results
         /// </summary>
         /// <param name="headerLocation">absolute header location</param>
         /// <param name="rowLocation">absolute data row location</param>
@@ -62,13 +62,19 @@ namespace SeleniumFixture
         {
         }
 
-        /// <summary>Extract table values from an HTML table; import the headers and data for the table from different parent</summary>
+        /// <summary>
+        /// Extract table values from an HTML table; import the headers
+        /// and data for the table from different parent
+        /// </summary>
         /// <param name="headerLocation">absolute header location</param>
         /// <param name="rowLocation">absolute row location</param>
         /// <param name="relativeCellLocationInRow">cell locator relative from row</param>
         /// <param name="maxResults">maximum result count</param>
         public ExtractTableValues(
-            string headerLocation, string rowLocation, string relativeCellLocationInRow, int maxResults)
+            string headerLocation, 
+            string rowLocation, 
+            string relativeCellLocationInRow,
+            int maxResults)
         {
             _headerLocation = headerLocation;
             _rowLocation = rowLocation;
@@ -77,8 +83,8 @@ namespace SeleniumFixture
         }
 
         /// <summary>
-        ///     Extract table values from an HTML table; import the headers and data for the table from different parent tables and
-        ///     limit # of results
+        /// Extract table values from an HTML table; import the headers and data for the table
+        /// from different parent tables and limit # of results
         /// </summary>
         /// <param name="tableLocation">absolute table locator</param>
         /// <param name="relativeHeaderLocationInTable">header locator relative to table</param>
@@ -86,10 +92,10 @@ namespace SeleniumFixture
         /// <param name="relativeCellLocationInRow">cell locator relative to row</param>
         /// <param name="maxResults">maximum result count</param>
         public ExtractTableValues(
-            string tableLocation, 
+            string tableLocation,
             string relativeHeaderLocationInTable,
-            string relativeRowLocationInTable, 
-            string relativeCellLocationInRow, 
+            string relativeRowLocationInTable,
+            string relativeCellLocationInRow,
             int maxResults)
         {
             _tableLocation = tableLocation;
@@ -126,7 +132,9 @@ namespace SeleniumFixture
         {
             if (_wasCalculated) return;
             if (BrowserDriverContainer.Current == null)
+            {
                 throw new NoNullAllowedException("Browser Driver was not initialized");
+            }
             ReadOnlyCollection<IWebElement> headerElements;
             IEnumerable<IWebElement> rowElements;
             if (string.IsNullOrEmpty(_tableLocation))

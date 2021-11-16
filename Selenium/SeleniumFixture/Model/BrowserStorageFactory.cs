@@ -11,7 +11,6 @@
 
 using System.Diagnostics;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Html5;
 using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model

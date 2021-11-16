@@ -65,10 +65,6 @@ namespace SeleniumFixture.Utilities
             browserName.Equals(driverWithCapabilities.Capabilities.GetCapability("browserName").ToString(),
                 StringComparison.OrdinalIgnoreCase);
 
-        public static bool IsChrome(this IWebDriver driver) => driver.IsBrowser("chrome");
-
-        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("msedge");
-
         public static bool IsFirefox(this IWebDriver driver) => driver.IsBrowser("firefox");
 
         public static bool IsIe(this IWebDriver driver) => driver.IsBrowser("internet explorer");

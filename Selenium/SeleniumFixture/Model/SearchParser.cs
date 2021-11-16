@@ -21,25 +21,26 @@ namespace SeleniumFixture.Model
     {
         private readonly Dictionary<string, Func<string, By>> _byMapping = new()
         {
-            { @"ACCESSIBILITYID", MobileBy.AccessibilityId },
-            { @"ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator },
-            { @"CLASSNAME", By.ClassName },
-            { @"CONTENT", CustomBy.Content },
-            { @"CSSSELECTOR", By.CssSelector },
-            { @"ID", By.Id },
-            { @"IOSCLASSCHAIN", MobileBy.IosClassChain },
-            { @"IOSNSPREDICATE", MobileBy.IosNSPredicate },
-            { @"IOSUIAUTOMATION", MobileBy.IosUIAutomation },
-            { @"LABEL", CustomBy.Label },
-            { @"LINKTEXT", By.LinkText },
-            { @"NAME", By.Name },
-            { @"PARTIALCONTENT", CustomBy.PartialContent },
-            { @"PARTIALLINKTEXT", By.PartialLinkText },
-            { @"TAGNAME", By.TagName },
-            { @"TIZENAUTOMATION", MobileBy.TizenAutomation },
-            { @"TRIAL", CustomBy.Trial },
-            { @"WINDOWSAUTOMATION", MobileBy.WindowsAutomation },
-            { @"XPATH", By.XPath }
+            { "ACCESSIBILITYID", MobileBy.AccessibilityId },
+            { "ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator },
+            { "CLASSNAME", By.ClassName },
+            { "CONTENT", CustomBy.Content },
+            { "CSSSELECTOR", By.CssSelector },
+            { "ID", By.Id },
+            { "IDORNAME", CustomBy.IdOrName },
+            { "IOSCLASSCHAIN", MobileBy.IosClassChain },
+            { "IOSNSPREDICATE", MobileBy.IosNSPredicate },
+            { "IOSUIAUTOMATION", MobileBy.IosUIAutomation },
+            { "LABEL", CustomBy.Label },
+            { "LINKTEXT", By.LinkText },
+            { "NAME", By.Name },
+            { "PARTIALCONTENT", CustomBy.PartialContent },
+            { "PARTIALLINKTEXT", By.PartialLinkText },
+            { "TAGNAME", By.TagName },
+            { "TIZENAUTOMATION", MobileBy.TizenAutomation },
+            { "TRIAL", CustomBy.Trial },
+            { "WINDOWSAUTOMATION", MobileBy.WindowsAutomation },
+            { "XPATH", By.XPath }
         };
 
         public SearchParser(string searchCriterion)

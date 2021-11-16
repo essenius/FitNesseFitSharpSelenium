@@ -27,11 +27,12 @@ namespace SeleniumFixture.Model
         public override string Name { get; } = "WINAPP";
 
         // Apparently the Windows driver doesn't expect /wd/hub, unlike all other drivers.
-        protected override Uri BaseUri(string baseAddress) => new(baseAddress);
 
-        public override IWebDriver LocalDriver() => null;
+        //protected override string BasePath { get; set; } = "";
 
-        protected override DriverOptions Options() => WinAppOptions();
+        public override IWebDriver LocalDriver(object options) => null;
+
+        public override DriverOptions Options() => WinAppOptions();
 
         public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
@@ -39,6 +40,13 @@ namespace SeleniumFixture.Model
             var options = WinAppOptions();
             options.AddAdditionalCapabilities(capabilities);
             return new WindowsDriver<WindowsElement>(uri, options, Timeout);
+        }
+
+        public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+        {
+            var uri = BaseUri(baseAddress);
+            var appiumOptions = options as AppiumOptions;
+            return new WindowsDriver<WindowsElement>(uri, appiumOptions, Timeout);
         }
 
         private AppiumOptions WinAppOptions()

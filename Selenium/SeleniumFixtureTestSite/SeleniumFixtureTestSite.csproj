@@ -3,7 +3,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysysMode>AllEnabledByDefault</AnalysysMode>
-    <Version>3.2.0</Version>
+    <Version>3.3.0</Version>
     <Copyright>Copyright © Rik Essenius 2015-2021</Copyright>
     <RepositoryUrl>https://github.com/essenius/FitNesseFitSharpSelenium</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

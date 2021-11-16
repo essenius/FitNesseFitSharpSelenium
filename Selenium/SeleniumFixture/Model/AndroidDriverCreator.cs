@@ -19,20 +19,33 @@ namespace SeleniumFixture.Model
 {
     internal class AndroidDriverCreator : BrowserDriverCreator
     {
+        private AppiumOptions _options;
+
         public AndroidDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
         }
 
-        public override string Name { get; } = "ANDROID";
+        public override string Name => "ANDROID";
 
-        public override IWebDriver LocalDriver() => null;
+        public override IWebDriver LocalDriver(object options) => null;
 
-        protected override DriverOptions Options() => new AppiumOptions { PlatformName = "Android", Proxy = Proxy };
+        public override DriverOptions Options()
+        {
+            if (_options != null) return _options;
+            _options = new AppiumOptions { PlatformName = "Android", Proxy = Proxy };
+            return _options;
+        }
 
         public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
             var uri = BaseUri(baseAddress);
             var options = RemoteOptions(capabilities);
+            return new AndroidDriver<AppiumWebElement>(uri, options, Timeout);
+        }
+
+        public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+        {
+            var uri = BaseUri(baseAddress);
             return new AndroidDriver<AppiumWebElement>(uri, options, Timeout);
         }
     }

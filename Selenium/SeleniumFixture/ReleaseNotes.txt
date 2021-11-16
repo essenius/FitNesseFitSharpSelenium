@@ -67,5 +67,7 @@
          Introduced Map fixture to make hash maps more convenient to enter.
 3.2.2    Introduced DotNetWindowsRegisty to eliminate the need for Fakes (implements #7). Replaced trait Appium by Native.
 3.2.3    Eliminated NativeBrowserStorage as no longer used.
+3.3.0    Enabled Appium 2, introduced Set/NewBrowserWithOptions, NewOptionsFor, Set/NewRemoteBrowserAtAddressWithOptions,
+         RemoteBrowserPath, made Edge path search for IE emulation smarter, cleaned up test site, added TableTestPage
 
 Note: we can't upgrade to Webdriver 4 until WinApp supports it.

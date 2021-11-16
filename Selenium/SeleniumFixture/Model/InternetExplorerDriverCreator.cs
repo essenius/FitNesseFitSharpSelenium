@@ -10,6 +10,7 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
+using System.IO;
 using OpenQA.Selenium;
 using OpenQA.Selenium.IE;
 
@@ -23,7 +24,18 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "IE";
 
-        private static string EdgePath() => AppConfig.Get("InternetExplorer.EdgePath");
+        private static string EdgePath()
+        {
+            var edgePath = AppConfig.Get("InternetExplorer.EdgePath");
+            if (!string.IsNullOrEmpty(edgePath)) return edgePath;
+            const string defaultSubPath = "\\Microsoft\\Edge\\Application\\msedge.exe";
+            var programFilesx86 = AppConfig.Get("ProgramFiles(x86)");
+            var defaultEdgePath = $"{programFilesx86}{defaultSubPath}";
+            if (File.Exists(defaultEdgePath)) return defaultEdgePath;
+            var programFiles = AppConfig.Get("ProgramFiles");
+            defaultEdgePath = $"{programFiles}{defaultSubPath}";
+            return File.Exists(defaultEdgePath) ? defaultEdgePath : null;
+        }
 
         private static bool IgnoreProtectedModeSetting()
         {
@@ -44,10 +56,11 @@ namespace SeleniumFixture.Model
             if (string.IsNullOrEmpty(edgePath)) return options;
             options.AddAdditionalCapability("ie.edgechromium", true);
             options.AddAdditionalCapability("ie.edgepath", edgePath);
+
             return options;
         }
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             var driverFolder = Environment.GetEnvironmentVariable("IEWebDriver");
             InternetExplorerDriverService driverService = null;
@@ -55,7 +68,8 @@ namespace SeleniumFixture.Model
             try
             {
                 driverService = GetDefaultService<InternetExplorerDriverService>(driverFolder);
-                driver = new InternetExplorerDriver(driverService, InternetExplorerOptions(), Timeout);
+                var ieOptions = options == null ? InternetExplorerOptions() : (InternetExplorerOptions)options;
+                driver = new InternetExplorerDriver(driverService, ieOptions, Timeout);
             }
             catch
             {
@@ -65,6 +79,6 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        protected override DriverOptions Options() => InternetExplorerOptions();
+        public override DriverOptions Options() => InternetExplorerOptions();
     }
 }

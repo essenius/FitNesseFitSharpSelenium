@@ -56,7 +56,7 @@ namespace SeleniumFixtureTest
             try
             {
                 bs.SetItem("key", "value");
-                Assert.Fail("N No exception thrown");
+                Assert.Fail("No exception thrown");
             }
             catch (NotImplementedException)
             {
@@ -78,7 +78,7 @@ namespace SeleniumFixtureTest
         [TestInitialize]
         public void TestInitialize()
         {
-            _driverHandle = BrowserDriverContainer.NewDriver("chrome headless");
+            _driverHandle = BrowserDriverContainer.NewDriver("chrome headless", null);
             _driver = BrowserDriverContainer.Current;
             _driver.Navigate().GoToUrl(EndToEndTest.CreateTestPageUri());
         }
