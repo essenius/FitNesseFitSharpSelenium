@@ -38,21 +38,6 @@ namespace SeleniumFixture.Model
         // Using the AddAdditionalCapabilities adds to the options rather than a separate capability.
 #pragma warning disable 618
         private DesiredCapabilities DesiredCapabilities() => DesiredCapabilities(Options());
-        /*{
-            var options = Options();
-            // We need to get a bit clever here. Different browsers return different underlying types, and ICapabilities has no way to iterate
-            // through the properties. So first we try DesiredCapabilities, and if that doesn't work we take the ReadOnlyDesiredCapabilities
-            // instead, and add all capabilities to a new DesiredCapabilities.
-            if (options?.ToCapabilities() is DesiredCapabilities desiredCapabilities) return desiredCapabilities;
-            var cap = (options?.ToCapabilities() as ReadOnlyDesiredCapabilities)?.ToDictionary();
-            if (cap == null) return null;
-            desiredCapabilities = new DesiredCapabilities();
-            foreach (var entry in cap.Keys)
-            {
-                desiredCapabilities.SetCapability(entry, cap[entry]);
-            }
-            return desiredCapabilities;
-        }*/
 
         internal static DesiredCapabilities DesiredCapabilities(DriverOptions options)
         {

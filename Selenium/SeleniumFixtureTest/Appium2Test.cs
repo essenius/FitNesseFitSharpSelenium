@@ -56,12 +56,6 @@ namespace SeleniumFixtureTest
             options.AddAdditionalCapability("appium:deviceName", "Pixel 2");
             options.AddAdditionalCapability("appium:automationName", "UiAutomator2");
             options.AddAdditionalCapability("appium:platformVersion", "9");
-            /*var caps = new Dictionary<string, string>
-            {
-                { "appium:deviceName", "Pixel 2" },
-                { "appium:automationName", "UiAutomator2" },
-                { "appium:platformVersion", "9"}
-            }; */
 
             Fixture.SetTimeoutSeconds(60);
             try
