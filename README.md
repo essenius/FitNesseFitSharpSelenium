@@ -6,10 +6,13 @@ For the moment it still depends on Selenium 3 as it seems WinAppDriver can't cop
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
 
 Differences are:
-* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-*`. 
-* You will need to use Visual Studio Enterprise to build the solution since the test project uses Fakes. You can work around that by building SeleniumFixture only, and manually copying in the package libraries to the dll folder (and then using that one as "go to folder" below).
+* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
+* Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
+* Build fixture solution: `dotnet build --configuration release Selenium.sln`
+* Go to fixture folder: `cd SeleniumFixture`
+* Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net5.0 --framework net5.0 --configuration release`
 * Install browser drivers and other dependencies that you need (see below).
-* Go to folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixtureTest\bin\debug\net5.0`
+* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net5.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
 # Installing dependencies
@@ -48,7 +51,7 @@ SeleniumServer=!-http://127.0.0.1:6667-!
 
 ## Appium
 
-If tou want to use Appium Desktop (https://appium.io) install that. You might also need to configure an emulated Android device; Three variables of use here:
+If tou want to use Appium Desktop (https://appium.io) install that. For the moment only Appium 1 (Desktop) is supported. You might also need to configure an emulated Android device; Three variables of use here:
 * `AppiumServer`: the URL for Appium
 * `AndroidDevice`: the ID of the Android device you want to test with.
 
@@ -77,8 +80,9 @@ Firefox.IntegratedAuthentication=mydomain.com
 
 # Running the unit tests
 If you want to run the unit tests, configure `appsettings.json`:
-    1. Similarly to plugins.properties for `TestSite` and `RemoteSelenium`.
-    2. If you are using Firefox and you want to use integrated authentication, set the key `Firefox.IntegratedAuthenticationDomain` to the desired domain.
+
+1. Similarly to plugins.properties for `TestSite` and `RemoteSelenium`.
+2. If you are using Firefox and you want to use integrated authentication, set the key `Firefox.IntegratedAuthenticationDomain` to the desired domain.
 
 # Tutorial and Reference
 See the [Wiki](../../wiki)
