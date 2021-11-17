@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -11,7 +11,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -24,16 +23,16 @@ namespace SeleniumFixtureTest
     {
         private IWebDriver _browserDriver;
 
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_browserDriver", Justification = "False positive")]
         public void Dispose() => _browserDriver?.Dispose();
 
-        [TestMethod, TestCategory("Experiments")]
+        [TestMethod]
+        [TestCategory("Experiments")]
         public void FrameSwitchTestWithSeleniumApiDocumentation()
         {
             const string deprecatedText = "DEPRECATED";
             const string contentFrameName = "classFrame";
             _browserDriver = new ChromeDriver();
-            _browserDriver.Navigate().GoToUrl(new Uri("http://seleniumhq.github.io/selenium/docs/api/java/index.html"));
+            _browserDriver.Navigate().GoToUrl(new Uri("https://www.selenium.dev/selenium/docs/api/java/index.html?overview-summary.html"));
 
             Thread.Sleep(2000);
             Debug.Print("___________________________________________________");
@@ -54,7 +53,6 @@ namespace SeleniumFixtureTest
             Debug.Print("___________________________________________________");
             Debug.Print(_browserDriver.PageSource);
             Debug.Print("___________________________________________________");
-            //Thread.Sleep(TimeSpan.FromSeconds(2));
             Assert.IsNotNull(_browserDriver.FindElement(By.LinkText(deprecatedText)));
         }
 

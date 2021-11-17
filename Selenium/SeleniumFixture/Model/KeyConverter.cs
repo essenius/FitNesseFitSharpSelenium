@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -22,45 +22,46 @@ namespace SeleniumFixture.Model
         private const char EndDelimiter = '}';
         private const char StartDelimiter = '{';
 
-        private static readonly Dictionary<string, string> KeyDictionary = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            {"ADD", Keys.Add},
-            {"BACKSPACE", Keys.Backspace},
-            {"BS", Keys.Backspace},
-            {"BKSP", Keys.Backspace},
-            {"DEL", Keys.Delete},
-            {"DELETE", Keys.Delete},
-            {"DIVIDE", Keys.Divide},
-            {"DOWN", Keys.ArrowDown},
-            {"END", Keys.End},
-            {"ENTER", Keys.Enter},
-            {"ESC", Keys.Escape},
-            {"HELP", Keys.Help},
-            {"HOME", Keys.Home},
-            {"INS", Keys.Insert},
-            {"INSERT", Keys.Insert},
-            {"MULTIPLY", Keys.Multiply},
-            {"LEFT", Keys.ArrowLeft},
-            {"PGDN", Keys.PageDown},
-            {"PGUP", Keys.PageUp},
-            {"RIGHT", Keys.ArrowRight},
-            {"SPACE", Keys.Space},
-            {"SUBTRACT", Keys.Subtract},
-            {"TAB", Keys.Tab},
-            {"UP", Keys.ArrowUp},
-            {"F1", Keys.F1},
-            {"F2", Keys.F2},
-            {"F3", Keys.F3},
-            {"F4", Keys.F4},
-            {"F5", Keys.F5},
-            {"F6", Keys.F6},
-            {"F7", Keys.F7},
-            {"F8", Keys.F8},
-            {"F9", Keys.F9},
-            {"F10", Keys.F10},
-            {"F11", Keys.F11},
-            {"F12", Keys.F12}
-        };
+        private static readonly Dictionary<string, string> KeyDictionary =
+            new(StringComparer.InvariantCultureIgnoreCase)
+            {
+                { "ADD", Keys.Add },
+                { "BACKSPACE", Keys.Backspace },
+                { "BS", Keys.Backspace },
+                { "BKSP", Keys.Backspace },
+                { "DEL", Keys.Delete },
+                { "DELETE", Keys.Delete },
+                { "DIVIDE", Keys.Divide },
+                { "DOWN", Keys.ArrowDown },
+                { "END", Keys.End },
+                { "ENTER", Keys.Enter },
+                { "ESC", Keys.Escape },
+                { "HELP", Keys.Help },
+                { "HOME", Keys.Home },
+                { "INS", Keys.Insert },
+                { "INSERT", Keys.Insert },
+                { "MULTIPLY", Keys.Multiply },
+                { "LEFT", Keys.ArrowLeft },
+                { "PGDN", Keys.PageDown },
+                { "PGUP", Keys.PageUp },
+                { "RIGHT", Keys.ArrowRight },
+                { "SPACE", Keys.Space },
+                { "SUBTRACT", Keys.Subtract },
+                { "TAB", Keys.Tab },
+                { "UP", Keys.ArrowUp },
+                { "F1", Keys.F1 },
+                { "F2", Keys.F2 },
+                { "F3", Keys.F3 },
+                { "F4", Keys.F4 },
+                { "F5", Keys.F5 },
+                { "F6", Keys.F6 },
+                { "F7", Keys.F7 },
+                { "F8", Keys.F8 },
+                { "F9", Keys.F9 },
+                { "F10", Keys.F10 },
+                { "F11", Keys.F11 },
+                { "F12", Keys.F12 }
+            };
 
         private readonly string _keys;
 
@@ -110,7 +111,7 @@ namespace SeleniumFixture.Model
             // check if we have a repeater, i.e. a space followed by an integer just prior to the closing curly brace
             var spacePosition = escapedString.IndexOf(" ", StringComparison.Ordinal);
             string finalKey;
-            if (spacePosition != -1 && int.TryParse(escapedString.Substring(spacePosition + 1), out var repeater))
+            if (spacePosition != -1 && int.TryParse(escapedString[(spacePosition + 1)..], out var repeater))
             {
                 // chop off the space and the repeater from the content, we don't want that in the result
                 finalKey = escapedString.Substring(0, spacePosition);

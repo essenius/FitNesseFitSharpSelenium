@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -21,8 +21,6 @@ namespace SeleniumFixture.Utilities
     /// <summary>
     ///     Web Driver Extensions class
     /// </summary>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by FitSharp"),
-     SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
     internal static class ObjectExtensions
     {
         public static bool IsGlob(this string input) => input.Contains("*") || input.Contains("?");
@@ -31,7 +29,8 @@ namespace SeleniumFixture.Utilities
             Matches(input, "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$");
 
         public static bool IsRegex(this string input) =>
-            input.StartsWith("/", StringComparison.CurrentCulture) && input.EndsWith("/", StringComparison.CurrentCulture);
+            input.StartsWith("/", StringComparison.CurrentCulture) &&
+            input.EndsWith("/", StringComparison.CurrentCulture);
 
         public static bool Matches(this string input, string pattern) =>
             new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline).IsMatch(input);
@@ -39,7 +38,7 @@ namespace SeleniumFixture.Utilities
         public static string RegexPattern(this string input)
         {
             Debug.Assert(input.IsRegex());
-            return input.Substring(1, input.Length - 2);
+            return input[1..^1];
         }
 
         /// <summary>
@@ -47,8 +46,7 @@ namespace SeleniumFixture.Utilities
         /// </summary>
         /// <param name="value">the value (expected to be something parseable to a boolean)</param>
         /// <returns>the boolean representation of the input value</returns>
-        [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "bool",
-            Justification = "False positive. Conversion of JavaScript return values to Bool")]
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "False positive")]
         public static bool ToBool(this object value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -65,11 +63,12 @@ namespace SeleniumFixture.Utilities
         public static string ToMethodName(this string gracefulName)
         {
             if (string.IsNullOrEmpty(gracefulName)) return gracefulName;
-            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CurrentCulture) + gracefulName.Substring(1);
+            if (!gracefulName.Contains(" ")) return char.ToUpper(gracefulName[0], CurrentCulture) + gracefulName[1..];
             var textInfo = CurrentCulture.TextInfo;
             var result = string.Empty;
             var sections = gracefulName.Split(' ');
-            return sections.Select(section => textInfo.ToTitleCase(textInfo.ToLower(section)))
+            return sections
+                .Select(section => textInfo.ToTitleCase(textInfo.ToLower(section)))
                 .Aggregate(result, (current, capitalizedSection) => current + capitalizedSection);
         }
     }

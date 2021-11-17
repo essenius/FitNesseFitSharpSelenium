@@ -48,10 +48,16 @@ namespace SeleniumFixture.Model
             throw new StopTestException("Unrecognized browser: " + browserName);
         }
 
-        public IWebDriver CreateLocalDriver(string browserName)
+        public DriverOptions CreateOptions(string browserName)
         {
             var browserDriverCreator = BrowserDriverCreatorFor(browserName);
-            return browserDriverCreator.LocalDriver();
+            return browserDriverCreator.Options();
+        }
+
+        public IWebDriver CreateLocalDriver(string browserName, object options)
+        {
+            var browserDriverCreator = BrowserDriverCreatorFor(browserName);
+            return browserDriverCreator.LocalDriver(options);
         }
 
         public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
@@ -60,27 +66,26 @@ namespace SeleniumFixture.Model
             return browserDriverCreator.RemoteDriver(baseAddress, capabilities);
         }
 
+        public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, DriverOptions options)
+        {
+            var browserDriverCreator = BrowserDriverCreatorFor(browserName);
+            return browserDriverCreator.RemoteDriver(baseAddress, options);
+        }
+
         private static string StandardizeBrowserName(string browserName)
         {
             var browserInUpperCase = browserName.Replace(" ", string.Empty).ToUpperInvariant();
-            switch (browserInUpperCase)
+            return browserInUpperCase switch
             {
-                case @"GOOGLECHROME":
-                    return @"CHROME";
-                case @"GOOGLECHROMEHEADLESS":
-                    return @"CHROMEHEADLESS";
-                case "MICROSOFTEDGE":
-                case "MSEDGE":
-                    return "EDGE";
-                case @"FF":
-                    return @"FIREFOX";
-                case @"FFHEADLESS":
-                    return @"FIREFOXHEADLESS";
-                case @"INTERNETEXPLORER":
-                    return @"IE";
-                default:
-                    return browserInUpperCase;
-            }
+                "GOOGLECHROME" => "CHROME",
+                "GOOGLECHROMEHEADLESS" => "CHROMEHEADLESS",
+                "MICROSOFTEDGE" => "EDGE",
+                "MSEDGE" => "EDGE",
+                "FF" => "FIREFOX",
+                "FFHEADLESS" => "FIREFOXHEADLESS",
+                "INTERNETEXPLORER" => "IE",
+                _ => browserInUpperCase
+            };
         }
     }
 }

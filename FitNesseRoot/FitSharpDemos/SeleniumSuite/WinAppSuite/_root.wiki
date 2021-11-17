@@ -1,1 +1,2 @@
+# don't use localhost here. It makes the test a lot slower.
 !contents -R2 -g -p -f -h

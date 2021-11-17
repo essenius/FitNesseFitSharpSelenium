@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,33 +10,66 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
+using System.IO;
 using OpenQA.Selenium;
 using OpenQA.Selenium.IE;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
-    internal class InternetExplorerDriverCreator: BrowserDriverCreator
+    internal class InternetExplorerDriverCreator : BrowserDriverCreator
     {
         public InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
         }
 
-        private readonly NativeMethods _nativeMethods = new NativeMethods();
-
         public override string Name { get; } = "IE";
 
-        public override IWebDriver LocalDriver()
+        private static string EdgePath()
         {
-            if (!_nativeMethods.ScreenScalingIs1()) throw new StopTestException(ErrorMessages.IEScreenScalingIssue);
+            var edgePath = AppConfig.Get("InternetExplorer.EdgePath");
+            if (!string.IsNullOrEmpty(edgePath)) return edgePath;
+            const string defaultSubPath = "\\Microsoft\\Edge\\Application\\msedge.exe";
+            var programFilesx86 = AppConfig.Get("ProgramFiles(x86)");
+            var defaultEdgePath = $"{programFilesx86}{defaultSubPath}";
+            if (File.Exists(defaultEdgePath)) return defaultEdgePath;
+            var programFiles = AppConfig.Get("ProgramFiles");
+            defaultEdgePath = $"{programFiles}{defaultSubPath}";
+            return File.Exists(defaultEdgePath) ? defaultEdgePath : null;
+        }
 
+        private static bool IgnoreProtectedModeSetting()
+        {
+            var ignoreProtectedModeSettingsString = AppConfig.Get("InternetExplorer.IgnoreProtectedModeSettings");
+            return !string.IsNullOrEmpty(ignoreProtectedModeSettingsString) &&
+                   bool.Parse(ignoreProtectedModeSettingsString);
+        }
+
+        private InternetExplorerOptions InternetExplorerOptions()
+        {
+            var options = new InternetExplorerOptions
+            {
+                Proxy = Proxy,
+                IntroduceInstabilityByIgnoringProtectedModeSettings = IgnoreProtectedModeSetting()
+            };
+            var edgePath = EdgePath();
+
+            if (string.IsNullOrEmpty(edgePath)) return options;
+            options.AddAdditionalCapability("ie.edgechromium", true);
+            options.AddAdditionalCapability("ie.edgepath", edgePath);
+
+            return options;
+        }
+
+        public override IWebDriver LocalDriver(object options)
+        {
             var driverFolder = Environment.GetEnvironmentVariable("IEWebDriver");
             InternetExplorerDriverService driverService = null;
             IWebDriver driver;
             try
             {
                 driverService = GetDefaultService<InternetExplorerDriverService>(driverFolder);
-                driver = new InternetExplorerDriver(driverService, InternetExplorerOptions(), Timeout);
+                var ieOptions = options == null ? InternetExplorerOptions() : (InternetExplorerOptions)options;
+                driver = new InternetExplorerDriver(driverService, ieOptions, Timeout);
             }
             catch
             {
@@ -47,22 +80,5 @@ namespace SeleniumFixture.Model
         }
 
         public override DriverOptions Options() => InternetExplorerOptions();
-
-        private InternetExplorerOptions InternetExplorerOptions()
-        {
-            var options = new InternetExplorerOptions
-            {
-                Proxy = Proxy,
-                IntroduceInstabilityByIgnoringProtectedModeSettings = IgnoreProtectedModeSetting()
-            };
-            return options;
-        }
-
-        private static bool IgnoreProtectedModeSetting()
-        {
-            var ignoreProtectedModeSettingsString = AppConfig.Get("InternetExplorer.IgnoreProtectedModeSettings");
-            return !string.IsNullOrEmpty(ignoreProtectedModeSettingsString) &&
-                   bool.Parse(ignoreProtectedModeSettingsString);
-        }
     }
 }

@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="FitNesse Rules" Description="This rule set contains the rules for FitNesse fixtures." ToolsVersion="16.0">
-  <IncludeAll Action="Warning" />
-  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
-    <Rule Id="CA1053" Action="None" />
-    <Rule Id="CA1811" Action="Warning" />
-  </Rules>
-</RuleSet>

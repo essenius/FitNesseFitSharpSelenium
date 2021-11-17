@@ -11,7 +11,6 @@
 
 using System.Diagnostics;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Html5;
 using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
@@ -21,10 +20,9 @@ namespace SeleniumFixture.Model
         public static BrowserStorage Create(IWebDriver browserDriver, StorageType storageType)
         {
             Debug.Assert(browserDriver != null, "browserDriver != null");
-            var hasStorage = (IHasWebStorage)browserDriver;
-            if (hasStorage.HasWebStorage) return new NativeBrowserStorage(browserDriver, storageType);
             var javaScriptExecutor = (IJavaScriptExecutor)browserDriver;
-            var javaScriptSupportsStorage = javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
+            var javaScriptSupportsStorage =
+                javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
             if (javaScriptSupportsStorage) return new JavaScriptBrowserStorage(browserDriver, storageType);
             return new NoBrowserStorage(browserDriver);
         }

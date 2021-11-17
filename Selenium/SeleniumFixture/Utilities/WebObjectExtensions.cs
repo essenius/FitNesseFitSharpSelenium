@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Internal;
 
@@ -23,7 +22,8 @@ namespace SeleniumFixture.Utilities
     {
         private static double _lastSetImplicitWaitSeconds;
 
-        public static void AddAdditionalCapabilities(this DriverOptions options, Dictionary<string, object> capabilities)
+        public static void AddAdditionalCapabilities(this DriverOptions options,
+            Dictionary<string, object> capabilities)
         {
             if (capabilities == null) return;
             foreach (var entry in capabilities.Keys)
@@ -43,8 +43,7 @@ namespace SeleniumFixture.Utilities
             return returnValue;
         }
 
-        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Enable use in extension method")]
-        public static double GetImplicitWait(this IWebDriver driver) => _lastSetImplicitWaitSeconds;
+        public static double GetImplicitWait(this IWebDriver _) => _lastSetImplicitWaitSeconds;
         // Currently this only works for firefox: (int)driver.Manage().Timeouts().ImplicitWait.TotalSeconds;
 
         private static IJavaScriptExecutor GetJavaScriptExecutor(IWebElement element)
@@ -63,11 +62,8 @@ namespace SeleniumFixture.Utilities
 
         private static bool IsBrowser(this IWebDriver driver, string browserName) =>
             driver is IHasCapabilities driverWithCapabilities &&
-            browserName.Equals(driverWithCapabilities.Capabilities.GetCapability("browserName").ToString(), StringComparison.OrdinalIgnoreCase);
-
-        public static bool IsChrome(this IWebDriver driver) => driver.IsBrowser("chrome");
-
-        public static bool IsEdge(this IWebDriver driver) => driver.IsBrowser("msedge");
+            browserName.Equals(driverWithCapabilities.Capabilities.GetCapability("browserName").ToString(),
+                StringComparison.OrdinalIgnoreCase);
 
         public static bool IsFirefox(this IWebDriver driver) => driver.IsBrowser("firefox");
 
@@ -77,7 +73,8 @@ namespace SeleniumFixture.Utilities
 
         private static bool IsPlatform(this IWebDriver driver, string platformName) =>
             driver is IHasCapabilities driverWithCapabilities &&
-            platformName.Equals(driverWithCapabilities.Capabilities.GetCapability("platformName")?.ToString(), StringComparison.OrdinalIgnoreCase);
+            platformName.Equals(driverWithCapabilities.Capabilities.GetCapability("platformName")?.ToString(),
+                StringComparison.OrdinalIgnoreCase);
 
         public static bool SetAttribute(this IWebElement element, string attributeName, string value)
         {

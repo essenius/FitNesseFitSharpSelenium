@@ -22,6 +22,7 @@ namespace SeleniumFixture.Model
     {
         /// <summary>Local storage</summary>
         Local,
+
         /// <summary>Session storage</summary>
         Session
     }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -25,14 +25,15 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "SAFARI";
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             SafariDriverService driverService = null;
             IWebDriver driver;
             try
             {
                 driverService = GetDefaultService<SafariDriverService>();
-                driver = new SafariDriver(driverService, SafariOptions(), Timeout);
+                var safariOptions = options == null ? SafariOptions() : (SafariOptions)options;
+                driver = new SafariDriver(driverService, safariOptions, Timeout);
             }
             catch
             {

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -14,7 +14,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading;
+using DotNetWindowsRegistry;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
 
@@ -28,9 +30,12 @@ namespace SeleniumFixture
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by FitSharp")]
     [SuppressMessage("Naming", "CA1724:Type names should not match namespaces", Justification =
         "Can't change the type name - would be a breaking change")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by FitSharp")]
     public sealed partial class Selenium
     {
         private const int DefaultTimeoutInSeconds = 3;
+
+        private readonly IRegistry _windowsRegistry = new WindowsRegistry();
 
         private BrowserStorage _browserStorage;
         private ProtectedMode _protectedMode;
@@ -67,13 +72,16 @@ namespace SeleniumFixture
             set => FireFoxDriverCreator.IntegratedAuthenticationDomain = value;
         }
 
-        [SuppressMessage("Style", "IDE0074:Use compound assignment", Justification = "Not avalable in C# 7.3")]
-        private ProtectedMode ProtectedMode => _protectedMode ?? (_protectedMode = new ProtectedMode(new ZoneListFactory()));
+        [SupportedOSPlatform("windows")]
+        private ProtectedMode ProtectedMode =>
+            _protectedMode ??= new ProtectedMode(new ZoneListFactory(_windowsRegistry));
+
+        /// <summary>Set base path for remote server (default /wd/hub)</summary>
+        public string RemoteBrowserBasePath { get; set; } = "/wd/hub";
 
         internal double TimeoutInSeconds { get; private set; } = DefaultTimeoutInSeconds;
 
         /// <summary>Get/set a Web Store. Sets all key-value pairs, but doesn't delete existing content. Clear any existing values beforehand</summary>
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "API for FitNesse")]
         public Dictionary<string, string> WebStorage
         {
             get { return BrowserStorage.KeySet.ToDictionary(key => key, key => BrowserStorage[key]); }
@@ -94,7 +102,7 @@ namespace SeleniumFixture
             }
         }
 
-        internal bool AreAllProtectedModes(bool mode) => ProtectedMode.AllAre(mode);
+        internal bool AreAllProtectedModes(bool mode) => !OperatingSystem.IsWindows() || ProtectedMode.AllAre(mode);
 
         /// <summary>Clear a web store (local or session)</summary>
         public bool ClearWebStorage() => BrowserStorage.Clear();
@@ -109,25 +117,32 @@ namespace SeleniumFixture
             return true;
         }
 
+        /// <summary>Return the input. Useful to set symbols</summary>
+        /// <remarks>Exists in CommonFunctions too, but didn't want to take a dependency on that just for this</remarks>
+        public static object Echo(object input) => input;
+
         /// <summary>Execute JavaScript asynchronously (in the browser)</summary>
         public object ExecuteAsyncScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             return scriptExecutor.ExecuteAsyncScript(script);
         }
 
         /// <summary>Execute JavaScript (in the browser)</summary>
         public object ExecuteScript(string script)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             return scriptExecutor.ExecuteScript(script);
         }
 
-        /// <summary>Execute JavaScript using parameters. If a parameter has a locator format (with colon) then it is substituted by the element</summary>
+        /// <summary>
+        ///     Execute JavaScript using parameters. If a parameter has a locator format (with colon) then it is substituted by the
+        ///     element
+        /// </summary>
         /// <remarks>You can refer to them via arguments[0-i] in the script</remarks>
         public object ExecuteScriptWithParameters(string script, Collection<string> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             var argsToUse = new List<object>();
             foreach (var locator in args ?? new Collection<string>())
             {
@@ -140,16 +155,16 @@ namespace SeleniumFixture
                     argsToUse.Add(locator);
                 }
             }
-
             return scriptExecutor.ExecuteScript(script, argsToUse.ToArray());
         }
 
         /// <summary>Execute JavaScript using parameters. No substitution of elements is attempted</summary>
-        ///<remarks>You can refer to them via arguments[0-i] in the script</remarks>
-        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global", Justification = "FitSharp cannot parse IEnumerables")]
+        /// <remarks>You can refer to them via arguments[0-i] in the script</remarks>
+        [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global",
+            Justification = "Would not be visible to FitSharp")]
         public object ExecuteScriptWithPlainParameters(string script, Collection<object> args)
         {
-            var scriptExecutor = (IJavaScriptExecutor) Driver;
+            var scriptExecutor = (IJavaScriptExecutor)Driver;
             return scriptExecutor.ExecuteScript(script, args.ToArray());
         }
 
@@ -159,58 +174,83 @@ namespace SeleniumFixture
         /// <summary>Find the first item matching a glob pattern (with *?)</summary>
         public string GetKeyLikeFromWebStorage(string key) => BrowserStorage.FindFirstKeyLike(key);
 
-        /// <summary>Creates a new browser instance and makes it current. See also <seealso cref="SetBrowser"/></summary>
+        /// <summary>Creates a new browser instance and makes it current. See also <seealso cref="SetBrowser" /></summary>
         /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
         /// <returns>an ID</returns>
-        public string NewBrowser(string browserName)
+        public string NewBrowser(string browserName) => NewBrowserWithOptions(browserName, null);
+
+        /// <summary>
+        ///     Create a new browser instance with a predefined options object. Cab be useful in case additional options are needed.
+        /// </summary>
+        /// <param name="browserName"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public string NewBrowserWithOptions(string browserName, object options)
         {
-            DriverId = BrowserDriverContainer.NewDriver(browserName);
+            DriverId = BrowserDriverContainer.NewDriver(browserName, options);
             Driver = BrowserDriverContainer.Current;
             _browserStorage = null; // force re-initialization on next call
             return DriverId;
         }
 
+        /// <summary>Get a new options object for a browser type.</summary>
+        /// <param name="browser">the browser to get the options object for</param>
+        /// <returns>the options object</returns>
+        public static object NewOptionsFor(string browser) => BrowserDriverContainer.NewOptions(browser);
+
         /// <summary>See <see cref="SetRemoteBrowserAtAddress" /></summary>
         /// <returns>the driver ID </returns>
         public string NewRemoteBrowserAtAddress(string browserName, string baseAddress) =>
-            NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, object>());
+            NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, new Dictionary<string, string>());
 
         /// <summary>See <see cref="SetRemoteBrowserAtAddressWithCapabilities" /></summary>
         /// <returns>the driver ID</returns>
-        public string NewRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress, Dictionary<string, object> capabilities)
+        public string NewRemoteBrowserAtAddressWithCapabilities(
+            string browserName,
+            string baseAddress,
+            Dictionary<string, string> capabilities)
         {
-            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress, capabilities);
+            var caps = capabilities.ToDictionary(pair => pair.Key, pair => (object)pair.Value);
+
+            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress + RemoteBrowserBasePath, caps);
+            Driver = BrowserDriverContainer.Current;
+            _browserStorage = null;
+            return DriverId;
+        }
+
+        /// <summary>See <see cref="SetRemoteBrowserAtAddressWithOptions" /></summary>
+        /// <returns>Driver ID</returns>
+        public string NewRemoteBrowserAtAddressWithOptions(string browserName, string baseAddress, object options)
+        {
+            DriverId = BrowserDriverContainer.NewRemoteDriver(
+                browserName, 
+                baseAddress + RemoteBrowserBasePath,
+                options);
             Driver = BrowserDriverContainer.Current;
             _browserStorage = null;
             return DriverId;
         }
 
         /// <summary>Debug function to see what the current protected mode settings are and what they come from</summary>
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "FitNesse interface spec")]
+        [SupportedOSPlatform("windows")]
         internal Collection<Collection<object>> ProtectedModePerZone() => ProtectedMode.State;
 
-        /// <summary>Check if Protected Mode for all security zones meet the condition, and throw a StopTestException if not. 
-        /// If you use Internet Explorer, it is important that all zones have the same protected mode setting</summary>
+        /// <summary>
+        ///     Check if Protected Mode for all security zones meet the condition, and throw a StopTestException if not.
+        ///     If you use Internet Explorer, it is important that all zones have the same protected mode setting
+        /// </summary>
         /// <param name="condition">ON, OFF or EQUAL</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Need lower case")]
-        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False Positive")]
         public bool ProtectedModesAre(string condition)
         {
-            bool ok;
-            switch (condition?.ToUpperInvariant())
+            // if we are not on Windows, we don't care about protected modes (no Internet Explorer) so all is good
+            if (!OperatingSystem.IsWindows()) return true;
+            var ok = condition?.ToUpperInvariant() switch
             {
-                case "ON":
-                    ok = ProtectedMode.AllAre(true);
-                    break;
-                case "OFF":
-                    ok = ProtectedMode.AllAre(false);
-                    break;
-                case "EQUAL":
-                    ok = ProtectedMode.AllAreSame();
-                    break;
-                default:
-                    throw new ArgumentException($"Unknown condition '{condition}. Valid are On, Off or Equal.");
-            }
+                "ON" => ProtectedMode.AllAre(true),
+                "OFF" => ProtectedMode.AllAre(false),
+                "EQUAL" => ProtectedMode.AllAreSame(),
+                _ => throw new ArgumentException($"Unknown condition '{condition}. Valid are On, Off or Equal.")
+            };
             if (!ok) throw new StopTestException("Protected modes are not all " + condition.ToLowerInvariant());
             return true;
         }
@@ -222,9 +262,16 @@ namespace SeleniumFixture
         public void ResetTimeout() => TimeoutInSeconds = DefaultTimeoutInSeconds;
 
         /// <summary>Sets the browser to be used</summary>
-        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
+        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Edge Headless, Firefox, Firefox Headless, Opera</param>
         /// <returns>whether the operation succeeded</returns>
         public bool SetBrowser(string browserName) => !string.IsNullOrEmpty(NewBrowser(browserName));
+
+        /// <summary>Sets the browser to be used</summary>
+        /// <param name="browserName">can be Chrome, Chrome Headless, Edge, Edge Headless, Firefox, Firefox Headless,IE, Opera</param>
+        /// <param name="options">options object (get via <seealso cref="NewOptionsFor" />)</param>
+        /// <returns>whether the operation succeeded</returns>
+        public bool SetBrowserWithOptions(string browserName, object options) =>
+            !string.IsNullOrEmpty(NewBrowserWithOptions(browserName, options));
 
         /// <summary>Set the current browser driver using its ID (returned earlier by NewBrowser)</summary>
         public bool SetDriver(string driverId)
@@ -244,10 +291,14 @@ namespace SeleniumFixture
         /// <param name="proxyType">Direct, System, or AutoDetect</param>
         public static bool SetProxyType(string proxyType) => BrowserDriverContainer.SetProxyType(proxyType);
 
-        /// <summary>Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure (http://host/pacfile)</summary>
+        /// <summary>
+        ///     Sets the http and SSL proxy for the test. Type is  Manual (hostname.com:8080) or ProxyAutoConfigure
+        ///     (http://host/pacfile)
+        /// </summary>
         /// <param name="proxyType">Manual or ProxyAutoConfigure</param>
         /// <param name="proxyValue">hostname.com:8080 with Manual, or http://host/pacfile withProxyAutoConfigure</param>
-        public static bool SetProxyTypeValue(string proxyType, string proxyValue) => BrowserDriverContainer.SetProxyValue(proxyType, proxyValue);
+        public static bool SetProxyTypeValue(string proxyType, string proxyValue) =>
+            BrowserDriverContainer.SetProxyValue(proxyType, proxyValue);
 
         /// <summary>Use a remote Selenium server (address including port). Raises a StopTestException if unable to connect</summary>
         /// <returns>true</returns>
@@ -256,20 +307,31 @@ namespace SeleniumFixture
 
         /// <summary>Use a remote Selenium server (address including port) with a dictionary of desired capabilities</summary>
         /// <remarks>Raises a StopTestException if unable to connect</remarks>
-        /// <returns></returns>
-        public bool SetRemoteBrowserAtAddressWithCapabilities(string browserName, string baseAddress,
-            Dictionary<string, object> capabilities) =>
+        /// <returns>true</returns>
+        public bool SetRemoteBrowserAtAddressWithCapabilities(
+            string browserName,
+            string baseAddress,
+            Dictionary<string, string> capabilities) =>
             !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithCapabilities(browserName, baseAddress, capabilities));
+
+        /// <summary>Use a remote Selenium server (address including port) with a driver options object</summary>
+        /// <remarks>Raises a StopTestException if unable to connect</remarks>
+        /// <returns>true</returns>
+        public bool SetRemoteBrowserAtAddressWithOptions(string browserName, string baseAddress, object options) =>
+            !string.IsNullOrEmpty(NewRemoteBrowserAtAddressWithOptions(browserName, baseAddress, options));
 
         /// <summary>Set the default timeout for all wait commands (except page loads). Default value is 3 seconds</summary>
         public void SetTimeoutSeconds(double timeoutInSeconds) => TimeoutInSeconds = timeoutInSeconds;
 
         /// <summary>Select either Local or Session storage (to work on other Web Storage functions)</summary>
-        public void UseWebStorage(StorageType storageType) => _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
-
+        public void UseWebStorage(StorageType storageType) =>
+            _browserStorage = BrowserStorageFactory.Create(Driver, storageType);
 
         /// <param name="qualifier">SHORT, EXTENDED or empty</param>
-        /// <returns>the version info of the fixture. SHORT: just the version, EXTENDED: name, version, description, copyright. Anything else: name, version</returns>
+        /// <returns>
+        ///     the version info of the fixture. SHORT: just the version, EXTENDED: name, version, description, copyright. Anything
+        ///     else: name, version
+        /// </returns>
         public static string VersionInfo(string qualifier) => ApplicationInfo.VersionInfo(qualifier + string.Empty);
 
         /// <summary>Checks whether the current version (x.y.z) is at least a minimally required version</summary>

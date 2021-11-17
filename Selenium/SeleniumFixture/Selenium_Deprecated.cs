@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -53,7 +53,8 @@ namespace SeleniumFixture
         {
             if (ExceptionOnDeprecatedFunctions)
             {
-                throw new WarningException("Use of deprecated function '" + fixtureName + "'. Replace by '" + fixtureReplacement + "'");
+                throw new WarningException(
+                    "Use of deprecated function '" + fixtureName + "'. Replace by '" + fixtureReplacement + "'");
             }
         }
 
@@ -73,8 +74,8 @@ namespace SeleniumFixture
 
         [Obsolete(ApplicationNameObsoleteMessage)]
         public static string NewRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string name) =>
-            throw new NotSupportedException(ApplicationNameObsoleteMessage +
-                                            " (" + browserName + "," + baseAddress + "," + name + ")");
+            throw new NotSupportedException(
+                ApplicationNameObsoleteMessage + " (" + browserName + "," + baseAddress + "," + name + ")");
 
         [Obsolete("Use ProtectedModesAre")]
         public bool ProtectedModeIsOff()
@@ -98,9 +99,10 @@ namespace SeleniumFixture
         }
 
         [Obsolete(ApplicationNameObsoleteMessage)]
-        public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress, string applicationName) =>
-            throw new NotSupportedException(ApplicationNameObsoleteMessage +
-                                            " (" + browserName + "," + baseAddress + "," + applicationName + ")");
+        public static bool SetRemoteBrowserAtAddressWithName(string browserName, string baseAddress,
+            string applicationName) =>
+            throw new NotSupportedException(
+                ApplicationNameObsoleteMessage + " (" + browserName + "," + baseAddress + "," + applicationName + ")");
 
         [Obsolete("Use WindowSize")]
         public bool SetWindowSizeX(int width, int height)

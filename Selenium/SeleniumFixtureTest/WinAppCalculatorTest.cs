@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,31 +10,23 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
 
 namespace SeleniumFixtureTest
 {
-    /// <remarks>Uses WinAppDriver, see https://github.com/microsoft/WinAppDriver/releases.
-    /// Start WinAppDriver with parameter 4727 as Appium uses the default port 4723 </remarks>
+    /// <remarks>
+    ///     Uses WinAppDriver, see https://github.com/microsoft/WinAppDriver/releases.
+    ///     Start WinAppDriver with parameter 4727 as Appium uses the default port 4723
+    /// </remarks>
     [TestClass]
     public class WinAppCalculatorTest
     {
-        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "False positive")]
-        private static TestContext _testContext;
+        private static readonly Selenium Fixture = new();
 
-        private static int _testsToDo;
-        private static readonly Selenium Fixture = new Selenium();
-
-        private static void AssertResult(string expectedResult)
-        {
+        private static void AssertResult(string expectedResult) =>
             Assert.AreEqual($"Display is {expectedResult}", Fixture.TextInElement("AccessibilityId:CalculatorResults"));
-        }
 
         [ClassCleanup]
         public static void ClassCleanup()
@@ -43,21 +35,17 @@ namespace SeleniumFixtureTest
         }
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
+        public static void ClassInitialize(TestContext _)
         {
-            _testContext = testContext; // not used at this point
-            _testsToDo = typeof(WinAppCalculatorTest)
-                .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
-                .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
-            Debug.Print($"Running {_testsToDo} tests for WinAppCalculator");
-            var caps = new Dictionary<string, object>
+            var caps = new Dictionary<string, string>
             {
-                {"app", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"}
+                { "app", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App" }
             };
             Selenium.DefaultSearchMethod = "name";
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
+                Assert.IsTrue(
+                    Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
             }
             catch (StopTestException)
             {
@@ -68,18 +56,11 @@ namespace SeleniumFixtureTest
         private static bool ResultOk(string expectedResult, string rawResult)
         {
             var result = new Regex(@".*\s([-+]?[0-9]*\.?[0-9]+)\s.*").Matches(rawResult);
-            if (result[0].Groups.Count <= 1) return false;
-            Debug.Print(result[0].Groups[1].Value);
-            return result[0].Groups[1].Value.Equals(expectedResult);
+            return result[0].Groups.Count > 1 && result[0].Groups[1].Value.Equals(expectedResult);
         }
 
-        [TestInitialize]
-        // Ensure we are on Standard mode
-        public void TestInitialize()
-        {
-        }
-
-        [TestMethod, TestCategory("Experiments")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void WinAppCalcAddTest()
         {
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");
@@ -94,7 +75,8 @@ namespace SeleniumFixtureTest
             AssertResult("8");
         }
 
-        [TestMethod, TestCategory("Experiments")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void WinAppCalcScientificTest()
         {
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");
@@ -111,10 +93,13 @@ namespace SeleniumFixtureTest
 
             Assert.IsTrue(Fixture.ClickElement("Sine"), "Click Sin");
             AssertResult("0.8414709848078965066525023216303");
-            Assert.AreEqual("Expression is sine radians (1)", Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
+            Assert.AreEqual(
+                "Expression is sine radians (1)",
+                Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
         }
 
-        [TestMethod, TestCategory("Experiments")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void WinAppCalcVolumeTest()
         {
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");

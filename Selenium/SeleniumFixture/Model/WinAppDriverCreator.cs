@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -26,15 +26,13 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "WINAPP";
 
-        public override IWebDriver LocalDriver() => null;
+        // Apparently the Windows driver doesn't expect /wd/hub, unlike all other drivers.
+
+        //protected override string BasePath { get; set; } = "";
+
+        public override IWebDriver LocalDriver(object options) => null;
 
         public override DriverOptions Options() => WinAppOptions();
-
-        private AppiumOptions WinAppOptions()
-        {
-            var options = new AppiumOptions {PlatformName = "Windows", Proxy = Proxy};
-            return options;
-        }
 
         public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
@@ -44,8 +42,17 @@ namespace SeleniumFixture.Model
             return new WindowsDriver<WindowsElement>(uri, options, Timeout);
         }
 
-        // Apparently the Windows driver doesn't expect /wd/hub, unlike all other drivers.
-        protected override Uri BaseUri(string baseAddress) => new Uri(baseAddress);
+        public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+        {
+            var uri = BaseUri(baseAddress);
+            var appiumOptions = options as AppiumOptions;
+            return new WindowsDriver<WindowsElement>(uri, appiumOptions, Timeout);
+        }
 
+        private AppiumOptions WinAppOptions()
+        {
+            var options = new AppiumOptions { PlatformName = "Windows", Proxy = Proxy };
+            return options;
+        }
     }
 }

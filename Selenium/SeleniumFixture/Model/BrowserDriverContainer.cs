@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using static System.Globalization.CultureInfo;
 using System.Reflection;
-using ImageHandler;
+using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model
 {
@@ -29,9 +29,9 @@ namespace SeleniumFixture.Model
     internal static class BrowserDriverContainer
     {
         private static int _idCounter = 1;
-        private static Proxy _proxy = new Proxy {Kind = ProxyKind.System};
+        private static Proxy _proxy = new() { Kind = ProxyKind.System };
         private static TimeSpan _timeout = TimeSpan.FromSeconds(60);
-        private static readonly Dictionary<string, IWebDriver> Drivers = new Dictionary<string, IWebDriver>();
+        private static readonly Dictionary<string, IWebDriver> Drivers = new();
 
         public static double CommandTimeoutSeconds
         {
@@ -56,41 +56,62 @@ namespace SeleniumFixture.Model
 
         internal static void CloseAllDrivers()
         {
-            foreach (var webDriver in Drivers) webDriver.Value?.Quit();
+            foreach (var webDriver in Drivers)
+            {
+                webDriver.Value?.Quit();
+            }
 
             Drivers.Clear();
             CurrentId = string.Empty;
             Current = null;
         }
 
-        private static IWebDriver GetDriver(string driverId) => !Drivers.ContainsKey(driverId) ? null : Drivers[driverId];
+        private static IWebDriver GetDriver(string driverId) =>
+            !Drivers.ContainsKey(driverId) ? null : Drivers[driverId];
 
         // this works for all drivers that implement RemoteWebDriver, which is the case for all drivers we use
         private static bool HasQuit(IWebDriver driver) => ((RemoteWebDriver)driver).SessionId == null;
 
-        public static string NewDriver(string browserName)
+        public static string NewDriver(string browserName, object options)
         {
             try
             {
-                Current = new BrowserDriverFactory(_proxy, _timeout).CreateLocalDriver(browserName);
+                Current = new BrowserDriverFactory(_proxy, _timeout).CreateLocalDriver(browserName, options);
                 CurrentId = AddDriver(Current);
                 return CurrentId;
             }
-            catch (Exception exception) when (exception is WebDriverException || exception is Win32Exception ||
-                                              exception is InvalidOperationException || exception is TargetInvocationException)
+            catch (Exception exception) when (
+                exception is WebDriverException ||
+                exception is Win32Exception ||
+                exception is InvalidOperationException ||
+                exception is TargetInvocationException)
             {
                 CloseAllDrivers();
                 throw new StopTestException("Could not start browser: " + browserName, exception);
             }
         }
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types",
-            Justification = "Desired behavior. Returning exception to FitSharp")]
-        public static string NewRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
+        public static DriverOptions NewOptions(string browserName) =>
+            new BrowserDriverFactory(_proxy, _timeout).CreateOptions(browserName);
+
+        //Dictionary<string, object> capabilities
+        public static string NewRemoteDriver(string browserName, string baseAddress, object optionsOrCapabilities)
         {
             try
             {
-                Current = new BrowserDriverFactory(_proxy, _timeout).CreateRemoteDriver(browserName, baseAddress, capabilities);
+                if (optionsOrCapabilities is DriverOptions options)
+                {
+                    Current = new BrowserDriverFactory(_proxy, _timeout)
+                        .CreateRemoteDriver(browserName, baseAddress, options);
+                }
+                else
+                {
+                    Current = new BrowserDriverFactory(_proxy, _timeout)
+                        .CreateRemoteDriver(
+                            browserName, 
+                            baseAddress,
+                            optionsOrCapabilities as Dictionary<string, object>);
+                }
             }
             catch (Exception e)
             {
@@ -101,7 +122,8 @@ namespace SeleniumFixture.Model
                 throw new StopTestException(message, e);
             }
             ((RemoteWebDriver)Current).FileDetector = new LocalFileDetector();
-
+            // Workaround for the encoding 437 error, see https://githubmemory.com/repo/aquality-automation/aquality-selenium-dotnet/issues/198
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             CurrentId = AddDriver(Current);
             return CurrentId;
         }
@@ -129,17 +151,24 @@ namespace SeleniumFixture.Model
 
         public static bool SetProxyType(string proxyType)
         {
-            if (!Enum.TryParse(proxyType, true, out ProxyKind proxyKind)) throw new ArgumentException($"Unrecognized proxy type '{proxyType}'");
+            if (!Enum.TryParse(proxyType, true, out ProxyKind proxyKind))
+            {
+                throw new ArgumentException($"Unrecognized proxy type '{proxyType}'");
+            }
             // can't update proxy in all cases, so create a new one.
-            _proxy = new Proxy {Kind = proxyKind};
+            _proxy = new Proxy { Kind = proxyKind };
             return proxyKind != ProxyKind.Unspecified;
         }
 
-        [SuppressMessage("ReSharper", "SwitchStatementMissingSomeCases", Justification = "no need to process the others")]
+        [SuppressMessage("ReSharper", "SwitchStatementMissingSomeCases",
+            Justification = "no need to process the others")]
         public static bool SetProxyValue(string proxyType, string proxyValue)
         {
             if (!SetProxyType(proxyType)) return false;
-            if (string.IsNullOrEmpty(proxyValue)) throw new ArgumentException($"No value specified for proxy type '{proxyType}'");
+            if (string.IsNullOrEmpty(proxyValue))
+            {
+                throw new ArgumentException($"No value specified for proxy type '{proxyType}'");
+            }
             switch (_proxy.Kind)
             {
                 case ProxyKind.Manual:
@@ -154,10 +183,10 @@ namespace SeleniumFixture.Model
             }
         }
 
-        public static Snapshot TakeScreenshot()
+        public static Image TakeScreenshot()
         {
             var screenshot = ((ITakesScreenshot)Current).GetScreenshot();
-            return new Snapshot(screenshot.AsByteArray);
+            return new Image(screenshot.AsBase64EncodedString);
         }
     }
 }

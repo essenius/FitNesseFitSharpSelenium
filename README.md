@@ -1,38 +1,94 @@
 # FitNesseFitSharpSelenium
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
 
-There is a [newer branch using .NET 5.0](../../tree/net5_0). Once that is stable, it will supersede this version.
+For the moment it still depends on Selenium 3 as it seems WinAppDriver can't cope with Selenium 4 just yet.
 
-# Getting Started
-1. Download FitNesse (http://fitnesse.org) and install it to C:\Apps\FitNesse
-1. Download FitSharp (https://github.com/jediwhale/fitsharp) and install it to C:\Apps\FitNesse\FitSharp. Note: at this point there seems to be a compatibility issue with FitSharp 2.7.1, so use 2.7.0 for now.
-1. Clone the repo to a local folder (C:\Data\FitNesseDemo)
-1. Update plugins.properties to point to the FitSharp folder (if you took other folders than suggested)
-1. Open the Seleniumfixture solution in Visual Studio
-1. Configure App.config: 
+# Installing the fixture and the examples
+The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
 
-	a. If you want to execute the tests, publish the test site in the SeleniumFixtureTestSite project to an azure website, and configure the URL in key TestSite.
+Differences are:
+* Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
+* Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
+* If you have .NET 5 SDK installed:
+    * Build fixture solution: `dotnet build --configuration release Selenium.sln`
+    * Go to fixture folder: `cd SeleniumFixture`
+    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net5.0 --framework net5.0 --configuration release`
+* If you don't have .NET 5 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
+* Install browser drivers and other dependencies that you need (see below).
+* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net5.0`
+* Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
-	b. If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.seleniumhq.org/download/ and if you want to be able to run the unit tests, configure the Selenium Server URL in key RemoteSelenium
+# Installing dependencies
 
-	c. If you are using Firefox and you want to use integrated authentication, set the key Firefox.IntegratedAuthenticationDomain to the desired domain
-1. Install the drivers for the browsers you need (see https://www.seleniumhq.org/download/ as well), and ensure that they can be found via the Path
-1. If tou want to use Appium (https://appium.io) and/or WinAppDriver (https://github.com/microsoft/WinAppDriver), install those.
-1. Restore the NuGet packages and build all projects (Release)
-1. Ensure you have Java installed (1.7 or higher)
-1. Update plugins.properties:
+All the settings mentioned in this section can be configured both in `plugins.properties` and on FitNesse pages (e.g. `!define BROWSER {chrome}`).
+Settings on test pages overrule the settings in `plugins.properties`.
 
-	a. Set TESTPAGE to http://your.test.site/Testpage.html (test site URL as per above)
+We'll give the instructions for Windows here, for Mac it should be quite similar.
 
-	b. Set SeleniumServer to the URL of your Selenium server (as per above)
+## Browser Drivers
 
-	c. Set BROWSER to the browser you want to run the test on (e.g. Chrome Headless)
-1. Start FitNesse with the root repo folder as the data folder as well as the current directory:
+* Choose a suitable folder that is already in the Path, or create new folder `%LOCALAPPDATA%\BrowserDrivers` and add that to the `Path`.
+* [Download the ChromeDriver version](https://chromedriver.chromium.org/downloads) that corresponds to the version of Chrome that you use. 
+* Unblock the ZIP file and extract the contents into that folder.
+* Repeat the process to download drivers for [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), [Firefox (GeckoDriver)](https://github.com/mozilla/geckodriver/releases) and [Internet Explorer](https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver) (if you still need that)
 
-	cd /D C:\Data\FitNesseDemo
-	
-	java -jar C:\Apps\FitNesse\fitnesse-standalone.jar -d .
-1. Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite?suite
+The default browser for the test pages is Chrome Headless. If you want to use a different browser set `BROWSER` in `plugins.properties`.
+```
+BROWSER=Chrome Headless
+```
+
+## Test site
+
+If you want to execute the tests, publish the test site in the `SeleniumFixtureTestSite` project to e.g. an azure website, and configure the URL in `TESTSITE`.
+```
+TESTSITE=http://mytestsite.azurewebsites.net.
+```
+
+## Selenium Server
+
+If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.selenium.dev/downloads/ (you will need version 3.141.59 or a newer version 3 patch if that exists) and if you want to be able to run the unit tests, configure the Selenium Server URL in key `SeleniumServer` in `plugins.properties`. 
+
+```
+SeleniumServer=!-http://127.0.0.1:6667-!
+```
+
+## Appium
+
+If tou want to use Appium Desktop (https://appium.io) install that. For the moment only Appium 1 (Desktop) is supported. You might also need to configure an emulated Android device; Three variables of use here:
+* `AppiumServer`: the URL for Appium
+* `AndroidDevice`: the ID of the Android device you want to test with.
+
+The demo uses KitKat 4.4 with x86, 1GB, 720x1280 Xh-DPI. Ensure Appium is up and running and listening before you run the tests
+
+```
+AppiumServer=!-http://127.0.0.1:4723-!
+AndroidDevice=!-XH-DPI 4.65in Kit Kat 4.4-!
+```
+
+## WinAppDriver
+
+Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required. Make sure that it listens to a different port than Appium (by default they listen to the same port).
+
+```
+WinAppServer=!-http://127.0.0.1:4727-!
+```
+
+## Firefox integrated authentication
+
+If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you wnat to enable it for.
+
+```
+Firefox.IntegratedAuthentication=mydomain.com
+```
+
+# Running the unit tests
+If you want to run the unit tests, configure `appsettings.json`:
+
+1. Similarly to plugins.properties for `TestSite` and `RemoteSelenium`.
+2. If you are using Firefox and you want to use integrated authentication, set the key `Firefox.IntegratedAuthenticationDomain` to the desired domain.
+
+# Tutorial and Reference
+See the [Wiki](../../wiki)
 
 # Contribute
-Enter an [issue](../../issues) or provide a [pull request](../../pulls).
+Enter an [issue](../../issues) or provide a [pull request](../../pulls). 

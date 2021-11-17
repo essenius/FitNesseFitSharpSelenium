@@ -15,7 +15,7 @@ using OpenQA.Selenium.Chrome;
 
 namespace SeleniumFixture.Model
 {
-    internal class HeadlessChromeDriverCreator: ChromeDriverCreator
+    internal class HeadlessChromeDriverCreator : ChromeDriverCreator
     {
         public HeadlessChromeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {

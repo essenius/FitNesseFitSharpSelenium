@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,68 +10,72 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.QualityTools.Testing.Fakes;
+using System.Runtime.Versioning;
+using DotNetWindowsRegistry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
-using Microsoft.Win32.Fakes;
 using SeleniumFixture.Model;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixtureTest
 {
     [TestClass]
     public class ZoneTest
     {
-        //[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "False positive"),
-        // SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "False positive")]
-        public TestContext TestContext { get; set; }
-
-        [TestMethod, TestCategory("Unit"), DataSource(@"Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\TestData.xml",
-             @"zonetest", DataAccessMethod.Sequential), DeploymentItem("test\\SeleniumFixtureTest\\TestData.xml")]
-        public void ZoneInitialProtectedModeTest()
+        [SupportedOSPlatform("windows")]
+        private static void AddValue(IRegistryKey baseKey, bool policy, object value)
         {
-            using (ShimsContext.Create())
-            {
-                var hklmPoliciesValue = TestContext.DataRow["hklmPolicies"].ToString();
-                var hkcuPoliciesValue = TestContext.DataRow["hkcuPolicies"].ToString();
-                var hklmValue = TestContext.DataRow["hklm"].ToString();
-                var hkcuValue = TestContext.DataRow["hkcu"].ToString();
-
-                var hklmShim = ShimFactory.CreateRegistryKey(hklmPoliciesValue, hklmValue);
-                var hkcuShim = ShimFactory.CreateRegistryKey(hkcuPoliciesValue, hkcuValue);
-
-                var zone = new Zone(1, hklmShim, hkcuShim);
-
-                var expected = TestContext.DataRow["expectedProtected"].ToBool();
-                var testId = TestContext.DataRow["testId"].ToString();
-                Assert.AreEqual(expected, zone.IsProtected, testId);
-            }
+            if (string.IsNullOrEmpty(value.ToString())) return;
+            const string zoneKeyTemplate = @"SOFTWARE\{0}Microsoft\Windows\CurrentVersion\Internet Settings\Zones\1";
+            var zoneKey = string.Format(zoneKeyTemplate, policy ? @"Policies\" : "");
+            var key = baseKey.CreateSubKey(zoneKey);
+            key.SetValue("2500", value, RegistryValueKind.DWord);
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(ArgumentException)),
-         SuppressMessage("ReSharper", "UnusedVariable", Justification = "Forcing exception")]
+        private const string Empty = "";
+
+        [DataTestMethod]
+        [TestCategory("Unit")]                      
+        [DataRow("both policies", Zone.Enabled, Zone.Disabled, Empty, Empty, true)]
+        [DataRow("both hkcu", Empty, Zone.Enabled, Zone.Disabled, Empty, true)]
+        [DataRow("hkcuPolicies/hklm", Empty, Zone.Disabled, Empty, Zone.Enabled, false)]
+        [DataRow("hklmPolicies/hkcu", Zone.Disabled, Empty, Zone.Enabled, Empty, false)]
+        [DataRow("hkcu/hklm", Empty, Empty, Zone.Enabled, Zone.Disabled, true)]
+        [DataRow("hklm", Empty, Empty, Empty, Zone.Enabled, true)]
+        [DataRow("both hklm", Zone.Enabled, Empty, Empty, Zone.Disabled, true)]
+        public void ZoneInitialProtectedModeTest(string testId, object hklmPoliciesValue, object hkcuPoliciesValue,
+            object hkcuValue,
+            object hklmValue, bool expectedProtected)
+        {
+            if (!OperatingSystem.IsWindows()) return;
+            var registry = new InMemoryRegistry();
+            var hkcu = registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default);
+            var hklm = registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
+            AddValue(hklm, true, hklmPoliciesValue);
+            AddValue(hklm, false, hklmValue);
+            AddValue(hkcu, true, hkcuPoliciesValue);
+            AddValue(hkcu, false, hkcuValue);
+
+            var zone = new Zone(1, registry);
+            Assert.AreEqual(expectedProtected, zone.IsProtected, testId);
+        }
+
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedException(typeof(ArgumentException))]
+        [SupportedOSPlatform("windows")]
         public void ZoneIsProtectedInInvalidKeyTest()
         {
-            var zone = new Zone(1, Registry.LocalMachine, Registry.CurrentUser);
+            var zone = new Zone(1, new InMemoryRegistry());
             _ = zone.IsProtectedIn("wrong key");
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [TestMethod]
+        [TestCategory("Unit")]
         public void ZoneNoZoneInformationReturnsProtected()
         {
-            using (ShimsContext.Create())
-            {
-                var hkcuShim = new ShimRegistryKey
-                {
-                    OpenSubKeyStringBoolean = (key, isWritable) => null
-                };
-                var hklmShim = new ShimRegistryKey
-                {
-                    OpenSubKeyStringBoolean = (key, isWritable) => null
-                };
-                Assert.IsTrue(new Zone(2, hklmShim, hkcuShim).IsProtected);
-            }
+            if (!OperatingSystem.IsWindows()) return;
+            var registry = new InMemoryRegistry();
+            Assert.IsTrue(new Zone(2, registry).IsProtected);
         }
     }
 }

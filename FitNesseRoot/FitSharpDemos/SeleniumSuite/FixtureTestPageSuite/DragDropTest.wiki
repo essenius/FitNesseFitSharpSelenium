@@ -1,7 +1,7 @@
 Drag an image and drop it onto a div, and then check whether it succeeded
 
 !|script                                                                  |
-|wait for element|CssSelector: body > section > #dragSource               |
+|wait for element|CssSelector: section > #dragSource                      |
 |drag element    |dragSource    |and drop on element      |dropTarget     |
 |ensure          |element exists|CssSelector: div#dropTarget > #dragSource|
-|reject          |element exists|CssSelector: body > section > #dragSource|
+|reject          |element exists|CssSelector: section > #dragSource       |

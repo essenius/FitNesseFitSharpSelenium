@@ -20,7 +20,8 @@ namespace SeleniumFixtureTest
     [TestClass]
     public class JavaScriptFunctionTest
     {
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod]
+        [TestCategory("Integration")]
         public void JavaScriptFunctionTestWithFibonacci()
         {
             // protected mode must be off for this to work in IE
@@ -28,7 +29,7 @@ namespace SeleniumFixtureTest
             try
             {
                 Assert.IsTrue(selenium.SetBrowser("firefox"));
-                Assert.IsTrue(selenium.Open(SeleniumBaseTest.CreateTestPageUri()));
+                Assert.IsTrue(selenium.Open(EndToEndTest.CreateTestPageUri()));
                 selenium.WaitForElement("id:sectionJavaScript");
                 var javaScriptFunction = new JavaScriptFunction();
                 javaScriptFunction.Reset();
@@ -44,7 +45,9 @@ namespace SeleniumFixtureTest
             }
         }
 
-        [TestMethod, TestCategory("Unit"), ExpectedException(typeof(NoNullAllowedException))]
+        [TestMethod]
+        [TestCategory("Unit")]
+        [ExpectedException(typeof(NoNullAllowedException))]
         public void JavaScriptFunctionTestWithoutBrowser()
         {
             BrowserDriverContainer.Current = null;

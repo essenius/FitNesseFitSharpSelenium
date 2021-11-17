@@ -8,7 +8,7 @@ TODO: this sometimes fails on Azure websites - Loading doesn't appear after relo
 |set timeout|1.1            |seconds                                  |
 |reload page                                                          |
 |check      |text in element|divAsyncLoad|Loading...                  |
-|Wait for HTML source to change                                       |
+|Wait for page source to change                                       |
 |check      |text in element|divAsyncLoad|0,1,1,2,3,5,8,13,21,34,55,89|
 
 Reload again, and wait in a different way. We now wait until the page size is larger than a threshold.
@@ -16,8 +16,8 @@ If it is larger already, it won't wait.
 
 !|script                                                                             |
 |reload page                                                                         |
-|$initialLength=                      |length of HTML source                         |
+|$initialLength=                      |length of page source                         |
 |check                                |text in element      |divAsyncLoad|Loading... |
-|wait until HTML source is larger than|$initialLength                                |
-|check                                |length of HTML source|>$initialLength         |
+|wait until page source is larger than|$initialLength                                |
+|check                                |length of page source|>$initialLength         |
 |check                                |text in element      |divAsyncLoad|=~/0,1,1,2/|

@@ -29,6 +29,5 @@ namespace SeleniumFixture.Model
             options.AddArgument("--headless");
             return options;
         }
-
     }
 }

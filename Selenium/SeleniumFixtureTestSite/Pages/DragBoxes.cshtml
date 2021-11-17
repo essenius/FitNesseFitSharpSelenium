@@ -1,0 +1,43 @@
+﻿@page
+@model SeleniumFixtureTestSite.Pages.DragBoxesModel
+@{
+}
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/js/DragBoxes.js"></script>
+    <script type="text/javascript">
+        window.addEventListener("load", initBoxes);
+    </script>
+}
+
+@section Styles
+{
+    <link href="~/css/DragBoxes.css" rel="stylesheet" type="text/css"/>
+}
+
+<header>
+    <h1>Selenium Fixture Drag Boxes Demo</h1>
+</header>
+<section id="sectionDragAndDropBoxes" style="display: table;">
+    <div class="box" draggable="true">
+        <header>A</header>
+        <p>order!</p>
+    </div>
+    <div class="box" draggable="true">
+        <header>B</header>
+        <p>Put me</p>
+    </div>
+    <div class="box" draggable="true">
+        <header>C</header>
+        <p>right</p>
+    </div>
+    <div class="box" draggable="true">
+        <header>D</header>
+        <p>into</p>
+    </div>
+    <div class="box" draggable="true">
+        <header>E</header>
+        <p>the</p>
+    </div><br/>
+</section>

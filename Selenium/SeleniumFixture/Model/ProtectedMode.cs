@@ -28,7 +28,7 @@ namespace SeleniumFixture.Model
                 var response = new Collection<Collection<object>>();
                 foreach (var zone in _zones)
                 {
-                    var row = new Collection<object> {zone.Id, zone.IsProtected, zone.FoundIn};
+                    var row = new Collection<object> { zone.Id, zone.IsProtected, zone.FoundIn };
                     response.Add(row);
                 }
 

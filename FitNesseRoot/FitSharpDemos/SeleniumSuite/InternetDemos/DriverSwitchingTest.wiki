@@ -3,13 +3,17 @@ Apparently that driver has not been written with co-existence in mind
 
 First open a couple of driver sessions
 
-|Script     |!-SeleniumFixture.Selenium-!                          |
-|$chrome=   |new browser       |Chrome                             |
-|$firefox=  |new browser       |Firefox                            |
-|$remote=   |new remote browser|Chrome|at address|${SeleniumServer}|
-|$headless= |new  browser      |Chrome Headless                    |
-|open       |!-http://www.google.com?hl=en-!                       |
-|wait until title matches      |Google                             |
+|Script                    |!-SeleniumFixture.Selenium-!                                 |
+|$acceptCookieButtonGoogle=|echo                     |id:L2AGLb                          |
+|$resultStatsGoogle=       |echo                     |id:result-stats                    |
+|$chrome=                  |new browser              |Chrome                             |
+|$firefox=                 |new browser              |Firefox                            |
+|$remote=                  |new remote browser       |Chrome|at address|${SeleniumServer}|
+|$headless=                |new  browser             |Chrome Headless                    |
+|open                      |!-http://www.google.com?hl=en-!                              |
+|wait until title matches  |Google                                                       |
+|Click element             |$acceptCookieButtonGoogle|if visible                         |
+
 
 Do a Bing search on the Chrome driver
 
@@ -23,13 +27,14 @@ Do a Bing search on the Chrome driver
 
 Do a Google search on the Firefox driver
 
-!|script                                                    |
-|set driver              |$firefox                          |
-|open                    |http://www.google.nl              |
-|wait until title matches|Google                            |
-|send keys               |Test Automation~|to element|name:q|
-|wait until title matches|^(?i)(Test Automation)            |
-|wait for element        |id:resultStats                    |
+!|script                                                             |
+|set driver              |$firefox                                   |
+|open                    |http://www.google.nl                       |
+|wait until title matches|Google                                     |
+|Click element           |$acceptCookieButtonGoogle|if visible       |
+|send keys               |Test Automation~         |to element|name:q|
+|wait until title matches|^(?i)(Test Automation)                     |
+|wait for element        |$resultStatsGoogle                         |
 
 Do a Yahoo search on the remote driver
 
@@ -40,7 +45,7 @@ Do a Yahoo search on the remote driver
 |click element if visible|ClassName:primary          |
 |send keys               |FitNesse~|to element|name:p|
 |wait until title matches|(?i)(FitNesse)             |
-|show|screenshot                                     |
+|show                    |screenshot                 |
 |close                                               |
 
 We already opened up Google on Headless. Also do a search here but search for something different than with Chrome so the screenshot is clearly different.
@@ -49,8 +54,8 @@ We already opened up Google on Headless. Also do a search here but search for so
 |set driver              |$headless                |
 |send keys               |Cheese~|to element|name:q|
 |wait until title matches|^(?i)(Cheese)            |
-|wait for element        |id:resultStats           |
-|take screenshot to      |Screenshot-headless.jpg  |
+|wait for element        |$resultStatsGoogle       |
+|show                    |screenshot               |
 |close                                             |
 
 Close Chrome. This shows that it doesn't matter in which order the browsers are closed

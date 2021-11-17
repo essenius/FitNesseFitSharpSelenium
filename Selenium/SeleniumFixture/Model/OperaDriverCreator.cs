@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -24,14 +24,15 @@ namespace SeleniumFixture.Model
 
         public override string Name { get; } = "OPERA";
 
-        public override IWebDriver LocalDriver()
+        public override IWebDriver LocalDriver(object options)
         {
             OperaDriverService driverService = null;
             IWebDriver driver;
             try
             {
                 driverService = GetDefaultService<OperaDriverService>();
-                driver = new OperaDriver(driverService, OperaOptions(), Timeout);
+                var operaOptions = options == null ? OperaOptions() : (OperaOptions)options;
+                driver = new OperaDriver(driverService, operaOptions, Timeout);
             }
             catch
             {
@@ -41,8 +42,8 @@ namespace SeleniumFixture.Model
             return driver;
         }
 
-        public override DriverOptions Options() => OperaOptions();
+        private OperaOptions OperaOptions() => new() { Proxy = Proxy };
 
-        private OperaOptions OperaOptions() => new OperaOptions {Proxy = Proxy};
+        public override DriverOptions Options() => OperaOptions();
     }
 }

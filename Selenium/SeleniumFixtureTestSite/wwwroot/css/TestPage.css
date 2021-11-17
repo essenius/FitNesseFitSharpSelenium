@@ -1,0 +1,64 @@
+﻿#status {
+    background: #ccc;
+    bottom: 0;
+    color: #fff;
+    padding: 5px;
+    position: fixed;
+    right: 0
+}
+
+#status.fail { background: #c00; }
+
+#status.success { background: #0c0; }
+
+#divElements {
+    border: 1px solid #aaa;
+    height: 50px;
+    padding: 10px;
+    width: 250px;
+}
+
+#dropTarget {
+    border: 1px solid #aaa;
+    display: inline-block;
+    height: 250px;
+    padding: 10px;
+    vertical-align: middle;
+    width: 250px;
+}
+
+#dragSource {
+    display: inline-block;
+    height: 190px;
+    vertical-align: middle;
+    width: 209px;
+}
+
+#fileDropTarget {
+    border: 10px dashed #ccc;
+    height: 150px;
+    margin: 20px;
+    width: 300px;
+}
+
+#fileDropTarget.hover { border: 10px dashed #333; }
+
+#hiddenButton { display: none; }
+
+#imageLightbulb {
+    height: 180px;
+    width: 100px;
+}
+
+table { border: 1px solid #eee; }
+
+.align {
+    display: inline-block;
+    vertical-align: top;
+}
+
+iframe { width: 300px; }
+
+section { border: 1px solid #aee; }
+
+article { border: 1px dotted #f00; }

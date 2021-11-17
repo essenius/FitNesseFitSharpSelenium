@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -23,28 +23,27 @@ namespace SeleniumFixture.Model
         public EdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
             var driverFolder = Environment.GetEnvironmentVariable("EdgeWebDriver");
-            _driverService = driverFolder == null 
-                ? EdgeDriverService.CreateChromiumService() 
+            _driverService = driverFolder == null
+                ? EdgeDriverService.CreateChromiumService()
                 : EdgeDriverService.CreateChromiumService(driverFolder);
         }
 
-        public override string Name { get; } = "EDGE";
-        public override IWebDriver LocalDriver()
-        {
-
-            var options = EdgeOptions();
-            return new EdgeDriver(_driverService, options, Timeout);
-        }
+        public override string Name => "EDGE";
 
         protected virtual EdgeOptions EdgeOptions()
         {
             // this is still the case in the new Edge - it ignores proxy settings in Options
             if (Proxy.Kind != ProxyKind.System) throw new StopTestException(ErrorMessages.EdgeNeedsSystemProxy);
-            var options = new EdgeOptions { UseChromium = _driverService.UsingChromium};
+            var options = new EdgeOptions { UseChromium = _driverService.UsingChromium };
             return options;
         }
 
-        public override DriverOptions Options() => EdgeOptions();
+        public override IWebDriver LocalDriver(object options)
+        {
+            var edgeOptions = options == null ? EdgeOptions() : (EdgeOptions)options;
+            return new EdgeDriver(_driverService, edgeOptions, Timeout);
+        }
 
+        public override DriverOptions Options() => EdgeOptions();
     }
 }

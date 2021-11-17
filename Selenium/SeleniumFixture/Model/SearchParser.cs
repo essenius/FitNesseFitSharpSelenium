@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -19,23 +19,28 @@ namespace SeleniumFixture.Model
 {
     internal class SearchParser
     {
-        private readonly Dictionary<string, Func<string, By>> _byMapping = new Dictionary<string, Func<string, By>>
+        private readonly Dictionary<string, Func<string, By>> _byMapping = new()
         {
-            {@"ACCESSIBILITYID", MobileBy.AccessibilityId},
-            {@"ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator},
-            {@"CLASSNAME", By.ClassName},
-            {@"CSSSELECTOR", By.CssSelector},
-            {@"ID", By.Id},
-            {@"IOSCLASSCHAIN", MobileBy.IosClassChain},
-            {@"IOSNSPREDICATE", MobileBy.IosNSPredicate},
-            {@"IOSUIAUTOMATION", MobileBy.IosUIAutomation},
-            {@"LINKTEXT", By.LinkText},
-            {@"NAME", By.Name},
-            {@"PARTIALLINKTEXT", By.PartialLinkText},
-            {@"TAGNAME", By.TagName},
-            {@"TIZENAUTOMATION", MobileBy.TizenAutomation},
-            {@"WINDOWSAUTOMATION", MobileBy.WindowsAutomation},
-            {@"XPATH", By.XPath}
+            { "ACCESSIBILITYID", MobileBy.AccessibilityId },
+            { "ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator },
+            { "CLASSNAME", By.ClassName },
+            { "CONTENT", CustomBy.Content },
+            { "CSSSELECTOR", By.CssSelector },
+            { "ID", By.Id },
+            { "IDORNAME", CustomBy.IdOrName },
+            { "IOSCLASSCHAIN", MobileBy.IosClassChain },
+            { "IOSNSPREDICATE", MobileBy.IosNSPredicate },
+            { "IOSUIAUTOMATION", MobileBy.IosUIAutomation },
+            { "LABEL", CustomBy.Label },
+            { "LINKTEXT", By.LinkText },
+            { "NAME", By.Name },
+            { "PARTIALCONTENT", CustomBy.PartialContent },
+            { "PARTIALLINKTEXT", By.PartialLinkText },
+            { "TAGNAME", By.TagName },
+            { "TIZENAUTOMATION", MobileBy.TizenAutomation },
+            { "TRIAL", CustomBy.Trial },
+            { "WINDOWSAUTOMATION", MobileBy.WindowsAutomation },
+            { "XPATH", By.XPath }
         };
 
         public SearchParser(string searchCriterion)
@@ -47,8 +52,10 @@ namespace SeleniumFixture.Model
 
             if (searchCriterion.Contains(Delimiter))
             {
-                Method = searchCriterion.Substring(0, searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal)).Trim();
-                Locator = searchCriterion.Substring(searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal) + Delimiter.Length).Trim();
+                Method = searchCriterion[..searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal)].Trim();
+                Locator =
+                    searchCriterion[(searchCriterion.IndexOf(Delimiter, StringComparison.Ordinal) + Delimiter.Length)..]
+                        .Trim();
             }
             else
             {
@@ -75,7 +82,7 @@ namespace SeleniumFixture.Model
             }
         }
 
-        public static string DefaultMethod { get; set; } = "id";
+        public static string DefaultMethod { get; set; } = "trial";
 
         public static string Delimiter { get; set; } = ":";
 

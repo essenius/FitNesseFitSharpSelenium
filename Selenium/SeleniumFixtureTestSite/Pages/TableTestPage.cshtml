@@ -1,0 +1,78 @@
+﻿@page
+@model SeleniumFixtureTestSite.Pages.TableTestPageModel
+@{
+    ViewData["Title"] = "Selenium Table Test Page";
+}
+
+    <div class="k-grid-header">
+        <div class="k-grid-header-wrap">
+            <table role="grid" style="width:800px;">
+                <colgroup>
+                    <col style="width:30%">
+                    <col style="width:20%">
+                    <col style="width:30%">
+                    <col style="width:20%">
+                </colgroup>
+                <thead role="rowgroup">
+                    <tr role="row">
+                        <th id="1"><a href="#">Contact Name</a></th>
+                        <th id="2"><a href="#">Contact Title</a></th>
+                        <th id="3"><a href="#">Company Name</a></th>
+                        <th id="4"><a href="#">Country</a></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div class="k-grid-content">
+        <table role="grid" style="width:800px;">
+            <colgroup>
+                <col style="width:30%">
+                <col style="width:20%">
+                <col style="width:30%">
+                <col style="width:20%">
+            </colgroup>
+            <tbody role="rowgroup">
+                <tr role="row">
+                    <td role="gridcell">
+                        <div class="customer-name">Maria Anders</div>
+                    </td>
+                    <td role="gridcell">Sales Representative</td>
+                    <td role="gridcell">Alfreds Futterkiste</td>
+                    <td role="gridcell">Germany</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">
+                        <div class="customer-name">Ana Trujillo</div>
+                    </td>
+                    <td role="gridcell">Owner</td>
+                    <td role="gridcell">Ana Trujillo Emparedados y helados</td>
+                    <td role="gridcell">Mexico</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">
+                        <div class="customer-name">Antonio Moreno</div>
+                    </td>
+                    <td role="gridcell">Owner</td>
+                    <td role="gridcell">Antonio Moreno Taquería</td>
+                    <td role="gridcell">Mexico</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">
+                        <div class="customer-name">Thomas Hardy</div>
+                    </td>
+                    <td role="gridcell">Sales Representative</td>
+                    <td role="gridcell">Around the Horn</td>
+                    <td role="gridcell">UK</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">
+                        <div class="customer-name">Christina Berglund</div>
+                    </td>
+                    <td role="gridcell">Order Administrator</td>
+                    <td role="gridcell">Berglunds snabbköp</td>
+                    <td role="gridcell">Sweden</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>

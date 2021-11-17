@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -111,18 +111,20 @@ namespace SeleniumFixture.Model
         /// <param name="dragFromElement">The WebElement to drag from</param>
         /// <param name="dropToDriver">The WebDriver where the drag ends</param>
         /// <param name="dropToElement">The WebElement to drag to</param>
-        public static void DragToWindow(IWebDriver dragFromDriver, IWebElement dragFromElement, IWebDriver dropToDriver, IWebElement dropToElement)
+        public static void DragToWindow(
+            IWebDriver dragFromDriver, IWebElement dragFromElement, IWebDriver dropToDriver, IWebElement dropToElement)
         {
             // Drag start
             Html5SimulateEvent(dragFromDriver, dragFromElement, @"mousedown", Position.Center, null);
             var dragData = Html5SimulateEvent(dragFromDriver, dragFromElement, @"dragstart", Position.Center, null);
             dragData = Html5SimulateEvent(dragFromDriver, dragFromElement, @"dragenter", Position.Center, dragData);
             dragData = Html5SimulateEvent(dragFromDriver, dragFromElement, @"dragleave", Position.Left, dragData);
-            dragData = Html5SimulateEvent(dragFromDriver, dragFromDriver.FindElement(By.TagName("body")), @"dragleave", Position.Left, dragData);
+            dragData = Html5SimulateEvent(dragFromDriver, dragFromDriver.FindElement(By.TagName("body")), @"dragleave",
+                Position.Left, dragData);
 
             // Drag to other window
-            Html5SimulateEvent(dropToDriver, dropToDriver.FindElement(By.TagName("body")), "dragenter", Position.Right, null);
-            //var dropOverlay = dragToDriver.FindElement(By.ClassName("DropOverlay"));
+            Html5SimulateEvent(
+                dropToDriver, dropToDriver.FindElement(By.TagName("body")), "dragenter", Position.Right, null);
             Html5SimulateEvent(dropToDriver, dropToElement, @"dragenter", Position.Right, null);
             Html5SimulateEvent(dropToDriver, dropToElement, @"dragover", Position.Center, null);
             dragData = Html5SimulateEvent(dropToDriver, dropToElement, @"drop", Position.Center, dragData);
@@ -139,11 +141,12 @@ namespace SeleniumFixture.Model
         /// <param name="dragFromY">The Y position to click relative to the top-left-corner of the client</param>
         /// <param name="dragToX">The X position to release relative to the top-left-corner of the client</param>
         /// <param name="dragToY">The Y position to release relative to the top-left-corner of the client</param>
-        private static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo,
+        private static void Html5DragAndDrop(
+            IWebDriver driver, IWebElement dragFrom, IWebElement dragTo,
             int dragFromX, int dragFromY, int dragToX, int dragToY)
         {
-            ((IJavaScriptExecutor)driver).ExecuteScript(SimulateHtml5DragAndDrop, dragFrom, dragTo,
-                dragFromX, dragFromY, dragToX, dragToY);
+            ((IJavaScriptExecutor)driver).ExecuteScript(
+                SimulateHtml5DragAndDrop, dragFrom, dragTo, dragFromX, dragFromY, dragToX, dragToY);
         }
 
         /// <summary>
@@ -154,7 +157,11 @@ namespace SeleniumFixture.Model
         /// <param name="dragTo">The WebElement to drag to</param>
         /// <param name="dragFromPosition">The place to click on the dragFrom</param>
         /// <param name="dragToPosition">The place to release on the dragTo</param>
-        public static void Html5DragAndDrop(IWebDriver driver, IWebElement dragFrom, IWebElement dragTo, Position dragFromPosition,
+        public static void Html5DragAndDrop(
+            IWebDriver driver,
+            IWebElement dragFrom,
+            IWebElement dragTo,
+            Position dragFromPosition,
             Position dragToPosition)
         {
             var fromLocation = dragFrom.Location;
@@ -181,7 +188,13 @@ namespace SeleniumFixture.Model
         /// <param name="clientY">The mouse click Y position on the screen</param>
         /// <param name="data">The data transfer data</param>
         /// <returns>The updated data transfer data</returns>
-        private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName, int clientX, int clientY, object data) =>
+        private static object Html5SimulateEvent(
+            IWebDriver driver,
+            IWebElement dragFrom,
+            string eventName,
+            int clientX,
+            int clientY,
+            object data) =>
             ((IJavaScriptExecutor)driver).ExecuteScript(SimulateEvent, dragFrom, eventName, clientX, clientY, data);
 
         /// <summary>
@@ -193,7 +206,12 @@ namespace SeleniumFixture.Model
         /// <param name="mousePosition">The mouse click area in the element</param>
         /// <param name="data">The data transfer data</param>
         /// <returns>The updated data transfer data</returns>
-        private static object Html5SimulateEvent(IWebDriver driver, IWebElement dragFrom, string eventName, Position mousePosition, object data)
+        private static object Html5SimulateEvent(
+            IWebDriver driver,
+            IWebElement dragFrom,
+            string eventName,
+            Position mousePosition,
+            object data)
         {
             var fromLocation = dragFrom.Location;
             var fromSize = dragFrom.Size;
@@ -207,15 +225,15 @@ namespace SeleniumFixture.Model
         /// </summary>
         public class Position
         {
-            public static readonly Position Bottom = new Position();
-            public static readonly Position BottomLeft = new Position();
-            public static readonly Position BottomRight = new Position();
-            public static readonly Position Center = new Position();
-            public static readonly Position Left = new Position();
-            public static readonly Position Right = new Position();
-            public static readonly Position Top = new Position();
-            public static readonly Position TopLeft = new Position();
-            public static readonly Position TopRight = new Position();
+            public static readonly Position Bottom = new();
+            public static readonly Position BottomLeft = new();
+            public static readonly Position BottomRight = new();
+            public static readonly Position Center = new();
+            public static readonly Position Left = new();
+            public static readonly Position Right = new();
+            public static readonly Position Top = new();
+            public static readonly Position TopLeft = new();
+            public static readonly Position TopRight = new();
 
             /// <summary>
             ///     Calculate relative X coordinate corresponding to a position

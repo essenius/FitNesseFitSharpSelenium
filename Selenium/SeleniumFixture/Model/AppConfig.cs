@@ -1,18 +1,37 @@
-﻿using System;
-using System.Configuration;
+﻿// Copyright 2015-2021 Rik Essenius
+//
+//   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
+//   except in compliance with the License. You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software distributed under the License 
+//   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and limitations under the License.
+
+using Microsoft.Extensions.Configuration;
 
 namespace SeleniumFixture.Model
 {
     internal static class AppConfig
     {
-        public static string Get(string name)
+        private static IConfigurationBuilder _builder;
+        private static IConfigurationRoot _root;
+
+        private static IConfigurationRoot Root
         {
-            var configValue = Environment.GetEnvironmentVariable(name);
-            if (string.IsNullOrEmpty(configValue))
+            get
             {
-                configValue = ConfigurationManager.AppSettings.Get(name);
+                if (_root != null) return _root;
+                // order is important. Later in the list means more priority
+                _builder = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", true, true)
+                    .AddEnvironmentVariables();
+                _root = _builder.Build();
+                return _root;
             }
-            return configValue;
         }
+
+        public static string Get(string name) => Root[name];
     }
 }

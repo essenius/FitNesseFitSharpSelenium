@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -12,6 +12,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Versioning;
+using DotNetWindowsRegistry;
 using Microsoft.Win32;
 using static System.Globalization.CultureInfo;
 
@@ -19,33 +21,32 @@ namespace SeleniumFixture.Model
 {
     internal class Zone : IZone
     {
-        private const int Enabled = 0; // Disabled = 3; not necessary right now
+        public const int Enabled = 0;
+        public const int Disabled = 3; 
         public const int MaxValue = 4;
         public const int MinValue = 1;
         private const string ProtectedModeKeyName = "2500";
 
         private const string ZoneSubKey = "Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\{0}";
 
-        private readonly Dictionary<string, string> _baseKeys = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _baseKeys = new()
         {
-            {"Machine Policies", "HKLM\\SOFTWARE\\Policies\\{0}"},
-            {"User Policies", "HKCU\\SOFTWARE\\Policies\\{0}"},
-            {"User", "HKCU\\SOFTWARE\\{0}"},
-            {"Machine", "HKLM\\SOFTWARE\\{0}"}
+            { "Machine Policies", "HKLM\\SOFTWARE\\Policies\\{0}" },
+            { "User Policies", "HKCU\\SOFTWARE\\Policies\\{0}" },
+            { "User", "HKCU\\SOFTWARE\\{0}" },
+            { "Machine", "HKLM\\SOFTWARE\\{0}" }
         };
 
         private string _foundIn;
         private bool? _isProtected;
 
-        public Zone(int zoneId, RegistryKey hklm, RegistryKey hkcu)
+        public Zone(int zoneId, IRegistry registry)
         {
             Id = zoneId;
-            Hklm = hklm;
-            Hkcu = hkcu;
+            _registry = registry;
         }
 
-        private RegistryKey Hkcu { get; }
-        private RegistryKey Hklm { get; }
+        private readonly IRegistry _registry;
 
         public string FoundIn
         {
@@ -68,16 +69,18 @@ namespace SeleniumFixture.Model
             }
         }
 
+        [SupportedOSPlatform("windows")]
         private object GetZoneValueFrom(string keyString)
         {
             var rootKey = RootKeyOf(keyString);
             // the Substring works because both HKLM and HKCU are 4 characters
-            var registryKey = rootKey.OpenSubKey(keyString.Substring(5), false);
+            var registryKey = rootKey.OpenSubKey(keyString[5..], false);
             return registryKey?.GetValue(ProtectedModeKeyName);
         }
 
         public bool? IsProtectedIn(string registryLocation)
         {
+            if (!OperatingSystem.IsWindows()) return false;
             if (!_baseKeys.ContainsKey(registryLocation))
             {
                 throw new ArgumentException(ErrorMessages.RegistryLocationIssue);
@@ -91,6 +94,11 @@ namespace SeleniumFixture.Model
 
         private void RetrieveProtectedValue()
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                _isProtected = false;
+                return;
+            }
             _foundIn = string.Empty;
             foreach (var key in _baseKeys.Keys)
             {
@@ -104,6 +112,10 @@ namespace SeleniumFixture.Model
             _isProtected = true;
         }
 
-        private RegistryKey RootKeyOf(string keyString) => keyString.StartsWith(@"HKLM", StringComparison.Ordinal) ? Hklm : Hkcu;
+        [SupportedOSPlatform("windows")]
+        private IRegistryKey RootKeyOf(string keyString) =>
+            keyString.StartsWith(@"HKLM", StringComparison.Ordinal)
+                ? _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
+                : _registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default);
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -12,7 +12,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,26 +31,25 @@ namespace SeleniumFixtureTest
         private const string Apps = "AccessibilityId:Apps";
         private const string Browser = "XPath://android.widget.TextView[@text = 'Browser']";
 
-        [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "False positive" )]
-        [SuppressMessage("Code Quality", "IDE0052:Remove unread private members", Justification = "False positive")]
-        private static TestContext _testContext;
         private static int _testsToDo;
-        private static readonly Selenium Fixture = new Selenium();
+        private static readonly Selenium Fixture = new();
 
-        [TestMethod, TestCategory("Appium")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void AppiumBasicOperationsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to Apps page");
             Assert.IsTrue(Fixture.WaitForElement(Apps));
             Assert.IsTrue(Fixture.Scroll("right"), "Scroll to the right");
-            Assert.IsTrue(Fixture.TextExistsIgnoringCase("Widget Preview"), "Check if the text 'Widget Preview' is there");
+            Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Widget Preview"), "Wait for text 'Widget Preview'");
             Assert.IsTrue(Fixture.Scroll("left"), "Scroll to the left");
-            Assert.IsTrue(Fixture.TextExists("Music"), "Check if the text 'Music't is there");
+            Assert.IsTrue(Fixture.WaitForText("Music"), "Wait for text 'Music'");
             Assert.IsTrue(Fixture.PressKeyCode("Back"), "Press the Back button");
             Assert.IsTrue(Fixture.WaitForElement(Browser), "Check if back at the home page");
         }
 
-        [TestMethod, TestCategory("Appium")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void AppiumCalculatorTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Tap Apps element");
@@ -68,7 +66,9 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement("accessibilityId:equals"), "Press =");
             Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:56"), "Wait for answer (also checks value)");
             Assert.AreEqual("56", Fixture.TextInElement(resultBox), "Check the calculation result");
+            var screenshot = Selenium.Screenshot();
             Debug.Print(Selenium.Screenshot());
+            Assert.IsTrue(screenshot.StartsWith("<img alt=\"Screenshot\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtIAAAUCCAY"), "Screenshot starts OK");
 
             // Now we test the LongPressKeyCode with Home. Something strange happening here. It does something else from Appium than on the device emulator itself:
             // it goes to the recent apps. But it is consistent with long pressing the circle button on the emulator menu (which should be Home).
@@ -79,7 +79,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Calculator"), "Calculator exists on the recent apps page");
         }
 
-        [TestMethod, TestCategory("Appium")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void AppiumDragDropTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
@@ -96,7 +97,8 @@ namespace SeleniumFixtureTest
             Assert.IsFalse(Fixture.ElementExists(galleryIcon));
         }
 
-        [TestMethod, TestCategory(@"Appium")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void AppiumLongPressElementForSecondsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
@@ -112,11 +114,13 @@ namespace SeleniumFixtureTest
             Assert.IsFalse(Fixture.LongPressKeyCode(string.Empty));
         }
 
-        [TestMethod, TestCategory("Appium"),
-         ExpectedExceptionWithMessage(typeof(ArgumentException), "Direction 'bogus' should be Up, Down, Left or Right")]
+        [TestMethod]
+        [TestCategory("Native")]
+        [ExpectedExceptionWithMessage(typeof(ArgumentException), "Direction 'bogus' should be Up, Down, Left or Right")]
         public void AppiumScrollWrongTest() => Fixture.Scroll("bogus");
 
-        [TestMethod, TestCategory("Appium")]
+        [TestMethod]
+        [TestCategory("Native")]
         public void AppiumSettingsAppTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps));
@@ -145,30 +149,29 @@ namespace SeleniumFixtureTest
         // safety net in case tests were ran individually
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
+        public static void ClassInitialize(TestContext _)
         {
-            _testContext = testContext; // not used at this point
             _testsToDo = typeof(AppiumTest)
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
-            Debug.Print($"Running {_testsToDo} tests for Appium");
-            var caps = new Dictionary<string, object>
+            var caps = new Dictionary<string, string>
             {
-                {MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4"},
-                {"automationName", "UiAutomator1"},
+                { MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4" },
+                { "platformVersion", "4.4" },
+                { "automationName", "UiAutomator1" },
                 //{ "appPackage", "com.android.settings"},
                 //{ "appActivity", ".Settings"},
-                {AndroidMobileCapabilityType.AppPackage, "com.android.launcher"},
-                {"appActivity", "com.android.launcher2.Launcher"},
-                {"newCommandTimeout", 300},
-                {"clearSystemFiles", true},
-                {"adbExecTimeout", 30000}
+                { AndroidMobileCapabilityType.AppPackage, "com.android.launcher" },
+                { "appActivity", "com.android.launcher2.Launcher" },
+                { "newCommandTimeout", "300" },
+                { "clearSystemFiles", "true" },
+                { "adbExecTimeout", "30000" }
             };
 
             Fixture.SetTimeoutSeconds(60);
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("Android", "http://localhost:4723", caps));
+                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("Android", "http://127.0.0.1:4723", caps));
             }
             catch (StopTestException)
             {
@@ -181,6 +184,8 @@ namespace SeleniumFixtureTest
             Fixture.WaitForElement(okButton);
             Fixture.ClickElementIfVisible(okButton);
             Assert.IsTrue(Fixture.PressKeyCode("Home"));
+            Assert.IsTrue(Fixture.WaitForElement(Apps), "Wait for the Apps button");
+
         }
 
         [TestCleanup]
@@ -191,12 +196,12 @@ namespace SeleniumFixtureTest
             _testsToDo--;
             if (_testsToDo == 0)
             {
-                Debug.Print("Closing session");
                 Fixture.Close();
             }
             else
             {
                 Assert.IsTrue(Fixture.PressKeyCode("Home"));
+                Assert.IsTrue(Fixture.WaitForElement(Apps));
             }
         }
     }

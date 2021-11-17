@@ -1,17 +1,17 @@
-!| import        |
-|SeleniumFixture |
-|SupportFunctions|
-
 !define SearchCriterion {Test Automation}
 
-!|Script                 |selenium                                             |
-|set browser             |${BROWSER}                                           |
-|open                    |http://www.google.com?hl=en                          |
-|wait until title matches|Google                                               |
-|set element             |name:q         |to             |${SearchCriterion}   |
-|submit element          |name:q                                               |
-|wait until title matches|^(?i)(${SearchCriterion})                            |
-|check                   |title          |=~/(?i)(${SearchCriterion}) - Google/|
-|wait for element        |id:resultStats                                       |
-|check                   |text in element|id:resultStats |=~/About.*results/   |
-|show                    |screenshot                                           |
+!|Script                 |selenium                                                 |
+|set browser             |${BROWSER}                                               |
+|open                    |http://www.google.com?hl=en                              |
+|$acceptCookieButton=    |echo               |id:L2AGLb                            |
+|$resultStats=           |echo               |id:result-stats                      |
+|wait until title matches|Google                                                   |
+|click element           |$acceptCookieButton|if visible                           |
+|set element             |name:q             |to             |${SearchCriterion}   |
+|submit element          |name:q                                                   |
+|wait until title matches|^(?i)(${SearchCriterion})                                |
+|check                   |title              |=~/(?i)(${SearchCriterion}) - Google/|
+|wait for element        |$resultStats                                             |
+|check                   |text in element    |$resultStats   |=~/About.*results/   |
+|show                    |screenshot                                               |
+|close|
