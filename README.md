@@ -1,5 +1,6 @@
 # FitNesseFitSharpSelenium
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
+
 For the moment it still depends on Selenium 3 as it seems WinAppDriver can't cope with Selenium 4 just yet.
 
 # Installing the fixture and the examples
