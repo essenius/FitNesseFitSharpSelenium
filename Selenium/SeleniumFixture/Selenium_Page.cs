@@ -64,7 +64,7 @@ namespace SeleniumFixture
         /// </summary>
         public bool LongPressKeyCode(string keyCodeIn)
         {
-            if (Driver is not AndroidDriver<AppiumWebElement> androidDriver) return false;
+            if (Driver is not AndroidDriver androidDriver) return false;
             var keyCode = KeyCode(keyCodeIn);
             if (keyCode == null) return false;
             androidDriver.LongPressKeyCode(keyCode.Value);
@@ -88,7 +88,7 @@ namespace SeleniumFixture
         /// </summary>
         public bool PressKeyCode(string keyCodeIn)
         {
-            if (Driver is not AndroidDriver<AppiumWebElement> androidDriver) return false;
+            if (Driver is not AndroidDriver androidDriver) return false;
             var keyCode = KeyCode(keyCodeIn);
             if (keyCode == null) return false;
             androidDriver.PressKeyCode(keyCode.Value);
@@ -139,13 +139,13 @@ namespace SeleniumFixture
             }
             switch (Driver)
             {
-                case IOSDriver<IOSElement> iosDriver:
+                case IOSDriver iosDriver:
                 {
                     var scrollObject = new Dictionary<string, string> { { "direction", direction.ToLowerInvariant() } };
                     iosDriver.ExecuteScript("mobile: scroll", scrollObject);
                     return true;
                 }
-                case AndroidDriver<AppiumWebElement> androidDriver:
+                case AndroidDriver androidDriver:
                     new TouchAction(androidDriver).Press(startX, startY).Wait(200).MoveTo(endX, endY).Release().Perform();
                     return true;
             }

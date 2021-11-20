@@ -215,15 +215,8 @@ namespace SeleniumFixtureTest
         private void VerifySendKeysToElementWithFallback(
             string keys, string element, string typeAttribute, string fallbackKeys)
         {
-            if (typeAttribute is "date" or "time" && _selenium.Driver.IsFirefox())
-            {
-                _selenium.SendKeysToElement(fallbackKeys, element);
-            }
-            else
-            {
-                _ = _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
-                _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
-            }
+            _ = _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
+            _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
             Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element),
                 "SendKeys value is correct for '{0}'", element);
         }
@@ -795,13 +788,26 @@ namespace SeleniumFixtureTest
             VerifySendKeysToElementWithFallback("{LEFT 25}{TAB}", "skill", "range", "75");
             VerifySendKeysToElementWithFallback("3{RIGHT}2004{TAB}", "month", "month", "2004-03");
             VerifySendKeysToElementWithFallback("472014", "week", "week", "2014-W47");
-            VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
-            VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
-            VerifySendKeysToElementWithFallback(
-                "2409{RIGHT}2014{RIGHT}0123",
-                "datetime-local",
-                "datetime-local",
-                "2014-09-24T01:23");
+            if (_selenium.Driver.IsFirefox())
+            {
+                VerifySendKeysToElementWithFallback("2014-07-02", "date", "date", "2014-07-02");
+                VerifySendKeysToElementWithFallback("01:23", "time", "time", "01:23");
+                VerifySendKeysToElementWithFallback(
+                    "24092014{RIGHT}0123", 
+                    "datetime-local", 
+                    "datetime-local",
+                    "2014-09-24T01:23");
+            }
+            else
+            {
+                VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
+                VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
+                VerifySendKeysToElementWithFallback(
+                    "2409{RIGHT}2014{RIGHT}0123",
+                    "datetime-local",
+                    "datetime-local",
+                    "2014-09-24T01:23");
+            }
 
             // The color picker is a pain since it opens a system dialog which Selenium can't get to
             // So we 'cheat' here and directly set the value. We don't have to test the color picker.

@@ -15,7 +15,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Enums;
+using OpenQA.Selenium.Internal;
 using SeleniumFixture;
 
 namespace SeleniumFixtureTest
@@ -154,26 +156,22 @@ namespace SeleniumFixtureTest
             _testsToDo = typeof(AppiumTest)
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
-            var caps = new Dictionary<string, string>
-            {
-                { MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4" },
-                { "platformVersion", "4.4" },
-                { "automationName", "UiAutomator1" },
-                //{ "appPackage", "com.android.settings"},
-                //{ "appActivity", ".Settings"},
-                { AndroidMobileCapabilityType.AppPackage, "com.android.launcher" },
-                { "appActivity", "com.android.launcher2.Launcher" },
-                { "newCommandTimeout", "300" },
-                { "clearSystemFiles", "true" },
-                { "adbExecTimeout", "30000" }
-            };
+            var options = Selenium.NewOptionsFor("Android") as AppiumOptions;
+            options.PlatformVersion = "4.4";
+            options.AutomationName = "UiAutomator1";
+            options.DeviceName = "Xh-4.65 KitKat 4.4";
+
+            options.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppPackage, "com.android.launcher");
+            options.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppActivity, "com.android.launcher2.Launcher");
+            options.AddAdditionalAppiumOption("clearSystemFiles", "true");
+            options.AddAdditionalAppiumOption("adbExecTimeout", "60000");
 
             Fixture.SetTimeoutSeconds(60);
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("Android", "http://127.0.0.1:4723", caps));
+                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4723", options));
             }
-            catch (StopTestException)
+            catch (StopTestException se)
             {
                 Assert.Inconclusive("Could not start Appium test");
                 return;
@@ -181,6 +179,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement(Apps));
             // expect the android guidance to kick in, and click it away
             const string okButton = "ClassName:android.widget.Button";
+            Console.WriteLine(Fixture.PageSource);
             Fixture.WaitForElement(okButton);
             Fixture.ClickElementIfVisible(okButton);
             Assert.IsTrue(Fixture.PressKeyCode("Home"));

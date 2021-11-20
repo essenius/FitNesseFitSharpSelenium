@@ -17,7 +17,7 @@ using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model
 {
-    internal class CustomBy : By
+    internal class TryBy : By
     {
         protected readonly List<By> ByList = new();
         protected readonly string ElementIdentifier;
@@ -25,7 +25,7 @@ namespace SeleniumFixture.Model
         protected string DisplayName;
 
         /// <summary>Make this a virtual class by making its constructor protected</summary>
-        protected CustomBy(string elementIdentifier) =>
+        protected TryBy(string elementIdentifier) =>
             ElementIdentifier = !string.IsNullOrEmpty(elementIdentifier)
                 ? elementIdentifier
                 : throw new ArgumentException(@"element identifier cannot be null or the empty string",

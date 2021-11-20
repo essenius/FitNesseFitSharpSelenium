@@ -10,8 +10,8 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using Microsoft.Edge.SeleniumTools;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Edge;
 
 namespace SeleniumFixture.Model
 {

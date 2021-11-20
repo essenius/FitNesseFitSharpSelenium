@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Internal;
 
 namespace SeleniumFixture.Utilities
 {
@@ -22,6 +21,7 @@ namespace SeleniumFixture.Utilities
     {
         private static double _lastSetImplicitWaitSeconds;
 
+        [Obsolete]
         public static void AddAdditionalCapabilities(this DriverOptions options,
             Dictionary<string, object> capabilities)
         {

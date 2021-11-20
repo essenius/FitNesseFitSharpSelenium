@@ -54,9 +54,8 @@ namespace SeleniumFixture.Model
             var edgePath = EdgePath();
 
             if (string.IsNullOrEmpty(edgePath)) return options;
-            options.AddAdditionalCapability("ie.edgechromium", true);
-            options.AddAdditionalCapability("ie.edgepath", edgePath);
-
+            options.AttachToEdgeChrome = true;
+            options.EdgeExecutablePath = edgePath;
             return options;
         }
 

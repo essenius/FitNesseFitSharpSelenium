@@ -459,6 +459,7 @@ namespace SeleniumFixture
         {
             var realType = AttributeOfElement("type", searchCriterion);
             if (expectedType != realType) return null;
+            Console.WriteLine($"Type of {searchCriterion} is {realType}");
             return SendKeysToElement(keys, searchCriterion);
         }
 
@@ -577,7 +578,7 @@ namespace SeleniumFixture
             {
                 return drv.FindElement(new SearchParser(searchCriterion).By) != null;
             }
-            catch (NoSuchElementException)
+            catch (NoSuchElementException nse)
             {
                 return false;
             }

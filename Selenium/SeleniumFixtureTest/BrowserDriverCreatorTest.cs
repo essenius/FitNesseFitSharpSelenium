@@ -15,7 +15,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Remote;
@@ -55,52 +57,6 @@ namespace SeleniumFixtureTest
                 Assert.IsNotNull(ex.InnerException, "ex.InnerException != null");
                 Assert.IsTrue(ex.InnerException.Message.StartsWith(@"The file c:\chromedriver.exe does not exist"));
             }
-        }
-
-        [TestMethod]
-        [TestCategory("Unit")]
-        public void BrowserDriverCreatorGetDesiredCapabilitiesTest()
-        {
-            var proxy = new Proxy { Kind = ProxyKind.System };
-            var timeout = TimeSpan.FromSeconds(60);
-            var creator = new ChromeDriverCreator(proxy, timeout);
-            var options = creator.Options() as ChromeOptions;
-            Assert.IsNotNull(options);
-            options.AddArgument("test-type");
-            var chromeCapabilities = BrowserDriverCreator.DesiredCapabilities(options);
-            ValidateChromeCapabilities(chromeCapabilities, "test-type");
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            Assert.IsFalse(chromeCapabilities.HasCapability(CapabilityType.IsJavaScriptEnabled),
-#pragma warning restore CS0618 // Type or member is obsolete
-                "javascriptEnabled capability does not exist");
-
-            var noAdditionalCapabilities = new Dictionary<string, object>();
-            var headlessCapabilities = new HeadlessChromeDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
-            ValidateChromeCapabilities(headlessCapabilities, "headless");
-
-            var edgeCapabilities = new EdgeDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
-            Assert.AreEqual("MicrosoftEdge", edgeCapabilities.GetCapability(CapabilityType.BrowserName));
-
-            var ffCapabilities = new FireFoxDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
-            ValidateFirefoxCapabilities(ffCapabilities);
-
-            var ieCapabilities = new InternetExplorerDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
-            Assert.AreEqual("internet explorer", ieCapabilities.GetCapability(CapabilityType.BrowserName));
-            Assert.AreEqual("windows", ieCapabilities.GetCapability(CapabilityType.PlatformName));
-
-            var operaCapabilities = new OperaDriverCreator(proxy, timeout).DesiredCapabilities(noAdditionalCapabilities);
-            Assert.AreEqual("opera", operaCapabilities.GetCapability(CapabilityType.BrowserName));
-
-            var safariCapabilities = new SafariDriverCreator(timeout).DesiredCapabilities(noAdditionalCapabilities);
-            Assert.AreEqual("safari", safariCapabilities.GetCapability(CapabilityType.BrowserName));
-
-            var noCapabilities = new NoBrowserDriverCreator().DesiredCapabilities(noAdditionalCapabilities);
-            Assert.IsNull(noCapabilities);
-
-            var additionalCapabilities = new Dictionary<string, object> { { "javascriptEnabled", false } };
-            var chromeCapabilities2 = new ChromeDriverCreator(proxy, timeout).DesiredCapabilities(additionalCapabilities);
-            Assert.IsFalse(chromeCapabilities2.GetCapability("javascriptEnabled").ToBool(), "Additional capabilities found");
         }
 
         private static object GetArgList(ICapabilities cap, string keyName)
