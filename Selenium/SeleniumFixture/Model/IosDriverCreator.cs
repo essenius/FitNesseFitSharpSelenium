@@ -11,9 +11,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.iOS;
+using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -29,17 +31,17 @@ namespace SeleniumFixture.Model
 
         public override DriverOptions Options() => new AppiumOptions { PlatformName = "iOS", Proxy = Proxy };
 
-        public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
+        /*public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
-            var uri = BaseUri(baseAddress);
-            var options = RemoteOptions(capabilities);
-            return new IOSDriver<AppiumWebElement>(uri, options, Timeout);
-        }
+            var options = Options();
+            options.AddAdditionalCapabilities(capabilities);
+            return RemoteDriver(baseAddress, options);
+        } */
 
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);
-            return new IOSDriver<AppiumWebElement>(uri, options, Timeout);
+            return new IOSDriver(uri, options, Timeout);
         }
     }
 }

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
+using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -36,17 +37,17 @@ namespace SeleniumFixture.Model
             return _options;
         }
 
-        public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
+        /* public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
-            var uri = BaseUri(baseAddress);
-            var options = RemoteOptions(capabilities);
-            return new AndroidDriver<AppiumWebElement>(uri, options, Timeout);
-        }
+            var options = Options();
+            options.AddAdditionalCapabilities(capabilities);
+            return RemoteDriver(baseAddress, options);
+        } */
 
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);
-            return new AndroidDriver<AppiumWebElement>(uri, options, Timeout);
+            return new AndroidDriver(uri, options, Timeout);
         }
     }
 }

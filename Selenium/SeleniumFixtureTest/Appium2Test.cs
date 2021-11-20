@@ -53,10 +53,9 @@ namespace SeleniumFixtureTest
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
             var options = Selenium.NewOptionsFor("Android") as AppiumOptions;
-            options.AddAdditionalCapability("appium:deviceName", "Pixel 2");
-            options.AddAdditionalCapability("appium:automationName", "UiAutomator2");
-            options.AddAdditionalCapability("appium:platformVersion", "9");
-
+            options.DeviceName = "Pixel 2";
+            options.AutomationName = "UiAutomator2";
+            options.PlatformVersion = "9";
             Fixture.SetTimeoutSeconds(60);
             try
             {

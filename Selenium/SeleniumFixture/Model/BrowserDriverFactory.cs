@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Rik Essenius
+﻿// Copyright 2015-2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -58,12 +58,6 @@ namespace SeleniumFixture.Model
         {
             var browserDriverCreator = BrowserDriverCreatorFor(browserName);
             return browserDriverCreator.LocalDriver(options);
-        }
-
-        public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, Dictionary<string, object> capabilities)
-        {
-            var browserDriverCreator = BrowserDriverCreatorFor(browserName);
-            return browserDriverCreator.RemoteDriver(baseAddress, capabilities);
         }
 
         public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, DriverOptions options)

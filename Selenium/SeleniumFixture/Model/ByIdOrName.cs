@@ -14,20 +14,14 @@ namespace SeleniumFixture.Model
     /// <summary>
     ///     Finds element on text, id or the name attribute has the specified value.
     /// </summary>
-    internal class ByTrial : CustomBy
+    internal class ByIdOrName : CustomBy
     {
-        public ByTrial(string elementIdentifier) : base(elementIdentifier)
+        public ByIdOrName(string elementIdentifier) : base(elementIdentifier)
         {
-            DisplayName = "ByTrial";
+            DisplayName = "ByIdOrName";
             ByList.Add(Id(ElementIdentifier));
             ByList.Add(Name(ElementIdentifier));
-            ByList.Add(LinkText(ElementIdentifier));
-            ByList.Add(ClassName(ElementIdentifier));
-            ByList.Add(Label(ElementIdentifier));
-            ByList.Add(Content(ElementIdentifier));
-            ByList.Add(PartialLinkText(ElementIdentifier));
-            ByList.Add(PartialContent(ElementIdentifier));
-            ByList.Add(TagName(ElementIdentifier));
         }
     }
 }
+

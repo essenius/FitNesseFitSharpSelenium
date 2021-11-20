@@ -19,6 +19,7 @@ using System.Threading;
 using DotNetWindowsRegistry;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
+using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture
 {
@@ -210,12 +211,8 @@ namespace SeleniumFixture
             string baseAddress,
             Dictionary<string, string> capabilities)
         {
-            var caps = capabilities.ToDictionary(pair => pair.Key, pair => (object)pair.Value);
-
-            DriverId = BrowserDriverContainer.NewRemoteDriver(browserName, baseAddress + RemoteBrowserBasePath, caps);
-            Driver = BrowserDriverContainer.Current;
-            _browserStorage = null;
-            return DriverId;
+            var options = BrowserDriverContainer.NewOptions(browserName, capabilities);
+            return NewRemoteBrowserAtAddressWithOptions(browserName, baseAddress, options);
         }
 
         /// <summary>See <see cref="SetRemoteBrowserAtAddressWithOptions" /></summary>
@@ -225,7 +222,7 @@ namespace SeleniumFixture
             DriverId = BrowserDriverContainer.NewRemoteDriver(
                 browserName, 
                 baseAddress + RemoteBrowserBasePath,
-                options);
+                (DriverOptions)options);
             Driver = BrowserDriverContainer.Current;
             _browserStorage = null;
             return DriverId;
