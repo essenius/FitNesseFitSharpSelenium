@@ -9,6 +9,8 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
+using OpenQA.Selenium.Appium;
+
 namespace SeleniumFixture.Model
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace SeleniumFixture.Model
     {
         public ByIdOrName(string elementIdentifier) : base(elementIdentifier)
         {
-            DisplayName = "ByIdOrName";
+            DisplayName = nameof(ByIdOrName);
             ByList.Add(Id(ElementIdentifier));
             ByList.Add(Name(ElementIdentifier));
         }

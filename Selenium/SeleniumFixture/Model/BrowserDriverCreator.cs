@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumFixture.Utilities;
@@ -48,7 +49,15 @@ namespace SeleniumFixture.Model
 
             var methodInfo = serviceType.GetMethod("CreateDefaultService", typeList.ToArray());
             Debug.Assert(methodInfo != null, nameof(methodInfo) + " != null");
-            return (T)methodInfo.Invoke(serviceType, parameterList.ToArray());
+            try
+            {
+                return (T) methodInfo.Invoke(serviceType, parameterList.ToArray());
+            }
+            catch (TargetInvocationException)
+            {
+                // We might not need it, so ignore for now
+                return default;
+            }
         }
 
         // I tried to make these methods smarter (eliminate redundancy) e.g. via generics, but that is not easy with all the hard dependencies

@@ -32,6 +32,7 @@ namespace SeleniumFixtureTest
     {
         private const string Apps = "AccessibilityId:Apps";
         private const string Browser = "XPath://android.widget.TextView[@text = 'Browser']";
+        private const string calculatorIcon = "xpath://*[@text='Calculator']";
 
         private static int _testsToDo;
         private static readonly Selenium Fixture = new();
@@ -41,7 +42,7 @@ namespace SeleniumFixtureTest
         public void AppiumBasicOperationsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to Apps page");
-            Assert.IsTrue(Fixture.WaitForElement(Apps));
+            Assert.IsTrue(Fixture.WaitForElement(calculatorIcon));
             Assert.IsTrue(Fixture.Scroll("right"), "Scroll to the right");
             Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Widget Preview"), "Wait for text 'Widget Preview'");
             Assert.IsTrue(Fixture.Scroll("left"), "Scroll to the left");
@@ -57,7 +58,6 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.TapElement(Apps), "Tap Apps element");
             Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:Apps"), "Wait for Apps element (another one)");
             Assert.IsTrue(Fixture.TapElement(Apps), "Tap the second apps element (just in case it's on the other tab)");
-            const string calculatorIcon = "xpath://*[@text='Calculator']";
             Assert.IsTrue(Fixture.WaitForElement(calculatorIcon), "Wait for Calculator icon");
             Assert.IsTrue(Fixture.TapElement(calculatorIcon), "Open the calculator");
             Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit7"), "Press 7");
@@ -166,20 +166,19 @@ namespace SeleniumFixtureTest
             options.AddAdditionalAppiumOption("clearSystemFiles", "true");
             options.AddAdditionalAppiumOption("adbExecTimeout", "60000");
 
-            Fixture.SetTimeoutSeconds(60);
+            Fixture.SetTimeoutSeconds(10);
             try
             {
                 Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4723", options));
             }
             catch (StopTestException se)
             {
-                Assert.Inconclusive("Could not start Appium test");
+                Assert.Inconclusive($"Could not start Appium test: {se.InnerException?.Message}");
                 return;
             }
             Assert.IsTrue(Fixture.TapElement(Apps));
             // expect the android guidance to kick in, and click it away
             const string okButton = "ClassName:android.widget.Button";
-            Console.WriteLine(Fixture.PageSource);
             Fixture.WaitForElement(okButton);
             Fixture.ClickElementIfVisible(okButton);
             Assert.IsTrue(Fixture.PressKeyCode("Home"));

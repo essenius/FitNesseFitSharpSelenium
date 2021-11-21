@@ -25,11 +25,25 @@ namespace SeleniumFixture.Model
         protected string DisplayName;
 
         /// <summary>Make this a virtual class by making its constructor protected</summary>
-        protected CustomBy(string elementIdentifier) =>
+        protected CustomBy(string elementIdentifier)
+        {
             ElementIdentifier = !string.IsNullOrEmpty(elementIdentifier)
                 ? elementIdentifier
                 : throw new ArgumentException(@"element identifier cannot be null or the empty string",
                     nameof(elementIdentifier));
+        }
+
+        // We redefine (new) the ones that are redefined in MobileBy.
+        // We need to execute both the By and the MobileBy variants
+        // as we don't know whether we are running in mobile context or not
+
+        public new static By ClassName(string selector) => new ByClassName(selector);
+
+        public new static By Id(string selector) => new ById(selector);
+
+        public new static By Name(string selector) => new ByName(selector);
+
+        public new static By TagName(string selector) => new ByTagName(selector);
 
         public static By Content(string selector) => new ByContent(selector);
 
@@ -40,16 +54,15 @@ namespace SeleniumFixture.Model
         {
             NoSuchElementException lastException = null;
             foreach (var by in ByList)
-            {
                 try
                 {
-                    return by.FindElement(context);
+                    return @by.FindElement(context);
                 }
                 catch (NoSuchElementException ex)
                 {
                     lastException = ex;
                 }
-            }
+
             Debug.Assert(lastException != null, nameof(lastException) + " != null");
             throw new NoSuchElementException($"Could not find element {DisplayName}", lastException);
         }
@@ -61,16 +74,15 @@ namespace SeleniumFixture.Model
         {
             var webElementList = new List<IWebElement>();
             foreach (var by in ByList)
-            {
                 try
                 {
-                    webElementList.AddRange(by.FindElements(context));
+                    webElementList.AddRange(@by.FindElements(context));
                 }
                 catch (NoSuchElementException)
                 {
                     // ignore
                 }
-            }
+
             return webElementList.AsReadOnly();
         }
 

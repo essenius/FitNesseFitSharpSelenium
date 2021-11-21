@@ -10,26 +10,21 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
 
 namespace SeleniumFixture.Model
 {
     /// <summary>
-    ///     Finds element on text, id or the name attribute has the specified value.
+    ///     Finds element on class name. First tries normal By, then MobileBy
     /// </summary>
-    internal class ByTrial : CustomBy
+    internal class ByClassName : CustomBy
     {
-        public ByTrial(string elementIdentifier) : base(elementIdentifier)
+        public ByClassName(string elementIdentifier) : base(elementIdentifier)
         {
-            DisplayName = nameof(ByTrial);
-            ByList.Add(Id(ElementIdentifier));
-            ByList.Add(Name(ElementIdentifier));
-            ByList.Add(LinkText(ElementIdentifier));
-            ByList.Add(ClassName(ElementIdentifier));
-            ByList.Add(Label(ElementIdentifier));
-            ByList.Add(Content(ElementIdentifier));
-            ByList.Add(PartialLinkText(ElementIdentifier));
-            ByList.Add(PartialContent(ElementIdentifier));
-            ByList.Add(TagName(ElementIdentifier));
+            DisplayName = nameof(ByClassName);
+            ByList.Add(By.ClassName(ElementIdentifier));
+            ByList.Add(MobileBy.ClassName(ElementIdentifier));
         }
     }
 }
+
