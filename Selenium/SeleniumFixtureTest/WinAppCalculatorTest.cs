@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.Appium;
 using SeleniumFixture;
 
 namespace SeleniumFixtureTest
@@ -37,15 +38,15 @@ namespace SeleniumFixtureTest
         [ClassInitialize]
         public static void ClassInitialize(TestContext _)
         {
-            var caps = new Dictionary<string, string>
-            {
-                { "app", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App" }
-            };
+            var options = Selenium.NewOptionsFor("WinApp") as AppiumOptions;
+            options.App = "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App";
+            options.DeviceName = "WindowsPC";
+
             Selenium.DefaultSearchMethod = "name";
             try
             {
                 Assert.IsTrue(
-                    Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
+                    Fixture.SetRemoteBrowserAtAddressWithOptions("WinApp", "http://127.0.0.1:4723", options));
             }
             catch (StopTestException)
             {

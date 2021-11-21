@@ -304,6 +304,7 @@ namespace SeleniumFixture
             {
                 // ignore
             }
+
             try
             {
                 new Actions(Driver).MoveToElement(element).Build().Perform();
@@ -311,6 +312,11 @@ namespace SeleniumFixture
             catch (NotImplementedException)
             {
                 // ignore
+            }
+            catch (WebDriverException e) when (e.Message.Contains(
+                "Currently only pen and touch pointer input source types are supported"))
+            {
+                //ignore, WinApp peculiarity
             }
         }
 

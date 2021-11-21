@@ -38,9 +38,9 @@ namespace SeleniumFixtureTest
         public static void ClassInitialize(TestContext _)
         {
             var options = Selenium.NewOptionsFor("WinApp") as AppiumOptions;
-            options.AddAdditionalCapability("app", "notepad.exe");
+            options.App = "notepad.exe";
             Selenium.DefaultSearchMethod = "name";
-            Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("WinApp", "http://127.0.0.1:4727", options));
+            Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("WinApp", "http://127.0.0.1:4723", options));
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace SeleniumFixtureTest
             Fixture.SetTimeoutSeconds(2);
             Selenium.DefaultSearchMethod = "name";
             Assert.IsTrue(Fixture.SetElementTo("ClassName:Edit", "The quick brown fox jumps over the lazy dog."), "Set element value OK");
-            Assert.IsTrue(Fixture.SendKeys("^{END}^{ENTER}Hello{ENTER}there"), "SendKeys OK");
+            Assert.IsTrue(Fixture.SendKeysToElement("^{END}^{ENTER}Hello{ENTER}there", "ClassName:Edit"), "SendKeys OK");
             Assert.AreEqual("The quick brown fox jumps over the lazy dog.\r\nHello\r\nthere", Fixture.TextInElement(@"ClassName:Edit"), "Content OK");
             var desiredSize = new Coordinate(400, 140);
             Fixture.WindowPosition = new Coordinate(10, 10);
