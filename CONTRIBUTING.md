@@ -25,6 +25,6 @@ This was adapted from the Ruby on Rails repo -- thanks for the inspiration!
 
 * [Open a new Q&A](../../discussions/new?category=q-a).
 
-Thanks for your pariticapation!
+Thanks for your particapation!
 
 The FitSharp Selenium Fixture team
