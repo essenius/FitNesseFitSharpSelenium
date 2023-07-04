@@ -82,10 +82,12 @@ namespace SeleniumFixture.Model
             }
         }
 
-        public static string DefaultMethod { get; set; } = "trial";
+        //public static string DefaultMethod { get; set; } = "trial";
 
-        public static string Delimiter { get; set; } = ":";
+        //public static string Delimiter { get; set; } = ":";
 
+        public static string DefaultMethod { get; set; } = "CSSSELECTOR";
+        public static string Delimiter { get; set; } = "::";
         public string Locator { get; }
         public string Method { get; }
     }
