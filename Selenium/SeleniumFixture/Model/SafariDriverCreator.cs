@@ -48,7 +48,7 @@ namespace SeleniumFixture.Model
         private static SafariOptions SafariOptions()
         {
             var options = new SafariOptions();
-            options.AddAdditionalCapability("safari.options", "skipExtensionInstallation");
+            options.AddAdditionalOption("safari.options", "skipExtensionInstallation");
             return options;
         }
     }

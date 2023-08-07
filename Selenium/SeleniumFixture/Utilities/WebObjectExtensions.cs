@@ -28,7 +28,7 @@ namespace SeleniumFixture.Utilities
             if (capabilities == null) return;
             foreach (var entry in capabilities.Keys)
             {
-                options.AddAdditionalCapability(entry, capabilities[entry]);
+                options.AddAdditionalOption(entry, capabilities[entry]);
             }
         }
 
