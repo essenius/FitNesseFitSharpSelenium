@@ -31,13 +31,6 @@ namespace SeleniumFixture.Model
 
         public override DriverOptions Options() => new AppiumOptions { PlatformName = "iOS", Proxy = Proxy };
 
-        /*public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
-        {
-            var options = Options();
-            options.AddAdditionalCapabilities(capabilities);
-            return RemoteDriver(baseAddress, options);
-        } */
-
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);

@@ -62,7 +62,6 @@ namespace SeleniumFixture.Model
                 driverService = GetDefaultService<FirefoxDriverService>(driverFolder);
                 // Workaround for the issue making .NET Core networking slow with GeckoDriver.
                 // see https://github.com/SeleniumHQ/selenium/issues/7840
-                //driverService.Host = "::1";
                 var firefoxOptions = options == null ? FirefoxOptions() : (FirefoxOptions)options;
                 driver = new FirefoxDriver(driverService, firefoxOptions, Timeout);
             }

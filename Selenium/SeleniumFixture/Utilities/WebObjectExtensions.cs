@@ -22,13 +22,13 @@ namespace SeleniumFixture.Utilities
         private static double _lastSetImplicitWaitSeconds;
 
         [Obsolete]
-        public static void AddAdditionalCapabilities(this DriverOptions options,
-            Dictionary<string, object> capabilities)
+        public static void AddAdditionalOption(this DriverOptions options,
+            Dictionary<string, object> option)
         {
-            if (capabilities == null) return;
-            foreach (var entry in capabilities.Keys)
+            if (option == null) return;
+            foreach (var entry in option.Keys)
             {
-                options.AddAdditionalOption(entry, capabilities[entry]);
+                options.AddAdditionalOption(entry, option[entry]);
             }
         }
 
