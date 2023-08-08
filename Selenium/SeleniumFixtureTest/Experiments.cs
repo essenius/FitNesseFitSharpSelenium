@@ -70,12 +70,6 @@ namespace SeleniumFixtureTest
             var ff = new FirefoxDriver(service, options, TimeSpan.FromSeconds(10));
             ff.Navigate().GoToUrl(new Uri("http://www.google.com?hl=en"));
             ff.Quit();
-            //Assert.IsNotNull(options, "Options is not null");
-            //Console.WriteLine(options.ToString());
-            //selenium.SetBrowserWithOptions("ff", options);
-            //selenium.Open(new Uri("http://www.google.com?hl=en"));
-            //selenium.Close();
-
         }
 
     }
