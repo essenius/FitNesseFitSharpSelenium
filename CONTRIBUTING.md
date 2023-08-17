@@ -17,7 +17,7 @@ This was adapted from the Ruby on Rails repo -- thanks for the inspiration!
 
 * Use ReSharper or SonarLint for static analysis and make sure that the code has no findings. 
 
-* Ensure that the code has an overall code coverage of at least 98%.
+* Ensure that the code as well as your code has an overall code coverage of at least 95%.
 
 #### **Do you intend to add a new feature or change an existing one?**
 
