@@ -33,14 +33,6 @@ namespace SeleniumFixture.Model
 
         public override DriverOptions Options() => WinAppOptions();
 
-        /* public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
-        {
-            var uri = BaseUri(baseAddress);
-            var options = WinAppOptions();
-            options.AddAdditionalCapabilities(capabilities);
-            return new WindowsDriver(uri, options, Timeout);
-        } */
-
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);

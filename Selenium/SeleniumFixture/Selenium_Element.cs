@@ -177,11 +177,7 @@ namespace SeleniumFixture
             Debug.Assert(location != null, nameof(location) + " != null");
 
             var action = new Actions(Driver);
-            //action.DragAndDropToOffset(dragElement, location.X - dragElement.Location.X, location.Y - dragElement.Location.Y).Perform();
             action.MoveToElement(dragElement).ClickAndHold().Pause(TimeSpan.FromSeconds(0.8)).MoveToLocation(location.X, location.Y).Release().Perform();
-            /* if (Driver is not IPerformsTouchActions driver) return false;
-            var touchAction = new TouchAction(driver);
-            touchAction.LongPress(dragElement).Wait(200).MoveTo(location.X, location.Y).Release().Perform(); */
             return true;
         }
 
@@ -211,12 +207,7 @@ namespace SeleniumFixture
                 {
                     throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
                 }
-
                 var dropElement = FindElement(dropElementLocator);
-////                var dropLocation = CenterOfElement(dropElement);
-////                checkAction.MoveToLocation(dragLocation.X, dragLocation.Y).Release().Perform();
-////                WaitForElement(dragElementLocator);
-
                 checkAction
                     .MoveToLocation(dragLocation.X, dragLocation.Y)
                     .Pause(TimeSpan.FromSeconds(0.5))
@@ -224,45 +215,7 @@ namespace SeleniumFixture
                     ////.MoveToLocation(dropLocation.X, dropLocation.Y)
                     .Release()
                     .Perform();
-
-
-////                var dragAction = new Actions(Driver);
-
-                // DragAndDropToOffset doesn't seem to work, so we spell it out
-
-////                dragAction
-////                    .MoveToElement(dragElement)
-////                    .ClickAndHold()
-////                    .Pause(TimeSpan.FromSeconds(0.8))
-////                    .MoveToLocation(dropLocation.X, dropLocation.Y)
-////                    .Release()
-////                     .Perform();
                 return true;
-
-                /*
-                 
-                if (Driver is not IPerformsTouchActions driver) return false;
-                var checkAction = new TouchAction(driver);
-                checkAction.LongPress(dragLocation.X, dragLocation.Y).Perform();
-                if (!WaitForElement(dropElementLocator))
-                {
-                    throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
-                }
-
-                var dropElement = FindElement(dropElementLocator);
-                var dropLocation = CenterOfElement(dropElement);
-                checkAction.Release().Perform();
-
-                // now we do the actual drag and drop
-
-                WaitForElement(dragElementLocator);
-                var action = new TouchAction(driver);
-                action
-                    .LongPress(dragLocation.X, dragLocation.Y)
-                    .MoveTo(dropLocation.X, dropLocation.Y)
-                    .Release()
-                    .Perform();
-                return true; */
             }
 
             DragDrop.Html5DragAndDrop(
@@ -338,12 +291,6 @@ namespace SeleniumFixture
             {
                 var action = new Actions(Driver);
                 action.MoveToElement(element).ClickAndHold().Pause(TimeSpan.FromSeconds(seconds)).Release().Perform();
-                /*
-                if (Driver is not IPerformsTouchActions driver) return false;
-                var action = new TouchAction(driver);
-                action.LongPress(element).Wait(Convert.ToInt64(TimeSpan.FromSeconds(seconds).TotalMilliseconds))
-                    .Release().Perform();
-                */
                 return true;
             });
 
@@ -591,9 +538,6 @@ namespace SeleniumFixture
             DoOperationOnElement(searchCriterion, element =>
             {
                 new Actions(Driver).MoveToElement(element).Click().Perform();
-                /* if (Driver is not IPerformsTouchActions driver) return false;
-                var action = new TouchAction(driver);
-                action.Tap(element).Perform(); */
                 return true;
             });
 

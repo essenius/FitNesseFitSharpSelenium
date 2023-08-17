@@ -50,38 +50,5 @@ namespace SeleniumFixtureTest
                 Assert.IsTrue(ex.Message.StartsWith(@"An error occurred trying to start process 'c:\chromedriver.exe'"));
             }
         }
-
-        /*
-        private static object GetArgList(ICapabilities cap, string keyName)
-        {
-            var options = cap.GetCapability(keyName) as Dictionary<string, object>;
-            Assert.IsNotNull(options);
-            var argList = options.Values.ToList()[0];
-            Assert.IsNotNull(argList, "ArgList is empty");
-            return argList;
-        }
-
-
-
-        private static void ValidateChromeCapabilities(ICapabilities cap, string optionToCheck)
-        {
-            Assert.AreEqual(@"chrome", cap.GetCapability(CapabilityType.BrowserName));
-            var argList = GetArgList(cap, @"goog:chromeOptions") as IReadOnlyCollection<object>;
-            Assert.IsNotNull(argList, "argList cannot be mapped to IReadOnlyCollection ");
-            Assert.IsTrue(argList.Count >= 1, "arg count ok");
-            Assert.IsTrue(argList.Contains(optionToCheck), "option present");
-        }
-
-        private static void ValidateFirefoxCapabilities(ICapabilities cap)
-        {
-            Assert.AreEqual("firefox", cap.GetCapability(CapabilityType.BrowserName));
-            var argList = GetArgList(cap, "moz:firefoxOptions") as Dictionary<string, object>;
-            Assert.IsNotNull(argList, "ArgList cannot be mapped to Dictionary");
-            Assert.IsTrue(argList.Count >= 4, "ff arg count ok");
-            Assert.IsTrue(argList.ContainsKey(@"plugin.state.npctrl"), "ff silverlight enabled");
-            Assert.IsTrue(argList.ContainsKey(@"network.negotiate-auth.trusted-uris"), "ff integrated authentication enabled");
-        }
-
-        */
     }
 }

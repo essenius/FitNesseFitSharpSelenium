@@ -98,22 +98,6 @@ namespace SeleniumFixtureTest
             Assert.IsFalse(Fixture.ElementExists(galleryIcon));
         }
 
-        /*[TestMethod]
-        [TestCategory("Native")]
-        public void AppiumLongPressElementForSecondsTest()
-        {
-            Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
-            const string calculatorIcon = "XPath://android.widget.TextView[@text = 'Calculator']";
-
-            const string deleteArea = "id:com.google.android.googlequicksearchbox:id/delete_target_text";
-            Assert.IsTrue(Fixture.WaitForElement(calculatorIcon));
-            Assert.IsTrue(Fixture.DragElementAndDropOnElement(calculatorIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
-            Assert.IsFalse(Fixture.ElementExists(calculatorIcon));
-            // negative cases
-            Assert.IsFalse(Fixture.PressKeyCode(string.Empty));
-            Assert.IsFalse(Fixture.LongPressKeyCode(string.Empty));
-        }*/
-
         [TestMethod]
         [TestCategory("Native")]
         [ExpectedExceptionWithMessage(typeof(ArgumentException), "Direction 'bogus' should be Up, Down, Left or Right")]
@@ -140,7 +124,6 @@ namespace SeleniumFixtureTest
             const string textAccounts = "XPath://android.widget.TextView[@text = 'Accounts']";
             Assert.IsFalse(Fixture.ElementExists(textAccounts));
 
-            /* const string addAccountLink = "AndroidUiAutomator:new UiSelector().textContains(\"Add account\")"; */
             Fixture.Scroll("Down");
             Assert.IsTrue(Fixture.WaitForElement(textAccounts));
             Assert.IsFalse(Fixture.ElementExists(textMore));

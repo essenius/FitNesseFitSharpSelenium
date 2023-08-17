@@ -66,16 +66,6 @@ namespace SeleniumFixture.Model
 
         public abstract DriverOptions Options();
 
-        /* public virtual IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
-        {
-            var options = Options();
-            // AddAdditionalCapabilities adds to the goog:ChromeOptions (etc.) structure rather than creating its own capability.
-            // This is aligned with W3C
-            options.AddAdditionalCapabilities(capabilities);
-            var result = RemoteDriver(baseAddress, options);
-            return result;
-        } */
-
         public virtual IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);

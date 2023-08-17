@@ -35,13 +35,6 @@ namespace SeleniumFixture.Model
             return _options;
         }
 
-        /* public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
-        {
-            var options = Options();
-            options.AddAdditionalCapabilities(capabilities);
-            return RemoteDriver(baseAddress, options);
-        } */
-
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);

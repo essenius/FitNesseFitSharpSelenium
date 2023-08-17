@@ -32,7 +32,6 @@ namespace SeleniumFixture.Model
                 new HeadlessFirefoxDriverCreator(proxy, timeout),
                 new InternetExplorerDriverCreator(proxy, timeout),
                 new IosDriverCreator(proxy, timeout),
-                /* new OperaDriverCreator(proxy, timeout), */
                 new SafariDriverCreator(timeout),
                 new WinAppDriverCreator(proxy, timeout),
                 new NoBrowserDriverCreator()

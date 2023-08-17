@@ -145,10 +145,7 @@ namespace SeleniumFixture
                     return true;
                 }
                 case AndroidDriver androidDriver:
-
                     new Actions(androidDriver).MoveToLocation(startX, startY).ClickAndHold().MoveToLocation(endX, endY).Release().Perform();
-                        
-                    /* new TouchAction(androidDriver).Press(startX, startY).Wait(200).MoveTo(endX, endY).Release().Perform(); */
                     return true;
             }
 
