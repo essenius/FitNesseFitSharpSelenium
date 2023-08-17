@@ -32,6 +32,10 @@ namespace SeleniumFixture.Model
             {
                 // ignore, we might not need it
             }
+            catch (DriverServiceNotFoundException)
+            {
+                // Ignore, we might not need the driver
+            }
         }
 
         public override string Name => "EDGE";
