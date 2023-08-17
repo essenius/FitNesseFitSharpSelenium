@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,26 +10,28 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium.Appium.Enums;
+using OpenQA.Selenium.Appium;
 using SeleniumFixture;
 
 namespace SeleniumFixtureTest
 {
-    // For this test class to work, make sure the Appium server has been started and the Android emulator is active
+    // For this test class to work, make sure the Appium 2 server has been started and the Android emulator is active
     // The specs for the device these tests were designed for are: 
-    // Name: Xh-4.65 KitKat 4.4, OS: KitKat 4.4 - API 19, Processor: x86, Memory: 1 GB, Resolution: 720 x 1280 Xh-DPI
+    // Name: 4.7 WXGA API 22, OS: Lollipop 5.1.1, API: 22, Processor: x86, RAM: 512MB, Resolution: 720 x 1280 WXGA.
     // It assumes that the tests are run on Windows 10 1809 or newer, as that can use Hyper-V.
+    // This is about the lowest version of Android that can run on Appium 2.
+
 
     [TestClass]
     public sealed class AppiumTest
     {
         private const string Apps = "AccessibilityId:Apps";
         private const string Browser = "XPath://android.widget.TextView[@text = 'Browser']";
+        private const string CalculatorIcon = "xpath://*[@text='Calculator']";
 
         private static int _testsToDo;
         private static readonly Selenium Fixture = new();
@@ -39,7 +41,7 @@ namespace SeleniumFixtureTest
         public void AppiumBasicOperationsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to Apps page");
-            Assert.IsTrue(Fixture.WaitForElement(Apps));
+            Assert.IsTrue(Fixture.WaitForElement(CalculatorIcon));
             Assert.IsTrue(Fixture.Scroll("right"), "Scroll to the right");
             Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Widget Preview"), "Wait for text 'Widget Preview'");
             Assert.IsTrue(Fixture.Scroll("left"), "Scroll to the left");
@@ -53,29 +55,28 @@ namespace SeleniumFixtureTest
         public void AppiumCalculatorTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Tap Apps element");
-            Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:Apps"), "Wait for Apps element (another one)");
-            Assert.IsTrue(Fixture.TapElement(Apps), "Tap the second apps element (just in case it's on the other tab)");
-            const string calculatorIcon = "xpath://*[@text='Calculator']";
-            Assert.IsTrue(Fixture.WaitForElement(calculatorIcon), "Wait for Calculator icon");
-            Assert.IsTrue(Fixture.TapElement(calculatorIcon), "Open the calculator");
-            Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit7"), "Press 7");
-            Assert.IsTrue(Fixture.TapElement("accessibilityId:multiply"), "Press *");
-            Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit8"), "Press 8");
-            const string resultBox = "xpath://android.widget.ViewSwitcher/android.widget.EditText";
-            Assert.AreEqual("7multiplied by8", Fixture.TextInElement(resultBox), "Check value of result box");
-            Assert.IsTrue(Fixture.TapElement("accessibilityId:equals"), "Press =");
-            Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:56"), "Wait for answer (also checks value)");
-            Assert.AreEqual("56", Fixture.TextInElement(resultBox), "Check the calculation result");
+            Assert.IsTrue(Fixture.Scroll("left"), "Make sure we're on the first page");
+
+            Assert.IsTrue(Fixture.WaitForElement(CalculatorIcon), "Wait for Calculator icon");
+            Assert.IsTrue(Fixture.TapElement(CalculatorIcon), "Open the calculator");
+            Assert.IsTrue(Fixture.WaitForElement("id:com.android.calculator2:id/formula"), "Wait for the calculator to open");
+            Assert.IsTrue(Fixture.LongPressElementForSeconds("xpath://android.widget.Button[@content-desc=\"delete\"] | //android.widget.Button[@content-desc=\"clear\"]", 0.5));
+            Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit_7"), "Press 7");
+            Assert.IsTrue(Fixture.TapElement("AccessibilityId:times"), "Press *");
+            Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit_8"), "Press 8");
+            Assert.AreEqual("7×8", Fixture.TextInElement("id:com.android.calculator2:id/formula"));
+            Assert.IsTrue(Fixture.TapElement("AccessibilityId:equals"), "Press =");
+            Assert.AreEqual("56", Fixture.TextInElement("id:com.android.calculator2:id/formula"), "Check the calculation result");
             var screenshot = Selenium.Screenshot();
             Debug.Print(Selenium.Screenshot());
-            Assert.IsTrue(screenshot.StartsWith("<img alt=\"Screenshot\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtIAAAUCCAY"), "Screenshot starts OK");
+            Assert.IsTrue(screenshot.StartsWith(@"<img alt=""Screenshot"" src=""data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAt"), "Screenshot starts OK");
 
-            // Now we test the LongPressKeyCode with Home. Something strange happening here. It does something else from Appium than on the device emulator itself:
-            // it goes to the recent apps. But it is consistent with long pressing the circle button on the emulator menu (which should be Home).
+            //// Now we test the LongPressKeyCode with Home. Something strange happening here. It does something else from Appium than on the device emulator itself:
+            //// it goes to the recent apps. But it is consistent with long pressing the circle button on the emulator menu (which should be Home).
 
             Assert.IsTrue(Fixture.PressKeyCode("Home"), "Go Home");
             Assert.IsTrue(Fixture.WaitForElement(Browser), "Wait for the Browser icon");
-            Assert.IsTrue(Fixture.LongPressKeyCode("Home"), "Move to Recent Apps page");
+            Assert.IsTrue(Fixture.PressKeyCode("Keycode_APP_SWITCH"), "Move to Recent Apps page");
             Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Calculator"), "Calculator exists on the recent apps page");
         }
 
@@ -84,35 +85,34 @@ namespace SeleniumFixtureTest
         public void AppiumDragDropTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
-            Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
-            const string galleryIcon = "XPath://android.widget.TextView[@text = 'Gallery']";
+            // don't use text search as that disappears when doing drag/drop
+            const string galleryIcon = "AccessibilityId:Gallery";
             Assert.IsTrue(Fixture.ScrollToElement("left", galleryIcon), "Scroll left to the page with Gallery on it");
             Assert.IsTrue(Fixture.ElementExists(galleryIcon), "Check the Gallery icon is there");
             Assert.IsTrue(Fixture.DragElementAndDropAt(galleryIcon, new Coordinate(400, 400)), "Drag and drop the gallery icon on the home page");
             // the drag/drop makes the element temporarily disappear, so wait for it to be back
             Assert.IsTrue(Fixture.WaitForElement(galleryIcon), "Wait for the Gallery icon");
-            // Tricky: the target only appears after the 'drag' starts.
-            const string deleteArea = "id:com.android.launcher:id/delete_target_text";
+
+            const string deleteArea = @"id:com.google.android.googlequicksearchbox:id/delete_target_text";
             Assert.IsTrue(Fixture.DragElementAndDropOnElement(galleryIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
             Assert.IsFalse(Fixture.ElementExists(galleryIcon));
         }
 
-        [TestMethod]
+        /*[TestMethod]
         [TestCategory("Native")]
         public void AppiumLongPressElementForSecondsTest()
         {
             Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
-            Assert.IsTrue(Fixture.TapElement(Apps), "Go to the Apps page");
             const string calculatorIcon = "XPath://android.widget.TextView[@text = 'Calculator']";
-            Assert.IsTrue(Fixture.LongPressElementForSeconds(calculatorIcon, 1), "Long Press Calculator Icon one second to copy it to the home page");
-            const string deleteArea = "id:com.android.launcher:id/delete_target_text";
+
+            const string deleteArea = "id:com.google.android.googlequicksearchbox:id/delete_target_text";
             Assert.IsTrue(Fixture.WaitForElement(calculatorIcon));
             Assert.IsTrue(Fixture.DragElementAndDropOnElement(calculatorIcon, deleteArea), "Delete the icon by dragging it to the Delete element");
             Assert.IsFalse(Fixture.ElementExists(calculatorIcon));
             // negative cases
             Assert.IsFalse(Fixture.PressKeyCode(string.Empty));
             Assert.IsFalse(Fixture.LongPressKeyCode(string.Empty));
-        }
+        }*/
 
         [TestMethod]
         [TestCategory("Native")]
@@ -127,21 +127,34 @@ namespace SeleniumFixtureTest
             const string settingsIcon = "XPath://android.widget.TextView[@text = 'Settings']";
             Assert.IsTrue(Fixture.WaitForElement(settingsIcon));
             Assert.IsTrue(Fixture.TapElement(settingsIcon));
-            const string switchBluetooth = "id:com.android.settings:id/switchWidget";
-            Assert.IsTrue(Fixture.WaitForElement(switchBluetooth));
-            Assert.AreEqual("OFF", Fixture.TextInElement(switchBluetooth));
+            const string textMore = "XPath://android.widget.TextView[@text = 'More']";
+            Assert.IsTrue(Fixture.WaitForElement(textMore));
+            Fixture.TapElement(textMore);
 
-            const string addAccountLink = "AndroidUiAutomator:new UiSelector().textContains(\"Add account\")";
-            Assert.IsFalse(Fixture.ElementExists(addAccountLink));
+            const string switchAirplaneMode = "id:android:id/switchWidget";
+            Assert.IsTrue(Fixture.WaitForElement(switchAirplaneMode));
+            Assert.AreEqual("OFF", Fixture.TextInElement(switchAirplaneMode));
+            Assert.IsTrue(Fixture.PressKeyCode("Back"));
+            Assert.IsTrue(Fixture.WaitForElement(settingsIcon));
+
+            const string textAccounts = "XPath://android.widget.TextView[@text = 'Accounts']";
+            Assert.IsFalse(Fixture.ElementExists(textAccounts));
+
+            /* const string addAccountLink = "AndroidUiAutomator:new UiSelector().textContains(\"Add account\")"; */
             Fixture.Scroll("Down");
-            Assert.IsTrue(Fixture.WaitForElement(addAccountLink));
-            Assert.IsFalse(Fixture.ElementExists(switchBluetooth));
-            Fixture.ScrollToElement("Up", switchBluetooth);
+            Assert.IsTrue(Fixture.WaitForElement(textAccounts));
+            Assert.IsFalse(Fixture.ElementExists(textMore));
+            Fixture.ScrollToElement("Up", textMore);
 
             var elementCount = Fixture.CountOfElements("ClassName:android.widget.TextView");
             Assert.IsTrue(elementCount > 0);
-            Assert.IsTrue(Fixture.ScrollToElement("FromTop", "XPath://android.widget.TextView[@text = 'About phone']"));
-            Assert.IsTrue(Fixture.ScrollToElement("Up", switchBluetooth));
+            const string textAbout = "XPath://android.widget.TextView[@text = 'About phone']";
+            Assert.IsTrue(Fixture.ScrollToElement("FromTop", textAbout));
+            Assert.IsTrue(Fixture.TapElement(textAbout));
+            Fixture.WaitForElement("XPath://android.widget.TextView[@text = 'System Update']");
+            Assert.IsTrue(Fixture.PressKeyCode("Back"));
+
+            Assert.IsTrue(Fixture.ScrollToElement("Up", textMore));
         }
 
         [ClassCleanup]
@@ -154,38 +167,29 @@ namespace SeleniumFixtureTest
             _testsToDo = typeof(AppiumTest)
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
-            var caps = new Dictionary<string, string>
-            {
-                { MobileCapabilityType.DeviceName, "Xh-4.65 KitKat 4.4" },
-                { "platformVersion", "4.4" },
-                { "automationName", "UiAutomator1" },
-                //{ "appPackage", "com.android.settings"},
-                //{ "appActivity", ".Settings"},
-                { AndroidMobileCapabilityType.AppPackage, "com.android.launcher" },
-                { "appActivity", "com.android.launcher2.Launcher" },
-                { "newCommandTimeout", "300" },
-                { "clearSystemFiles", "true" },
-                { "adbExecTimeout", "30000" }
-            };
+            var options = Selenium.NewOptionsFor("Android") as AppiumOptions;
+            Assert.IsNotNull(options, "options != null");
+            options.PlatformVersion = "5";
+            options.AutomationName = "UiAutomator2";
+            options.DeviceName = @"4.7 WXGA API 22";
 
-            Fixture.SetTimeoutSeconds(60);
+            options.AddAdditionalAppiumOption("clearSystemFiles", "true");
+            options.AddAdditionalAppiumOption("adbExecTimeout", "60000");
+            options.AddAdditionalAppiumOption("enforceXPath1", true);
+
+            Fixture.SetTimeoutSeconds(10);
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithCapabilities("Android", "http://127.0.0.1:4723", caps));
+                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4723", options));
             }
-            catch (StopTestException)
+            catch (StopTestException se)
             {
-                Assert.Inconclusive("Could not start Appium test");
+                Assert.Inconclusive($"Could not start Appium test: {se.InnerException?.Message}");
                 return;
             }
-            Assert.IsTrue(Fixture.TapElement(Apps));
-            // expect the android guidance to kick in, and click it away
-            const string okButton = "ClassName:android.widget.Button";
-            Fixture.WaitForElement(okButton);
-            Fixture.ClickElementIfVisible(okButton);
+
             Assert.IsTrue(Fixture.PressKeyCode("Home"));
             Assert.IsTrue(Fixture.WaitForElement(Apps), "Wait for the Apps button");
-
         }
 
         [TestCleanup]

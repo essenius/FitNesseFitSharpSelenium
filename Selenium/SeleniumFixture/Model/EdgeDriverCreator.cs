@@ -10,15 +10,15 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.IO;
-using Microsoft.Edge.SeleniumTools;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Edge;
 
 namespace SeleniumFixture.Model
 {
     internal class EdgeDriverCreator : BrowserDriverCreator
     {
         // we need this one to stay alive while the driver is alive
+        // TODO: check if still the case with Chromium based driver
         private readonly EdgeDriverService _driverService;
 
         public EdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
@@ -26,9 +26,11 @@ namespace SeleniumFixture.Model
             var driverFolder = Environment.GetEnvironmentVariable("EdgeWebDriver");
             try
             {
-                _driverService = driverFolder == null
-                    ? EdgeDriverService.CreateChromiumService()
-                    : EdgeDriverService.CreateChromiumService(driverFolder);
+                _driverService = GetDefaultService<EdgeDriverService>(driverFolder);
+            }
+            catch (DriverServiceNotFoundException)
+            {
+                // ignore, we might not need it
             }
             catch (DriverServiceNotFoundException)
             {
@@ -40,10 +42,11 @@ namespace SeleniumFixture.Model
 
         protected virtual EdgeOptions EdgeOptions()
         {
-            if (_driverService == null) throw new DriveNotFoundException("Could not find Edge driver");
+            // Now we do need it, so if not found throw the exception
+            if (_driverService == null) throw new DriverServiceNotFoundException("Could not find Edge driver");
             // this is still the case in the new Edge - it ignores proxy settings in Options
             if (Proxy.Kind != ProxyKind.System) throw new StopTestException(ErrorMessages.EdgeNeedsSystemProxy);
-            var options = new EdgeOptions { UseChromium = _driverService.UsingChromium };
+            var options = new EdgeOptions();
             return options;
         }
 

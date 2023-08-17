@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,7 +10,6 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
@@ -36,17 +35,17 @@ namespace SeleniumFixture.Model
             return _options;
         }
 
-        public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
+        /* public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
         {
-            var uri = BaseUri(baseAddress);
-            var options = RemoteOptions(capabilities);
-            return new AndroidDriver<AppiumWebElement>(uri, options, Timeout);
-        }
+            var options = Options();
+            options.AddAdditionalCapabilities(capabilities);
+            return RemoteDriver(baseAddress, options);
+        } */
 
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {
             var uri = BaseUri(baseAddress);
-            return new AndroidDriver<AppiumWebElement>(uri, options, Timeout);
+            return new AndroidDriver(uri, options, Timeout);
         }
     }
 }

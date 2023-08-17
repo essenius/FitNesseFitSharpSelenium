@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -10,9 +10,11 @@
 //   See the License for the specific language governing permissions and limitations under the License.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 
@@ -42,11 +44,44 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
+        [TestCategory("Unit")]
+        public void BrowserDriverContainerNewOptionsTest()
+        {
+            var caps = new Dictionary<string, string>
+            {
+                { "string", "value" },
+                { "int", "10" }
+            };
+            var options = BrowserDriverContainer.NewOptions("chrome headless", caps);
+            var outCaps = options.ToCapabilities();
+            Assert.AreEqual("chrome", options.BrowserName, "Browser name is Chrome");
+            Assert.IsTrue(((ChromeOptions)options).Arguments.Contains("headless"),"is headless");
+            Assert.AreEqual("value", outCaps.GetCapability("string"), "contains extra capability");
+            Assert.AreEqual("chrome", outCaps.GetCapability(CapabilityType.BrowserName), "contains browser name as capability");
+            var chromeOptions = outCaps.GetCapability("goog:chromeOptions") as Dictionary<string, object>;
+            Assert.IsNotNull(chromeOptions, "chromeOptions not null");
+            var args = chromeOptions["args"] as IReadOnlyCollection<object>;
+            Assert.IsTrue(args?.Contains("headless"), "headless present");
+
+            var ffOptions = BrowserDriverContainer.NewOptions("firefox");
+            var ffOutCaps = ffOptions.ToCapabilities();
+            Assert.AreEqual("firefox", ffOutCaps.GetCapability(CapabilityType.BrowserName));
+            var ffOutOptions = ffOutCaps.GetCapability("moz:firefoxOptions") as Dictionary<string, object>;
+            Assert.IsNotNull(ffOutOptions, "ArgList cannot be mapped to Dictionary");
+            var ffPrefs = ffOutOptions["prefs"] as Dictionary<string, object>;
+            Assert.IsNotNull(ffPrefs, "ff Prefs not null");
+            Assert.IsTrue(ffPrefs.Count >= 4, "ff prefs count ok");
+            Assert.IsTrue(ffPrefs.ContainsKey(@"plugin.state.npctrl"), "ff silverlight enabled");
+            Assert.IsTrue(ffPrefs.ContainsKey(@"network.negotiate-auth.trusted-uris"), "ff integrated authentication enabled");
+
+        }
+
+        [TestMethod]
         [TestCategory("Integration")]
         [ExpectedExceptionWithMessage(typeof(StopTestException),
             "Can't run browser 'Opera' on Selenium server '*'")]
         public void BrowserDriverNonInstalledRemoteDriverRaisesStopTestException() =>
-            BrowserDriverContainer.NewRemoteDriver("Opera", EndToEndTest.RemoteSelenium, new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("Opera", EndToEndTest.RemoteSelenium, null);
 
         [TestMethod]
         [TestCategory("Unit")]
@@ -75,7 +110,7 @@ namespace SeleniumFixtureTest
         [DataRow("manual", true, 1)]
         [DataRow("DIRECT", true, 0)]
         [DataRow("MaNuAl", true, 1)]
-        [DataRow("proxyautoconfigure", true, 2)]
+        [DataRow(@"proxyautoconfigure", true, 2)]
         [DataRow("autodetect", true, 4)]
         [DataRow("unspecified", false, 6)]
         [DataRow("SYSTEM", true, 5)]
@@ -97,7 +132,7 @@ namespace SeleniumFixtureTest
         [ExpectedExceptionWithMessage(typeof(StopTestException),
             @"Can't run browser 'WrongBrowser' on Selenium server 'wrongaddress'")]
         public void BrowserDriverWrongAddressRaisesStopTestException() =>
-            BrowserDriverContainer.NewRemoteDriver("WrongBrowser", @"wrongaddress", new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("WrongBrowser", @"wrongaddress", null);
 
         [TestMethod]
         [TestCategory("Unit")]
@@ -110,6 +145,6 @@ namespace SeleniumFixtureTest
         [ExpectedExceptionWithMessage(typeof(StopTestException),
             "Can't run browser 'WrongDriver' on Selenium server 'http://localhost'")]
         public void BrowserDriverWrongRemoteDriverRaisesStopTestException() =>
-            BrowserDriverContainer.NewRemoteDriver("WrongDriver", "http://localhost", new Dictionary<string, object>());
+            BrowserDriverContainer.NewRemoteDriver("WrongDriver", "http://localhost", null);
     }
 }

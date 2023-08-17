@@ -22,12 +22,12 @@ namespace SeleniumFixtureTest
         [TestCategory("Unit")]
         public void AppConfigGetTest()
         {
-            Assert.IsTrue(AppConfig.Get("HOMEDRIVE").Matches("[A-Za-z]:"));
-            Assert.IsTrue(AppConfig.Get("InternetExplorer.IgnoreProtectedModeSettings").Matches("true|false"));
-            Assert.IsNull(AppConfig.Get("nonexisting_q231"));
-            var testSite = AppConfig.Get("TestSite");
-            Assert.IsNotNull(testSite, "TestSite exists");
-            Assert.IsTrue(testSite.Contains("azurewebsites"), "overruled in environment");
+            Assert.IsTrue(AppConfig.Get(@"HOMEDRIVE").Matches("[A-Za-z]:"));
+            Assert.IsTrue(AppConfig.Get(@"InternetExplorer.IgnoreProtectedModeSettings").Matches("true|false"));
+            Assert.IsNull(AppConfig.Get(@"nonexisting_q231"));
+            var testSite = AppConfig.Get(@"TestSite");
+            Assert.IsNotNull(testSite, @"TestSite exists");
+            Assert.IsTrue(testSite.Contains(@"azurewebsites"), "overruled in environment");
         }
     }
 }

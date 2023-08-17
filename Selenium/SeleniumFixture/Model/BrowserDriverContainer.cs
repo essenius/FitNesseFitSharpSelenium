@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Remote;
 using static System.Globalization.CultureInfo;
 
@@ -69,8 +70,8 @@ namespace SeleniumFixture.Model
         private static IWebDriver GetDriver(string driverId) =>
             !Drivers.ContainsKey(driverId) ? null : Drivers[driverId];
 
-        // this works for all drivers that implement RemoteWebDriver, which is the case for all drivers we use
-        private static bool HasQuit(IWebDriver driver) => ((RemoteWebDriver)driver).SessionId == null;
+        // this works for all drivers that implement WebDriver, which is the case for all drivers we use
+        private static bool HasQuit(IWebDriver driver) => ((WebDriver)driver).SessionId == null;
 
         public static string NewDriver(string browserName, object options)
         {
@@ -84,7 +85,8 @@ namespace SeleniumFixture.Model
                 exception is WebDriverException ||
                 exception is Win32Exception ||
                 exception is InvalidOperationException ||
-                exception is TargetInvocationException)
+                exception is TargetInvocationException ||
+                exception is NullReferenceException)
             {
                 CloseAllDrivers();
                 throw new StopTestException("Could not start browser: " + browserName, exception);
@@ -94,24 +96,30 @@ namespace SeleniumFixture.Model
         public static DriverOptions NewOptions(string browserName) =>
             new BrowserDriverFactory(_proxy, _timeout).CreateOptions(browserName);
 
-        //Dictionary<string, object> capabilities
-        public static string NewRemoteDriver(string browserName, string baseAddress, object optionsOrCapabilities)
+        public static DriverOptions NewOptions(string browserName, Dictionary<string, string> capabilities)
         {
-            try
+            // convert strings to objects
+            var options = NewOptions(browserName);
+            foreach (var (key, value) in capabilities)
             {
-                if (optionsOrCapabilities is DriverOptions options)
+                if (options is AppiumOptions appiumOptions)
                 {
-                    Current = new BrowserDriverFactory(_proxy, _timeout)
-                        .CreateRemoteDriver(browserName, baseAddress, options);
+                    appiumOptions.AddAdditionalAppiumOption(key, value);
                 }
                 else
                 {
-                    Current = new BrowserDriverFactory(_proxy, _timeout)
-                        .CreateRemoteDriver(
-                            browserName, 
-                            baseAddress,
-                            optionsOrCapabilities as Dictionary<string, object>);
+                    options.AddAdditionalOption(key, value);
                 }
+            }
+            return options;
+        }
+
+        public static string NewRemoteDriver(string browserName, string baseAddress, DriverOptions options)
+        {
+            try
+            {
+                Current = new BrowserDriverFactory(_proxy, _timeout)
+                    .CreateRemoteDriver(browserName, baseAddress, options);
             }
             catch (Exception e)
             {
@@ -121,7 +129,7 @@ namespace SeleniumFixture.Model
                 var message = "Can't run " + browser + " on " + address;
                 throw new StopTestException(message, e);
             }
-            ((RemoteWebDriver)Current).FileDetector = new LocalFileDetector();
+            ((IAllowsFileDetection)Current).FileDetector = new LocalFileDetector();
             // Workaround for the encoding 437 error, see https://githubmemory.com/repo/aquality-automation/aquality-selenium-dotnet/issues/198
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             CurrentId = AddDriver(Current);

@@ -22,15 +22,15 @@ namespace SeleniumFixture.Model
         {
         }
 
-        public override string Name { get; } = "IE";
+        public override string Name => "IE";
 
         private static string EdgePath()
         {
             var edgePath = AppConfig.Get("InternetExplorer.EdgePath");
             if (!string.IsNullOrEmpty(edgePath)) return edgePath;
-            const string defaultSubPath = "\\Microsoft\\Edge\\Application\\msedge.exe";
-            var programFilesx86 = AppConfig.Get("ProgramFiles(x86)");
-            var defaultEdgePath = $"{programFilesx86}{defaultSubPath}";
+            const string defaultSubPath = @"\Microsoft\Edge\Application\msedge.exe";
+            var programFilesX86 = AppConfig.Get("ProgramFiles(x86)");
+            var defaultEdgePath = $"{programFilesX86}{defaultSubPath}";
             if (File.Exists(defaultEdgePath)) return defaultEdgePath;
             var programFiles = AppConfig.Get("ProgramFiles");
             defaultEdgePath = $"{programFiles}{defaultSubPath}";
@@ -54,9 +54,8 @@ namespace SeleniumFixture.Model
             var edgePath = EdgePath();
 
             if (string.IsNullOrEmpty(edgePath)) return options;
-            options.AddAdditionalCapability("ie.edgechromium", true);
-            options.AddAdditionalCapability("ie.edgepath", edgePath);
-
+            options.AttachToEdgeChrome = true;
+            options.EdgeExecutablePath = edgePath;
             return options;
         }
 

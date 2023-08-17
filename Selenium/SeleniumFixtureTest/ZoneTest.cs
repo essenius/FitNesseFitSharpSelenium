@@ -35,13 +35,13 @@ namespace SeleniumFixtureTest
 
         [DataTestMethod]
         [TestCategory("Unit")]                      
-        [DataRow("both policies", Zone.Enabled, Zone.Disabled, Empty, Empty, true)]
-        [DataRow("both hkcu", Empty, Zone.Enabled, Zone.Disabled, Empty, true)]
-        [DataRow("hkcuPolicies/hklm", Empty, Zone.Disabled, Empty, Zone.Enabled, false)]
-        [DataRow("hklmPolicies/hkcu", Zone.Disabled, Empty, Zone.Enabled, Empty, false)]
-        [DataRow("hkcu/hklm", Empty, Empty, Zone.Enabled, Zone.Disabled, true)]
-        [DataRow("hklm", Empty, Empty, Empty, Zone.Enabled, true)]
-        [DataRow("both hklm", Zone.Enabled, Empty, Empty, Zone.Disabled, true)]
+        [DataRow(@"both policies", Zone.Enabled, Zone.Disabled, Empty, Empty, true)]
+        [DataRow(@"both hkcu", Empty, Zone.Enabled, Zone.Disabled, Empty, true)]
+        [DataRow(@"hkcuPolicies/hklm", Empty, Zone.Disabled, Empty, Zone.Enabled, false)]
+        [DataRow(@"hklmPolicies/hkcu", Zone.Disabled, Empty, Zone.Enabled, Empty, false)]
+        [DataRow(@"hkcu/hklm", Empty, Empty, Zone.Enabled, Zone.Disabled, true)]
+        [DataRow(@"hklm", Empty, Empty, Empty, Zone.Enabled, true)]
+        [DataRow(@"both hklm", Zone.Enabled, Empty, Empty, Zone.Disabled, true)]
         public void ZoneInitialProtectedModeTest(string testId, object hklmPoliciesValue, object hkcuPoliciesValue,
             object hkcuValue,
             object hklmValue, bool expectedProtected)

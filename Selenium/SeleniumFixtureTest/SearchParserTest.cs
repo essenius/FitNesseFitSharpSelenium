@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -41,34 +41,34 @@ namespace SeleniumFixtureTest
         public void SearchParserByFunctionTest()
         {
             const string locator = "abc";
-            var searchParser = new SearchParser("AccessibilityID", locator);
-            Assert.AreEqual(searchParser.By, MobileBy.AccessibilityId(locator));
-            searchParser = new SearchParser("classname", locator);
-            Assert.AreEqual(searchParser.By, By.ClassName(locator));
-            searchParser = new SearchParser("CssSelector", locator);
-            Assert.AreEqual(searchParser.By, By.CssSelector(locator));
-            searchParser = new SearchParser("id", locator);
-            Assert.AreEqual(searchParser.By, By.Id(locator));
-            searchParser = new SearchParser("IOSCLASSCHAIN", locator);
-            Assert.AreEqual(searchParser.By, MobileBy.IosClassChain(locator));
-            searchParser = new SearchParser("iosNSpredicate", locator);
-            Assert.AreEqual(searchParser.By, MobileBy.IosNSPredicate(locator));
-            searchParser = new SearchParser("IOSUIAutomation", locator);
-            Assert.AreEqual(searchParser.By, MobileBy.IosUIAutomation(locator));
-            searchParser = new SearchParser("LINKTEXT", locator);
-            Assert.AreEqual(searchParser.By, By.LinkText(locator));
-            searchParser = new SearchParser("NaMe", locator);
-            Assert.AreEqual(searchParser.By, By.Name(locator));
-            searchParser = new SearchParser("PartialLINKTEXT", locator);
-            Assert.AreEqual(searchParser.By, By.PartialLinkText(locator));
-            searchParser = new SearchParser("Tagname", locator);
-            Assert.AreEqual(searchParser.By, By.TagName(locator));
-            searchParser = new SearchParser("TizenAutomation", locator);
-            Assert.AreEqual(searchParser.By, MobileBy.TizenAutomation(locator));
-            searchParser = new SearchParser("WindowsAutomation", locator);
-            Assert.AreEqual(searchParser.By, MobileBy.WindowsAutomation(locator));
-            searchParser = new SearchParser("XPath", locator);
-            Assert.AreEqual(searchParser.By, By.XPath(locator));
+            var searchParser = new SearchParser(@"AccessibilityID", locator);
+            Assert.AreEqual(MobileBy.AccessibilityId(locator), searchParser.By);
+            searchParser = new SearchParser(@"classname", locator);
+            Assert.AreEqual(new SeleniumFixture.Model.ByClassName(locator), searchParser.By);
+            searchParser = new SearchParser(@"CssSelector", locator);
+            Assert.AreEqual(By.CssSelector(locator), searchParser.By);
+            searchParser = new SearchParser(@"id", locator);
+            Assert.AreEqual(new SeleniumFixture.Model.ById(locator), searchParser.By);
+            searchParser = new SearchParser(@"IOSCLASSCHAIN", locator);
+            Assert.AreEqual(MobileBy.IosClassChain(locator), searchParser.By);
+            searchParser = new SearchParser(@"iosNSpredicate", locator);
+            Assert.AreEqual(MobileBy.IosNSPredicate(locator), searchParser.By);
+            searchParser = new SearchParser(@"IOSUIAutomation", locator);
+            Assert.AreEqual(MobileBy.IosUIAutomation(locator), searchParser.By);
+            searchParser = new SearchParser(@"LINKTEXT", locator);
+            Assert.AreEqual(By.LinkText(locator), searchParser.By);
+            searchParser = new SearchParser(@"NaMe", locator);
+            Assert.AreEqual(new SeleniumFixture.Model.ByName(locator), searchParser.By);
+            searchParser = new SearchParser(@"PartialLINKTEXT", locator);
+            Assert.AreEqual(By.PartialLinkText(locator), searchParser.By);
+            searchParser = new SearchParser(@"Tagname", locator);
+            Assert.AreEqual(By.TagName(locator), searchParser.By);
+            searchParser = new SearchParser(@"TizenAutomation", locator);
+            Assert.AreEqual(MobileBy.TizenAutomation(locator), searchParser.By);
+            searchParser = new SearchParser(@"WindowsAutomation", locator);
+            Assert.AreEqual(MobileBy.WindowsAutomation(locator), searchParser.By);
+            searchParser = new SearchParser(@"XPath", locator);
+            Assert.AreEqual(By.XPath(locator), searchParser.By);
         }
 
         [TestMethod]

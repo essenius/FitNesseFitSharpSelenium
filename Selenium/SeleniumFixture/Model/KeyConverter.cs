@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -25,42 +25,42 @@ namespace SeleniumFixture.Model
         private static readonly Dictionary<string, string> KeyDictionary =
             new(StringComparer.InvariantCultureIgnoreCase)
             {
-                { "ADD", Keys.Add },
-                { "BACKSPACE", Keys.Backspace },
-                { "BS", Keys.Backspace },
-                { "BKSP", Keys.Backspace },
-                { "DEL", Keys.Delete },
-                { "DELETE", Keys.Delete },
-                { "DIVIDE", Keys.Divide },
-                { "DOWN", Keys.ArrowDown },
-                { "END", Keys.End },
-                { "ENTER", Keys.Enter },
-                { "ESC", Keys.Escape },
-                { "HELP", Keys.Help },
-                { "HOME", Keys.Home },
-                { "INS", Keys.Insert },
-                { "INSERT", Keys.Insert },
-                { "MULTIPLY", Keys.Multiply },
-                { "LEFT", Keys.ArrowLeft },
-                { "PGDN", Keys.PageDown },
-                { "PGUP", Keys.PageUp },
-                { "RIGHT", Keys.ArrowRight },
-                { "SPACE", Keys.Space },
-                { "SUBTRACT", Keys.Subtract },
-                { "TAB", Keys.Tab },
-                { "UP", Keys.ArrowUp },
-                { "F1", Keys.F1 },
-                { "F2", Keys.F2 },
-                { "F3", Keys.F3 },
-                { "F4", Keys.F4 },
-                { "F5", Keys.F5 },
-                { "F6", Keys.F6 },
-                { "F7", Keys.F7 },
-                { "F8", Keys.F8 },
-                { "F9", Keys.F9 },
-                { "F10", Keys.F10 },
-                { "F11", Keys.F11 },
-                { "F12", Keys.F12 }
+                { @"ADD", Keys.Add },
+                { @"BACKSPACE", Keys.Backspace },
+                { @"BS", Keys.Backspace },
+                { @"BKSP", Keys.Backspace },
+                { @"DEL", Keys.Delete },
+                { @"DELETE", Keys.Delete },
+                { @"DIVIDE", Keys.Divide },
+                { @"DOWN", Keys.ArrowDown },
+                { @"END", Keys.End },
+                { @"ENTER", Keys.Enter },
+                { @"ESC", Keys.Escape },
+                { @"HELP", Keys.Help },
+                { @"HOME", Keys.Home },
+                { @"INS", Keys.Insert },
+                { @"INSERT", Keys.Insert },
+                { @"MULTIPLY", Keys.Multiply },
+                { @"LEFT", Keys.ArrowLeft },
+                { @"PGDN", Keys.PageDown },
+                { @"PGUP", Keys.PageUp },
+                { @"RIGHT", Keys.ArrowRight },
+                { @"SPACE", Keys.Space },
+                { @"SUBTRACT", Keys.Subtract },
+                { @"TAB", Keys.Tab },
+                { @"UP", Keys.ArrowUp },
+                { @"F1", Keys.F1 },
+                { @"F2", Keys.F2 },
+                { @"F3", Keys.F3 },
+                { @"F4", Keys.F4 },
+                { @"F5", Keys.F5 },
+                { @"F6", Keys.F6 },
+                { @"F7", Keys.F7 },
+                { @"F8", Keys.F8 },
+                { @"F9", Keys.F9 },
+                { @"F10", Keys.F10 },
+                { @"F11", Keys.F11 },
+                { @"F12", Keys.F12 }
             };
 
         private readonly string _keys;
@@ -124,7 +124,7 @@ namespace SeleniumFixture.Model
             }
 
             //Replace content if it is a special key; otherwise just leave as is
-            var singleResult = KeyDictionary.ContainsKey(finalKey) ? KeyDictionary[finalKey] : finalKey;
+            var singleResult = KeyDictionary.TryGetValue(finalKey, out var value) ? value : finalKey;
             return string.Concat(Enumerable.Repeat(singleResult, repeater));
         }
 

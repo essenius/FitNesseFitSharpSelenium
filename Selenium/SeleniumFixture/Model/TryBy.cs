@@ -1,4 +1,4 @@
-﻿// Copyright 2021-2023 Rik Essenius
+﻿// Copyright 2021 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -9,6 +9,8 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
+/* looks like this is not used anymore. Commenting out to validate everything still works without it
+ // TODO: remove this file
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +19,7 @@ using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model
 {
-    internal class CustomBy : By
+    internal class TryBy : By
     {
         protected readonly List<By> ByList = new();
         protected readonly string ElementIdentifier;
@@ -25,25 +27,11 @@ namespace SeleniumFixture.Model
         protected string DisplayName;
 
         /// <summary>Make this a virtual class by making its constructor protected</summary>
-        protected CustomBy(string elementIdentifier)
-        {
+        protected TryBy(string elementIdentifier) =>
             ElementIdentifier = !string.IsNullOrEmpty(elementIdentifier)
                 ? elementIdentifier
                 : throw new ArgumentException(@"element identifier cannot be null or the empty string",
                     nameof(elementIdentifier));
-        }
-
-        // We redefine (new) the ones that are redefined in MobileBy.
-        // We need to execute both the By and the MobileBy variants
-        // as we don't know whether we are running in mobile context or not
-
-        public new static By ClassName(string selector) => new ByClassName(selector);
-
-        public new static By Id(string selector) => new ById(selector);
-
-        public new static By Name(string selector) => new ByName(selector);
-
-        public new static By TagName(string selector) => new ByTagName(selector);
 
         public static By Content(string selector) => new ByContent(selector);
 
@@ -52,17 +40,18 @@ namespace SeleniumFixture.Model
         /// <returns>The element that matches</returns>
         public override IWebElement FindElement(ISearchContext context)
         {
-            Exception lastException = null;
+            NoSuchElementException lastException = null;
             foreach (var by in ByList)
+            {
                 try
                 {
                     return by.FindElement(context);
                 }
-                catch (Exception ex) when (ex is NoSuchElementException or InvalidSelectorException or InvalidCastException)
+                catch (NoSuchElementException ex)
                 {
                     lastException = ex;
                 }
-
+            }
             Debug.Assert(lastException != null, nameof(lastException) + " != null");
             throw new NoSuchElementException($"Could not find element {DisplayName}", lastException);
         }
@@ -74,15 +63,16 @@ namespace SeleniumFixture.Model
         {
             var webElementList = new List<IWebElement>();
             foreach (var by in ByList)
+            {
                 try
                 {
                     webElementList.AddRange(by.FindElements(context));
                 }
-                catch (Exception ex) when (ex is NoSuchElementException or InvalidCastException)
+                catch (NoSuchElementException)
                 {
                     // ignore
                 }
-
+            }
             return webElementList.AsReadOnly();
         }
 
@@ -99,3 +89,4 @@ namespace SeleniumFixture.Model
         public static By Trial(string selector) => new ByTrial(selector);
     }
 }
+*/

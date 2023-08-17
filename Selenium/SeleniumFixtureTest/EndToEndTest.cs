@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,6 +22,8 @@ using OpenQA.Selenium;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
+
+// ReSharper disable UnusedMember.Local -- we use reflection to call the test methods
 
 namespace SeleniumFixtureTest
 {
@@ -37,7 +38,6 @@ namespace SeleniumFixtureTest
     /// <remarks>
     ///     It's a bit bigger than I would like, but splitting it in partial classes doesn't make it much better.
     /// </remarks>
-    [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Used via reflection calls")]
     public class EndToEndTest
     {
         #region Support fields and properties
@@ -139,7 +139,6 @@ namespace SeleniumFixtureTest
 
         #region Support Methods
 
-        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local", Justification = "Intentional")]
         private void AssertOptionValues(string locator, IReadOnlyCollection<string> expected, string message)
         {
             var allItems = _selenium.AllOptionsOfElementBy(locator, "text");
@@ -215,15 +214,8 @@ namespace SeleniumFixtureTest
         private void VerifySendKeysToElementWithFallback(
             string keys, string element, string typeAttribute, string fallbackKeys)
         {
-            if (typeAttribute is "date" or "time" && _selenium.Driver.IsFirefox())
-            {
-                _selenium.SendKeysToElement(fallbackKeys, element);
-            }
-            else
-            {
-                _ = _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
-                _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
-            }
+            _ = _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
+            _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
             Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element),
                 "SendKeys value is correct for '{0}'", element);
         }
@@ -263,7 +255,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert (2)");
             Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"), "Pressed OK");
 
-            _selenium.ClickElement("partialcontent:Confir");
+            _selenium.ClickElement(@"partialcontent:Confir");
             Assert.IsTrue(_selenium.DismissAlert(), "Dismiss alert");
             Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss succeeded");
 
@@ -303,7 +295,7 @@ namespace SeleniumFixtureTest
 
         private void AttributeOfElementTest()
         {
-            Assert.AreEqual(CreateUri("iframe1.html"), _selenium.AttributeOfElement("src", "id:iframe1"));
+            Assert.AreEqual(CreateUri("iframe1.html").ToString(), _selenium.AttributeOfElement("src", "id:iframe1"));
             var originalClass = _selenium.AttributeOfElement("class", "status");
             Assert.IsTrue(_selenium.SetAttributeOfElementTo("class", "status", "fail"), "Set class to fail");
             Assert.IsTrue(
@@ -663,17 +655,17 @@ namespace SeleniumFixtureTest
                 "Select by parent label ignoring colon");
             Assert.IsTrue(
                 _selenium.TextInElement("label:Text Area").StartsWith("Sample text area"),
-                "Select by label after element, withouts specifying colon");
+                "Select by label after element, without specifying colon");
         }
 
-        private void SelectByPartialContentlTest()
+        private void SelectByPartialContentTest()
         {
             Assert.IsTrue(
                 _selenium.TextInElement("PartialContent:allows for checking").StartsWith("Sample text area"),
                 "Select text area by partial content");
             Assert.AreEqual(
                 "7",
-                _selenium.AttributeOfElement("value", "partialcontent:7 of"),
+                _selenium.AttributeOfElement("value", @"partialcontent:7 of"),
                 "Select by partial content");
         }
 
@@ -795,13 +787,26 @@ namespace SeleniumFixtureTest
             VerifySendKeysToElementWithFallback("{LEFT 25}{TAB}", "skill", "range", "75");
             VerifySendKeysToElementWithFallback("3{RIGHT}2004{TAB}", "month", "month", "2004-03");
             VerifySendKeysToElementWithFallback("472014", "week", "week", "2014-W47");
-            VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
-            VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
-            VerifySendKeysToElementWithFallback(
-                "2409{RIGHT}2014{RIGHT}0123",
-                "datetime-local",
-                "datetime-local",
-                "2014-09-24T01:23");
+            if (_selenium.Driver.IsFirefox())
+            {
+                VerifySendKeysToElementWithFallback("2014-07-02", "date", "date", "2014-07-02");
+                VerifySendKeysToElementWithFallback("01:23", "time", "time", "01:23");
+                VerifySendKeysToElementWithFallback(
+                    "09242014{RIGHT}0123A", 
+                    "datetime-local", 
+                    "datetime-local",
+                    "2014-09-24T01:23");
+            }
+            else
+            {
+                VerifySendKeysToElementWithFallback("0207{RIGHT}2014", "date", "date", "2014-07-02");
+                VerifySendKeysToElementWithFallback("{RIGHT 4}{LEFT}0123", "time", "time", "01:23");
+                VerifySendKeysToElementWithFallback(
+                    "2409{RIGHT}2014{RIGHT}0123",
+                    "datetime-local",
+                    "datetime-local",
+                    "2014-09-24T01:23");
+            }
 
             // The color picker is a pain since it opens a system dialog which Selenium can't get to
             // So we 'cheat' here and directly set the value. We don't have to test the color picker.
