@@ -9,13 +9,13 @@ The steps to install are very similar to that of installing the [FibonacciDemo](
 Differences are:
 * Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
 * Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
-* If you have .NET 5 SDK installed:
+* If you have .NET 6 SDK installed:
     * Build fixture solution: `dotnet build --configuration release Selenium.sln`
     * Go to fixture folder: `cd SeleniumFixture`
-    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net5.0 --framework net5.0 --configuration release`
-* If you don't have .NET 5 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
+    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net5.0 --framework net6.0 --configuration release`
+* If you don't have .NET 6 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
 * Install browser drivers and other dependencies that you need (see below).
-* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net5.0`
+* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net6.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
 # Installing dependencies
@@ -46,7 +46,7 @@ TESTSITE=http://mytestsite.azurewebsites.net.
 
 ## Selenium Server
 
-If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.selenium.dev/downloads/ (you will need version 3.141.59 or a newer version 3 patch if that exists) and if you want to be able to run the unit tests, configure the Selenium Server URL in key `SeleniumServer` in `plugins.properties`. 
+If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.selenium.dev/downloads/ (you will need version 4.11 or a newer version 4 patch if that exists) and if you want to be able to run the unit tests, configure the Selenium Server URL in key `SeleniumServer` in `plugins.properties`. 
 
 ```
 SeleniumServer=!-http://127.0.0.1:6667-!
@@ -54,23 +54,24 @@ SeleniumServer=!-http://127.0.0.1:6667-!
 
 ## Appium
 
-If tou want to use Appium Desktop (https://appium.io) install that. For the moment only Appium 1 (Desktop) is supported. You might also need to configure an emulated Android device; Three variables of use here:
+If you want to use Appium Desktop (https://appium.io) install that. Only Appium 2 is supported. You might also need to configure an emulated Android device; Three variables of use here:
 * `AppiumServer`: the URL for Appium
 * `AndroidDevice`: the ID of the Android device you want to test with.
 
-The demo uses KitKat 4.4 with x86, 1GB, 720x1280 Xh-DPI. Ensure Appium is up and running and listening before you run the tests
+The demo uses Lollipop 5.1 with x86, 512MB, 720x1280 WXGA, API 22. Ensure Appium is up and running and listening before you run the tests
 
 ```
 AppiumServer=!-http://127.0.0.1:4723-!
-AndroidDevice=!-XH-DPI 4.65in Kit Kat 4.4-!
+AndroidDevice=!-4.7 WXGA API 22-!
 ```
 
 ## WinAppDriver
 
-Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required. Make sure that it listens to a different port than Appium (by default they listen to the same port).
+Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required, and make sure that Appium has the Windows driver installed.
+WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so ut isn't fully functional under Selenium 4.
 
 ```
-WinAppServer=!-http://127.0.0.1:4727-!
+WinAppServer=!-http://127.0.0.1:4723-!
 ```
 
 ## Firefox integrated authentication
