@@ -1,7 +1,7 @@
 # FitNesseFitSharpSelenium
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
 
-For the moment it still depends on Selenium 3 as it seems WinAppDriver can't cope with Selenium 4 just yet.
+As Selenium 3 is now considered legacy, Selenium 4 is now used. This implies that the support for WinAppDriver is limited as that can't cope with Selenium 4 a this stage.
 
 # Installing the fixture and the examples
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
@@ -12,7 +12,7 @@ Differences are:
 * If you have .NET 6 SDK installed:
     * Build fixture solution: `dotnet build --configuration release Selenium.sln`
     * Go to fixture folder: `cd SeleniumFixture`
-    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net5.0 --framework net6.0 --configuration release`
+    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net6.0 --framework net6.0 --configuration release`
 * If you don't have .NET 6 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
 * Install browser drivers and other dependencies that you need (see below).
 * Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net6.0`
