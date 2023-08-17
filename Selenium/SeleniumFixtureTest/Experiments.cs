@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -11,6 +11,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using SeleniumFixture;
@@ -27,7 +28,7 @@ namespace SeleniumFixtureTest
         {
             var selenium = new Selenium();
             // Chrome cannot interact with context menus. Workaround is using native sendkeys, but we don't want to go there.
-            // This test tries to select all in the context meny and then press delete. It just presses delete instead, so the
+            // This test tries to select all in the context menu and then press delete. It just presses delete instead, so the
             // field doesn't get empty. If this test would fail, right click would work
             selenium.SetBrowser("chrome");
             selenium.SetTimeoutSeconds(20);
@@ -63,19 +64,33 @@ namespace SeleniumFixtureTest
         [TestCategory("Experiments")]
         public void SeleniumFfTest()
         {
-            var selenium = new Selenium();
+            /* var selenium = new Selenium(); */
             var options = Selenium.NewOptionsFor("ff") as FirefoxOptions;
             var service = FirefoxDriverService.CreateDefaultService();
             service.Host = "127.0.0.1";
             var ff = new FirefoxDriver(service, options, TimeSpan.FromSeconds(10));
             ff.Navigate().GoToUrl(new Uri("http://www.google.com?hl=en"));
             ff.Quit();
-            //Assert.IsNotNull(options, "Options is not null");
+            /*Assert.IsNotNull(options, "Options is not null");
             //Console.WriteLine(options.ToString());
             //selenium.SetBrowserWithOptions("ff", options);
             //selenium.Open(new Uri("http://www.google.com?hl=en"));
-            //selenium.Close();
+            //selenium.Close(); */
 
+        }
+
+
+        [TestMethod]
+        [TestCategory("Experiments")]
+        public void SeleniumRemoteTest()
+        {
+            var selenium = new Selenium();
+            var options = Selenium.NewOptionsFor("chrome") as ChromeOptions;
+            Assert.IsNotNull(options, "Options is not null");
+            Console.WriteLine(options.ToString());
+            selenium.SetRemoteBrowserAtAddressWithOptions("chrome","http://localhost:6667", options);
+            selenium.Open(new Uri("http://www.google.com?hl=en"));
+            selenium.Close();
         }
 
     }

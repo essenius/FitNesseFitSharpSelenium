@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Rik Essenius
+﻿// Copyright 2021-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -52,13 +52,13 @@ namespace SeleniumFixture.Model
         /// <returns>The element that matches</returns>
         public override IWebElement FindElement(ISearchContext context)
         {
-            NoSuchElementException lastException = null;
+            Exception lastException = null;
             foreach (var by in ByList)
                 try
                 {
-                    return @by.FindElement(context);
+                    return by.FindElement(context);
                 }
-                catch (NoSuchElementException ex)
+                catch (Exception ex) when (ex is NoSuchElementException or InvalidSelectorException or InvalidCastException)
                 {
                     lastException = ex;
                 }
@@ -76,9 +76,9 @@ namespace SeleniumFixture.Model
             foreach (var by in ByList)
                 try
                 {
-                    webElementList.AddRange(@by.FindElements(context));
+                    webElementList.AddRange(by.FindElements(context));
                 }
-                catch (NoSuchElementException)
+                catch (Exception ex) when (ex is NoSuchElementException or InvalidCastException)
                 {
                     // ignore
                 }

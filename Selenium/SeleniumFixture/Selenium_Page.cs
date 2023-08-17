@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -15,10 +15,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.iOS;
-using OpenQA.Selenium.Appium.MultiTouch;
+using OpenQA.Selenium.Interactions;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
 using static System.FormattableString;
@@ -60,7 +59,7 @@ namespace SeleniumFixture
 
         /// <summary>
         ///     Long press a key on an Android via a keycode (number or field name). Returns false if not run on an Android or the
-        ///     keycode is not recognised
+        ///     keycode is not recognized
         /// </summary>
         public bool LongPressKeyCode(string keyCodeIn)
         {
@@ -81,10 +80,10 @@ namespace SeleniumFixture
             return true;
         }
 
-        //TODO implement metastates
+        //TODO implement meta states
         /// <summary>
         ///     Press a key on an Android via a keycode (number/field name). Returns false if not run on an Android or the keycode is
-        ///     not recognised
+        ///     not recognized
         /// </summary>
         public bool PressKeyCode(string keyCodeIn)
         {
@@ -146,7 +145,10 @@ namespace SeleniumFixture
                     return true;
                 }
                 case AndroidDriver androidDriver:
-                    new TouchAction(androidDriver).Press(startX, startY).Wait(200).MoveTo(endX, endY).Release().Perform();
+
+                    new Actions(androidDriver).MoveToLocation(startX, startY).ClickAndHold().MoveToLocation(endX, endY).Release().Perform();
+                        
+                    /* new TouchAction(androidDriver).Press(startX, startY).Wait(200).MoveTo(endX, endY).Release().Perform(); */
                     return true;
             }
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Rik Essenius
+﻿// Copyright 2021-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -9,7 +9,6 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -53,13 +52,14 @@ namespace SeleniumFixtureTest
                 .GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
                 .Count(m => m.GetCustomAttribute(typeof(TestMethodAttribute)) != null);
             var options = Selenium.NewOptionsFor("Android") as AppiumOptions;
-            options.DeviceName = "Pixel 2";
+            Assert.IsNotNull(options, "Options != null");
+            options.DeviceName = "Pixel 2 API 28";
             options.AutomationName = "UiAutomator2";
             options.PlatformVersion = "9";
             Fixture.SetTimeoutSeconds(60);
             try
             {
-                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4725", options));
+                Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4723", options));
             }
             catch (StopTestException)
             {

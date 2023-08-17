@@ -124,7 +124,7 @@ namespace SeleniumFixture.Model
 
             // Drag to other window
             Html5SimulateEvent(
-                dropToDriver, dropToDriver.FindElement(By.TagName("body")), "dragenter", Position.Right, null);
+                dropToDriver, dropToDriver.FindElement(By.TagName("body")), @"dragenter", Position.Right, null);
             Html5SimulateEvent(dropToDriver, dropToElement, @"dragenter", Position.Right, null);
             Html5SimulateEvent(dropToDriver, dropToElement, @"dragover", Position.Center, null);
             dragData = Html5SimulateEvent(dropToDriver, dropToElement, @"drop", Position.Center, dragData);

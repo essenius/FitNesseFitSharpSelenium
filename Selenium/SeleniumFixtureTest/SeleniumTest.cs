@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -25,6 +25,7 @@ namespace SeleniumFixtureTest
     public class SeleniumTest
     {
         private const string CookiesOkButton = "id:L2AGLb";
+        private const string RejectCookiesButton = "id:W0wltc";
         private const string SearchBar = "name:q";
         private Selenium _selenium;
 
@@ -178,11 +179,11 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(_selenium.WaitForElement(cookiesOkButton));
             _selenium.ClickElement(cookiesOkButton);
             Assert.IsTrue(_selenium.WaitForElement("van"));
-            _selenium.SetElementTo("naar", "Den Haag HS");
-            _selenium.SendKeysToElement("Rotterdam Centraal{Enter}", "van");
-            _selenium.WaitUntilElementIsClickable("Plannen en aanmelden");
-            _selenium.ClickElement("Plannen en aanmelden");
-            _selenium.WaitForElement("trial:rio-jp-advice-container-wrapper");
+            _selenium.SetElementTo(@"naar", @"Den Haag HS");
+            _selenium.SendKeysToElement(@"Rotterdam Centraal{Enter}", "van");
+            _selenium.WaitUntilElementIsClickable(@"Plannen");
+            _selenium.ClickElement(@"Plannen");
+            _selenium.WaitForElement(@"trial:rio-jp-advice-container-wrapper");
 
             _selenium.Close();
         }
@@ -197,27 +198,12 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Selenium.SetProxyType("System"));
             Assert.IsTrue(_selenium.SetBrowser("Firefox"));
             Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")));
+            _selenium.ClickElementIfVisible(RejectCookiesButton);
             Assert.IsTrue(_selenium.WaitUntilTitleMatches("Google"));
-            Assert.IsTrue(_selenium.ClickElementIfVisible(CookiesOkButton) ?? true);
             Assert.IsTrue(_selenium.WaitForElement(SearchBar));
             Assert.IsTrue(_selenium.Url.Contains("www.google."), "url is something like www.google.");
             Assert.IsTrue(_selenium.SetElementTo(SearchBar, "Cheese"));
             Assert.IsTrue(_selenium.SubmitElement(SearchBar));
-        }
-
-        [TestMethod]
-        [TestCategory("Integration")]
-        public void SeleniumLocalInternetExplorerGoogleTest()
-        {
-            Assert.IsTrue(Selenium.SetProxyType("System"), "Set Proxy System");
-            Assert.IsTrue(_selenium.SetBrowser("IE"), "Set Browser IE");
-            Assert.IsTrue(_selenium.Open(new Uri("http://www.google.com")), "Open Uri");
-            Assert.IsTrue(_selenium.WaitUntilTitleMatches("Google"));
-            Assert.IsTrue(_selenium.ClickElementIfVisible(CookiesOkButton) ?? true);
-            Assert.IsTrue(_selenium.WaitForElement("name:q"));
-            Assert.IsTrue(_selenium.Url.Contains("google."), "URL contains google");
-            Assert.IsTrue(_selenium.SetElementTo(SearchBar, "Cheese"), "Set q to Cheese");
-            Assert.IsTrue(_selenium.SubmitElement(SearchBar), "Submit");
         }
 
         [TestMethod]

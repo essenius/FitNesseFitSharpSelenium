@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -24,10 +24,12 @@ namespace SeleniumFixture.Model
         public static string IntegratedAuthenticationDomain { get; set; } =
             AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
 
-        public override string Name { get; } = "FIREFOX";
+        public override string Name => "FIREFOX";
 
         protected virtual FirefoxOptions FirefoxOptions()
         {
+            // TODO: check out https://stackoverflow.com/questions/43960301/using-http-proxy-with-selenium-geckodriver/43961118#43961118
+
             var options = new FirefoxOptions { Proxy = Proxy };
 
             // As of FF49 Firefox can trust Root authorities in the windows certificate store. 

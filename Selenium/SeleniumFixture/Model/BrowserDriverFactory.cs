@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -32,7 +32,7 @@ namespace SeleniumFixture.Model
                 new HeadlessFirefoxDriverCreator(proxy, timeout),
                 new InternetExplorerDriverCreator(proxy, timeout),
                 new IosDriverCreator(proxy, timeout),
-                new OperaDriverCreator(proxy, timeout),
+                /* new OperaDriverCreator(proxy, timeout), */
                 new SafariDriverCreator(timeout),
                 new WinAppDriverCreator(proxy, timeout),
                 new NoBrowserDriverCreator()
@@ -71,13 +71,13 @@ namespace SeleniumFixture.Model
             var browserInUpperCase = browserName.Replace(" ", string.Empty).ToUpperInvariant();
             return browserInUpperCase switch
             {
-                "GOOGLECHROME" => "CHROME",
-                "GOOGLECHROMEHEADLESS" => "CHROMEHEADLESS",
-                "MICROSOFTEDGE" => "EDGE",
-                "MSEDGE" => "EDGE",
-                "FF" => "FIREFOX",
-                "FFHEADLESS" => "FIREFOXHEADLESS",
-                "INTERNETEXPLORER" => "IE",
+                @"GOOGLECHROME" => @"CHROME",
+                @"GOOGLECHROMEHEADLESS" => @"CHROMEHEADLESS",
+                @"MICROSOFTEDGE" => @"EDGE",
+                @"MSEDGE" => @"EDGE",
+                @"FF" => @"FIREFOX",
+                @"FFHEADLESS" => @"FIREFOXHEADLESS",
+                @"INTERNETEXPLORER" => @"IE",
                 _ => browserInUpperCase
             };
         }

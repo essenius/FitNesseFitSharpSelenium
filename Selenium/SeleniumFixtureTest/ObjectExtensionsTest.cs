@@ -70,13 +70,13 @@ namespace SeleniumFixtureTest
 
         [DataTestMethod]
         [TestCategory("Unit")]
-        [DataRow("GracefulName", "GracefulName")]
-        [DataRow("gracefulName", "GracefulName")]
-        [DataRow("GracefulName", "GracefulName")]
-        [DataRow("graceful name", "GracefulName")]
-        [DataRow("Graceful Name", "GracefulName")]
-        [DataRow("GrAcEful NAME", "GracefulName")]
-        [DataRow("grace FUL Name", "GraceFulName")]
+        [DataRow(@"GracefulName", "GracefulName")]
+        [DataRow(@"gracefulName", "GracefulName")]
+        [DataRow(@"GracefulName", "GracefulName")]
+        [DataRow(@"graceful name", "GracefulName")]
+        [DataRow(@"Graceful Name", "GracefulName")]
+        [DataRow(@"GrAcEful NAME", "GracefulName")]
+        [DataRow(@"grace FUL Name", "GraceFulName")]
         public void ObjectExtensionsToMethodNameTest(string input, string expected) =>
             Assert.AreEqual(expected, input.ToMethodName(), "input: " + input);
     }

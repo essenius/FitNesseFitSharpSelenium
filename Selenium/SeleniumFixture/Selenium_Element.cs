@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -22,8 +23,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
-using OpenQA.Selenium.Appium.Interfaces;
-using OpenQA.Selenium.Appium.MultiTouch;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumFixture.Model;
@@ -36,7 +35,7 @@ namespace SeleniumFixture
     {
         private IWebElement _query;
 
-        /// <summary>Default search method for finding elements: ClassName, CssSelector, Id, LinkText, Name, PartialLinkText, Tagname, XPath</summary>
+        /// <summary>Default search method for finding elements: ClassName, CssSelector, Id, LinkText, Name, PartialLinkText, TagName, XPath</summary>
         public static string DefaultSearchMethod
         {
             get => SearchParser.DefaultMethod;
@@ -174,41 +173,98 @@ namespace SeleniumFixture
             {
                 throw new NotImplementedException(ErrorMessages.NoDragDropToCoordinates);
             }
-            if (Driver is not IPerformsTouchActions driver) return false;
-            var touchAction = new TouchAction(driver);
+
             Debug.Assert(location != null, nameof(location) + " != null");
-            touchAction.LongPress(dragElement).Wait(200).MoveTo(location.X, location.Y).Release().Perform();
+
+            var action = new Actions(Driver);
+            //action.DragAndDropToOffset(dragElement, location.X - dragElement.Location.X, location.Y - dragElement.Location.Y).Perform();
+            action.MoveToElement(dragElement).ClickAndHold().Pause(TimeSpan.FromSeconds(0.8)).MoveToLocation(location.X, location.Y).Release().Perform();
+            /* if (Driver is not IPerformsTouchActions driver) return false;
+            var touchAction = new TouchAction(driver);
+            touchAction.LongPress(dragElement).Wait(200).MoveTo(location.X, location.Y).Release().Perform(); */
             return true;
         }
 
-        // todo: make a simpler version if target not invisible.
+        private Point CenterOfElement(IWebElement element)
+        {
+            var location = element.Location;
+            var size = element.Size;
+            return new Point(location.X + size.Width / 2, location.Y + size.Height / 2);
+        }
+
         /// <summary>Drag an element and drop it onto another element</summary>
         public bool DragElementAndDropOnElement(string dragElementLocator, string dropElementLocator)
         {
             var dragElement = FindElement(dragElementLocator);
             // We do the drop element resolution as late as possible since it may only appear during LongPress
+            // Also, the source may disappear when the drop is done, so we use its coordinates for robustness.
             if (Driver.IsAndroid() || Driver.IsIos())
             {
-                if (Driver is not IPerformsTouchActions driver) return false;
-                // first we long press and find the element. It might only show up during longpress
-                var checkAction = new TouchAction(driver);
-                checkAction.LongPress(dragElement).Perform();
+
+                // first we long press and find the element. It might only show up during long press
+                // An example of that is the remove button in the Android notification bar
+
+                var dragLocation = CenterOfElement(dragElement);
+                var checkAction = new Actions(Driver);
+                checkAction.MoveToElement(dragElement).ClickAndHold().Perform();
                 if (!WaitForElement(dropElementLocator))
                 {
                     throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
                 }
-                var target = FindElement(dropElementLocator);
-                // Now do the actual drag and drop. Not using MoveTo(Element) as element may still be invisible.
-                var position = target.Location;
-                var size = target.Size;
-                var moveX = position.X + size.Width / 2;
-                var moveY = position.Y + size.Height / 2;
-                checkAction.Release().Perform();
-                var action = new TouchAction(driver);
-                dragElement = FindElement(dragElementLocator);
-                action.LongPress(dragElement).MoveTo(moveX, moveY).Release().Perform();
+
+                var dropElement = FindElement(dropElementLocator);
+////                var dropLocation = CenterOfElement(dropElement);
+////                checkAction.MoveToLocation(dragLocation.X, dragLocation.Y).Release().Perform();
+////                WaitForElement(dragElementLocator);
+
+                checkAction
+                    .MoveToLocation(dragLocation.X, dragLocation.Y)
+                    .Pause(TimeSpan.FromSeconds(0.5))
+                    .MoveToElement(dropElement)
+                    ////.MoveToLocation(dropLocation.X, dropLocation.Y)
+                    .Release()
+                    .Perform();
+
+
+////                var dragAction = new Actions(Driver);
+
+                // DragAndDropToOffset doesn't seem to work, so we spell it out
+
+////                dragAction
+////                    .MoveToElement(dragElement)
+////                    .ClickAndHold()
+////                    .Pause(TimeSpan.FromSeconds(0.8))
+////                    .MoveToLocation(dropLocation.X, dropLocation.Y)
+////                    .Release()
+////                     .Perform();
                 return true;
+
+                /*
+                 
+                if (Driver is not IPerformsTouchActions driver) return false;
+                var checkAction = new TouchAction(driver);
+                checkAction.LongPress(dragLocation.X, dragLocation.Y).Perform();
+                if (!WaitForElement(dropElementLocator))
+                {
+                    throw new NoSuchElementException(ErrorMessages.DropElementNotFound);
+                }
+
+                var dropElement = FindElement(dropElementLocator);
+                var dropLocation = CenterOfElement(dropElement);
+                checkAction.Release().Perform();
+
+                // now we do the actual drag and drop
+
+                WaitForElement(dragElementLocator);
+                var action = new TouchAction(driver);
+                action
+                    .LongPress(dragLocation.X, dragLocation.Y)
+                    .MoveTo(dropLocation.X, dropLocation.Y)
+                    .Release()
+                    .Perform();
+                return true; */
             }
+
             DragDrop.Html5DragAndDrop(
                 Driver,
                 dragElement,
@@ -280,10 +336,14 @@ namespace SeleniumFixture
         public bool LongPressElementForSeconds(string searchCriterion, double seconds) => 
             DoOperationOnElement(searchCriterion, element =>
             {
+                var action = new Actions(Driver);
+                action.MoveToElement(element).ClickAndHold().Pause(TimeSpan.FromSeconds(seconds)).Release().Perform();
+                /*
                 if (Driver is not IPerformsTouchActions driver) return false;
                 var action = new TouchAction(driver);
                 action.LongPress(element).Wait(Convert.ToInt64(TimeSpan.FromSeconds(seconds).TotalMilliseconds))
                     .Release().Perform();
+                */
                 return true;
             });
 
@@ -307,7 +367,7 @@ namespace SeleniumFixture
 
             try
             {
-                new Actions(Driver).MoveToElement(element).Build().Perform();
+                new Actions(Driver).MoveToElement(element).Perform();
             }
             catch (NotImplementedException)
             {
@@ -346,7 +406,7 @@ namespace SeleniumFixture
             int oldHash;
             // We allow things like FromTop, from top, FROM top.
             // If that is used, we first scroll up to the top, and then start scrolling down.
-            if (Regex.Replace(direction, @"\s+", string.Empty).Equals("fromtop", StringComparison.OrdinalIgnoreCase))
+            if (Regex.Replace(direction, @"\s+", string.Empty).Equals(@"fromtop", StringComparison.OrdinalIgnoreCase))
             {
                 do
                 {
@@ -465,7 +525,8 @@ namespace SeleniumFixture
         {
             var realType = AttributeOfElement("type", searchCriterion);
             if (expectedType != realType) return null;
-            Console.WriteLine($"Type of {searchCriterion} is {realType}");
+            // TODO remove this line
+            Console.WriteLine($@"Type of {searchCriterion} is {realType}");
             return SendKeysToElement(keys, searchCriterion);
         }
 
@@ -529,9 +590,10 @@ namespace SeleniumFixture
         public bool TapElement(string searchCriterion) => 
             DoOperationOnElement(searchCriterion, element =>
             {
-                if (Driver is not IPerformsTouchActions driver) return false;
+                new Actions(Driver).MoveToElement(element).Click().Perform();
+                /* if (Driver is not IPerformsTouchActions driver) return false;
                 var action = new TouchAction(driver);
-                action.Tap(element).Perform();
+                action.Tap(element).Perform(); */
                 return true;
             });
 
@@ -584,7 +646,7 @@ namespace SeleniumFixture
             {
                 return drv.FindElement(new SearchParser(searchCriterion).By) != null;
             }
-            catch (NoSuchElementException nse)
+            catch (NoSuchElementException)
             {
                 return false;
             }

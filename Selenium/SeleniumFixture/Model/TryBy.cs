@@ -9,6 +9,8 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
+/* looks like this is not used anymore. Commenting out to validate everything still works without it
+ // TODO: remove this file
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -87,3 +89,4 @@ namespace SeleniumFixture.Model
         public static By Trial(string selector) => new ByTrial(selector);
     }
 }
+*/

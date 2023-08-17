@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -21,26 +21,26 @@ namespace SeleniumFixture.Model
     {
         private readonly Dictionary<string, Func<string, By>> _byMapping = new()
         {
-            { "ACCESSIBILITYID", MobileBy.AccessibilityId },
-            { "ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator },
-            { "CLASSNAME", CustomBy.ClassName },
-            { "CONTENT", CustomBy.Content },
-            { "CSSSELECTOR", By.CssSelector },
-            { "ID", CustomBy.Id },
-            { "IDORNAME", CustomBy.IdOrName },
-            { "IOSCLASSCHAIN", MobileBy.IosClassChain },
-            { "IOSNSPREDICATE", MobileBy.IosNSPredicate },
-            { "IOSUIAUTOMATION", MobileBy.IosUIAutomation },
-            { "LABEL", CustomBy.Label },
-            { "LINKTEXT", By.LinkText },
-            { "NAME", CustomBy.Name },
-            { "PARTIALCONTENT", CustomBy.PartialContent },
-            { "PARTIALLINKTEXT", By.PartialLinkText },
-            { "TAGNAME", By.TagName },
-            { "TIZENAUTOMATION", MobileBy.TizenAutomation },
-            { "TRIAL", CustomBy.Trial },
-            { "WINDOWSAUTOMATION", MobileBy.WindowsAutomation },
-            { "XPATH", By.XPath }
+            { @"ACCESSIBILITYID", MobileBy.AccessibilityId },
+            { @"ANDROIDUIAUTOMATOR", MobileBy.AndroidUIAutomator },
+            { @"CLASSNAME", CustomBy.ClassName },
+            { @"CONTENT", CustomBy.Content },
+            { @"CSSSELECTOR", By.CssSelector },
+            { @"ID", CustomBy.Id },
+            { @"IDORNAME", CustomBy.IdOrName },
+            { @"IOSCLASSCHAIN", MobileBy.IosClassChain },
+            { @"IOSNSPREDICATE", MobileBy.IosNSPredicate },
+            { @"IOSUIAUTOMATION", MobileBy.IosUIAutomation },
+            { @"LABEL", CustomBy.Label },
+            { @"LINKTEXT", By.LinkText },
+            { @"NAME", CustomBy.Name },
+            { @"PARTIALCONTENT", CustomBy.PartialContent },
+            { @"PARTIALLINKTEXT", By.PartialLinkText },
+            { @"TAGNAME", By.TagName },
+            { @"TIZENAUTOMATION", MobileBy.TizenAutomation },
+            { @"TRIAL", CustomBy.Trial },
+            { @"WINDOWSAUTOMATION", MobileBy.WindowsAutomation },
+            { @"XPATH", By.XPath }
         };
 
         public SearchParser(string searchCriterion)
@@ -77,7 +77,7 @@ namespace SeleniumFixture.Model
             get
             {
                 var key = Method.ToUpper(CurrentCulture);
-                if (_byMapping.ContainsKey(key)) return _byMapping[key];
+                if (_byMapping.TryGetValue(key, out var function)) return function;
                 throw new ArgumentException("Could not understand search method: " + Method);
             }
         }

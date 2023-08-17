@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Remote;
-using SeleniumFixture.Utilities;
 using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model
@@ -87,7 +85,8 @@ namespace SeleniumFixture.Model
                 exception is WebDriverException ||
                 exception is Win32Exception ||
                 exception is InvalidOperationException ||
-                exception is TargetInvocationException)
+                exception is TargetInvocationException ||
+                exception is NullReferenceException)
             {
                 CloseAllDrivers();
                 throw new StopTestException("Could not start browser: " + browserName, exception);

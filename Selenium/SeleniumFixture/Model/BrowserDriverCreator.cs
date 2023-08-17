@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -15,7 +15,6 @@ using System.Diagnostics;
 using System.Reflection;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -81,7 +80,11 @@ namespace SeleniumFixture.Model
         {
             var uri = BaseUri(baseAddress);
             options ??= Options();
+            // We're being hit by this issue: https://github.com/SeleniumHQ/selenium/issues/12475
+            // Therefore, disabling the proxy for now. TODO: monitor resolution of the issue.
+            options.Proxy = null;
             var result = new RemoteWebDriver(uri, options.ToCapabilities(), Timeout);
+            
             return result;
         }
     }
