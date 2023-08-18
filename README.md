@@ -69,10 +69,7 @@ AndroidDevice=!-4.7 WXGA API 22-!
 
 Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required, and make sure that Appium has the Windows driver installed.
 WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so ut isn't fully functional under Selenium 4.
-
-```
-WinAppServer=!-http://127.0.0.1:4723-!
-```
+For the same reason, you will not be able to run via WinAppDriver directly.
 
 ## Firefox integrated authentication
 
