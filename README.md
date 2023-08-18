@@ -68,12 +68,12 @@ AndroidDevice=!-4.7 WXGA API 22-!
 ## WinAppDriver
 
 Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required, and make sure that Appium has the Windows driver installed.
-WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so ut isn't fully functional under Selenium 4.
+WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so it isn't fully functional under Selenium 4.
 For the same reason, you will not be able to run via WinAppDriver directly.
 
 ## Firefox integrated authentication
 
-If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you wnat to enable it for.
+If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you what to enable it for.
 
 ```
 Firefox.IntegratedAuthentication=mydomain.com
