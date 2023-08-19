@@ -60,7 +60,7 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.WaitForElement(CalculatorIcon), "Wait for Calculator icon");
             Assert.IsTrue(Fixture.TapElement(CalculatorIcon), "Open the calculator");
             Assert.IsTrue(Fixture.WaitForElement("id:com.android.calculator2:id/formula"), "Wait for the calculator to open");
-            Assert.IsTrue(Fixture.LongPressElementForSeconds("xpath://android.widget.Button[@content-desc=\"delete\"] | //android.widget.Button[@content-desc=\"clear\"]", 0.5));
+            Assert.IsTrue(Fixture.LongPressElementForSeconds("xpath://android.widget.Button[@content-desc=\"delete\" or @content-desc=\"clear\"]", 0.5));
             Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit_7"), "Press 7");
             Assert.IsTrue(Fixture.TapElement("AccessibilityId:times"), "Press *");
             Assert.IsTrue(Fixture.TapElement("id:com.android.calculator2:id/digit_8"), "Press 8");
@@ -71,12 +71,10 @@ namespace SeleniumFixtureTest
             Debug.Print(Selenium.Screenshot());
             Assert.IsTrue(screenshot.StartsWith(@"<img alt=""Screenshot"" src=""data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAt"), "Screenshot starts OK");
 
-            //// Now we test the LongPressKeyCode with Home. Something strange happening here. It does something else from Appium than on the device emulator itself:
-            //// it goes to the recent apps. But it is consistent with long pressing the circle button on the emulator menu (which should be Home).
-
+            // check if calculator shows up in the recent apps
             Assert.IsTrue(Fixture.PressKeyCode("Home"), "Go Home");
             Assert.IsTrue(Fixture.WaitForElement(Browser), "Wait for the Browser icon");
-            Assert.IsTrue(Fixture.PressKeyCode("Keycode_APP_SWITCH"), "Move to Recent Apps page");
+            Assert.IsTrue(Fixture.PressKeyCode("APP_SWITCH"), "Move to Recent Apps page");
             Assert.IsTrue(Fixture.WaitForTextIgnoringCase("Calculator"), "Calculator exists on the recent apps page");
         }
 
@@ -154,11 +152,10 @@ namespace SeleniumFixtureTest
             Assert.IsNotNull(options, "options != null");
             options.PlatformVersion = "5";
             options.AutomationName = "UiAutomator2";
-            options.DeviceName = @"4.7 WXGA API 22";
 
             options.AddAdditionalAppiumOption("clearSystemFiles", "true");
             options.AddAdditionalAppiumOption("adbExecTimeout", "60000");
-            options.AddAdditionalAppiumOption("enforceXPath1", true);
+            //options.AddAdditionalAppiumOption("enforceXPath1", true);
 
             Fixture.SetTimeoutSeconds(10);
             try

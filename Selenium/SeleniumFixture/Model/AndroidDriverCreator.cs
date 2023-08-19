@@ -31,7 +31,14 @@ namespace SeleniumFixture.Model
         public override DriverOptions Options()
         {
             if (_options != null) return _options;
-            _options = new AppiumOptions { PlatformName = "Android", Proxy = Proxy };
+            // disabled proxy since it's not supported in Appium
+            // TODO: add proxy support when it's fixed
+            _options = new AppiumOptions
+            {
+                PlatformName = "Android", 
+                Proxy = null,
+                AutomationName = "UiAutomator2"
+            };
             return _options;
         }
 

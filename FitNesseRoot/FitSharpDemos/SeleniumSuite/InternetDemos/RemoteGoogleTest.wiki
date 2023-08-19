@@ -1,4 +1,4 @@
-!define SearchCriterion {Test Automation}
+!define SearchCriterion {ATDD}
 !define AcceptCookies {id:L2AGLb}
 !define ResultStats {id:result-stats}
 !define SearchBar {name:q}
@@ -11,4 +11,5 @@
 |set element             |${SearchBar}    |to        |${SearchCriterion}|
 |submit element          |${SearchBar}                                  |
 |wait until title matches|^(?i)(${SearchCriterion})                     |
+|show                    |screenshot                                    |
 |close                                                                  |

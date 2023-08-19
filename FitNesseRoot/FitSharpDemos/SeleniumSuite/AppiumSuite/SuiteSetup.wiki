@@ -1,15 +1,22 @@
-|script        |selenium                                                                                                                                                                                                             |
-|$okButton=    |echo|!-ClassName:android.widget.Button-!                                                                                                                                                                             |
-|$capabilities=|echo|!{deviceName:${AndroidDevice}, automationName:!-UiAutomator1-!, appPackage:com.android.launcher, appActivity:com.android.launcher2.Launcher, newCommandTimeout:300, clearSystemFiles:true, adbExecTimeout:30000}|
+|script    |selenium               |
+|$options= |New Options For|Android|
+|$selenium=|get fixture            |
+
+!|script                     |$options               |
+|set Platform Version        |5                      |
+|set Automation Name         |UiAutomator2           |
+|set Device Name             |4.7 WXGA API 22        |
+#|add additional appium option|clearSystemFiles||true |
+#|add additional appium option|adbExecTimeout  ||60000|
+#|add additional appium option|enforceXPath1   ||true |
+
+#|$capabilities=|echo|!{deviceName:${AndroidDevice}, automationName:!-UiAutomator1-!, appPackage:com.android.launcher, appActivity:com.android.launcher2.Launcher, newCommandTimeout:300, clearSystemFiles:true, adbExecTimeout:30000}|
+
 Start an Appium session. 
 
-!|script                                                                              |
-|set timeout       |60     |seconds                                                   |
-|set remote browser|Android|at address|${AppiumServer}|with capabilities|$capabilities|
+!|script           |$selenium                                               |
+|set timeout       |60     |seconds                                         |
+|set remote browser|Android|at address|${AppiumServer}|with options|$options|
 Go to the Apps page and click away the guidance, and go to the home page
 
-!|script                   |
-|tap element     |${apps}  |
-|wait for element|$okButton|
-|click element   |$okButton|
-|press keycode   |Home     |
+

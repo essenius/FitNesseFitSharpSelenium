@@ -81,7 +81,7 @@ namespace SeleniumFixture.Model
             var uri = BaseUri(baseAddress);
             options ??= Options();
             // We're being hit by this issue: https://github.com/SeleniumHQ/selenium/issues/12475
-            // Therefore, disabling the proxy for now. TODO: monitor resolution of the issue.
+            // Appium doesn't use it, so disabling the proxy for now. TODO: monitor resolution of the issue and revert when fixed.
             options.Proxy = null;
             var result = new RemoteWebDriver(uri, options.ToCapabilities(), Timeout);
             

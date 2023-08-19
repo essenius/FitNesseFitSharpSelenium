@@ -1,7 +1,3 @@
 !|scenario|Assert Result  |expectedValue                                              |
 |check    |Text In Element|AccessibilityId:CalculatorResults|Display is @expectedValue|
 
-|scenario |Text In Element|element|matches               |expectedResult               |
-|$result= |text in element|@element                                                    |
-|$escaped=|regex escape   |@expectedResult                                             |
-|check    |echo           |$result|=~/\s+[\u202a-\u202c]*($escaped)[\u202a-\u202c]*\s+/|

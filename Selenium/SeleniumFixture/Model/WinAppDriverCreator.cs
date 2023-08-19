@@ -42,7 +42,14 @@ namespace SeleniumFixture.Model
 
         private AppiumOptions WinAppOptions()
         {
-            var options = new AppiumOptions { PlatformName = "Windows", Proxy = Proxy };
+            var options = new AppiumOptions
+            {
+                PlatformName = "Windows", 
+                Proxy = null,
+                // TODO: add proxy back when Appium supports it
+                DeviceName = "WindowsPC",
+                AutomationName = "Windows"
+            };
             return options;
         }
     }

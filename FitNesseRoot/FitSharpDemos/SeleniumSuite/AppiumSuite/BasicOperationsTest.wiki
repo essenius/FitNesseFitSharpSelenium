@@ -1,7 +1,8 @@
 !|script                                             |
+|Wait for element|${CalculatorIcon}                  |
 |Scroll          |right                              |
 |Text            |widget preview|exists ignoring case|
 |scroll          |left                               |
 |Wait for text   |Music                              |
 |press keycode   |back                               |
-|wait for element|$browser                           |
+|wait for element|${BrowserIcon}                     |

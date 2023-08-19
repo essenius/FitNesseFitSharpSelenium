@@ -1,12 +1,10 @@
 Define the symbols we need in more than one test
 
-!|script                                                             |
-|$browser=   |echo|XPath://android.widget.TextView[@text = 'Browser']|
-|$calculator=|echo|xpath://*[@text='Calculator']                     |
-|$deleteArea=|echo|id:com.android.launcher:id/delete_target_text     |
-All tests start on the Apps page. Tap the element twice (the second one is actually a different element with the same id) so we are sure we are on the Apps page and not accidentally on the Widgets page.
+!|script                                                                           |
+|$deleteArea=|echo|id:com.google.android.googlequicksearchbox:id/delete_target_text|
 
+All tests start on the Apps page. 
 !|script                 |
-|tap element     |${apps}|
-|wait for element|${apps}|
-|tap element     |${apps}|
+|press keycode   |Home   |
+|wait for element|${Apps}|
+|tap element     |${Apps}|

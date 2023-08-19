@@ -170,7 +170,7 @@ namespace SeleniumFixture
                 // This caters for all Android texts I could think of, and probably for iOS too (still to be tested)
                 var textElements = Driver.FindElements(By.XPath("/" +
                                                                 "/*" +
-                                                                "[string(@text) or string(text())]"));
+                                                                "[string(@text) or text()]"));
                 textOnPage = textElements.Aggregate(textOnPage, (current, entry) => current + entry.Text + "\r\n");
             }
             return Regex.IsMatch(

@@ -1,9 +1,9 @@
 Long pressing an icon should copy it to the home page. Check that this happens, and then delete it.
 
-!|script                                                              |
-|ensure|long press element|$calculator|for                |1 |seconds |
-|ensure|wait for element  |$calculator                                |
-|ensure|drag element      |$calculator|and drop on element|$deleteArea|
-|reject|element exists    |$calculator                                |
-|reject|press keycode     |                                           |
-|reject|long press keycode|                                           |
+!|script                                                                    |
+|ensure|long press element|${CalculatorIcon}|for                |1 |seconds |
+|ensure|wait for element  |${CalculatorIcon}                                |
+|ensure|drag element      |${CalculatorIcon}|and drop on element|$deleteArea|
+|reject|element exists    |${CalculatorIcon}                                |
+|reject|press keycode     |                                                 |
+|reject|long press keycode|                                                 |

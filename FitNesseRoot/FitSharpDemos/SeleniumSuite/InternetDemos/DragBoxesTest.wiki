@@ -22,7 +22,7 @@ we are using variables here since these are resolved by the wiki. The references
 !|Script         |selenium                        |
 |set browser     |chrome                          |
 |open            |${DRAGBOXESPAGE}                |
-|window size     |770x370                         |
+|window size     |800x370                         |
 |wait for element|${AnyBox}                       |
 |check values    |order!||Put me||right||into||the|
 |show            |screenshot                      |

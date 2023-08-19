@@ -1,1 +1,3 @@
+!define Editor {ClassName:Edit}
+
 !contents -R2 -g -p -f -h

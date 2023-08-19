@@ -1,3 +1,11 @@
-|script               |Selenium                                                           |
-|Default Search Method|name                                                               |
-|Set Remote Browser   |Win App|At Address|${WinAppServer}|With Capabilities|!{app:notepad}|
+!|script              |Selenium              |
+|Default Search Method|name                  |
+|$options=            |new options for|WinApp|
+|push fixture                                |
+
+!|script            |$options |
+|set app            |notepad  |
+
+!|script                                                                   |
+|pop fixture                                                               |
+|Set Remote Browser|WinApp|At Address|${AppiumServer}|With Options|$options|

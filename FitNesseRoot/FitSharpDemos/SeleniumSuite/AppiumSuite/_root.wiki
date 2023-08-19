@@ -1,11 +1,13 @@
-!define apps {AccessibilityId:Apps}
+!define Apps {AccessibilityId:Apps}
+!define BrowserIcon {XPath://android.widget.TextView[@text = 'Browser']}
+!define CalculatorIcon {xpath://*[@text='Calculator']}
 
 For this test suite to work, make sure the Appium server has been started and the Android emulator is active. 
-The specs for the device that these tests were designed for are: 
- * Name: XH-DPI 4.65in Kit Kat 4.4 
- * OS: !-KitKat-! 4.4 - API 19 
+The specs for the device that these tests were designed for are the lowest that Appium 2 can hancle: 
+ * Name: 4.7 WXGA API 22 
+ * OS: Lollipop 5.1.1 - API 22 
  * Processor: x86
- * Memory: 1 GB
- * Resolution: 720 x 1280 Xh-DPI
+ * RAM: 512 MB
+ * Resolution: 720 x 1280 WXGA
 
 !contents -R2 -g -p -f -h

@@ -277,9 +277,15 @@ namespace SeleniumFixture
             if (int.TryParse(keyCodeIn, out var keyCode)) return keyCode;
             var myType = typeof(AndroidKeyCode);
             if (keyCodeIn == null) throw new ArgumentNullException(nameof(keyCodeIn));
+
             var myFieldInfo =
-                myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
-            if (myFieldInfo == null) return null;
+                myType.GetField(keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase) ??
+                myType.GetField("Keycode_" + keyCodeIn, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
+            if (myFieldInfo == null)
+            {
+                return null;
+            }
+
             var success = int.TryParse(myFieldInfo.GetValue(null)?.ToString(), out keyCode);
             if (!success) return null;
             return keyCode;
