@@ -10,7 +10,7 @@ Differences are:
 * Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
 * Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
 * If you have .NET 6 SDK installed:
-    * Build fixture solution: `dotnet build --configuration release Selenium.sln`
+    * Build fixture solution: `dotnet build --configuration release SeleniumFixture.sln`
     * Go to fixture folder: `cd SeleniumFixture`
     * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net6.0 --framework net6.0 --configuration release`
 * If you don't have .NET 6 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
