@@ -61,7 +61,7 @@ namespace SeleniumFixture.Model
 
         public override IWebDriver LocalDriver(object options)
         {
-            var driverFolder = Environment.GetEnvironmentVariable("IEWebDriver");
+            var driverFolder = ConfiguredFolder("IEWebDriver");
             InternetExplorerDriverService driverService = null;
             IWebDriver driver;
             try

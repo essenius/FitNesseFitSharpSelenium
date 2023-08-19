@@ -33,6 +33,16 @@ namespace SeleniumFixture.Model
 
         protected static Uri BaseUri(string baseAddress) => new(baseAddress);
 
+        protected static string ConfiguredFolder(string specificFolder)
+        {
+            var driverFolder = AppConfig.Get(specificFolder);
+            if (string.IsNullOrEmpty(driverFolder))
+            {
+                driverFolder = AppConfig.Get("DriverFolder");
+            }
+            return driverFolder;
+        }
+
         // This is a workaround for the absence of an IDriverService interface, using reflection
         // T is the driver service to be instantiated (e.g. ChromeDriverService)
         internal static T GetDefaultService<T>(string driverFolder = null)

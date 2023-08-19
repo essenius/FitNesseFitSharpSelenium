@@ -56,7 +56,7 @@ namespace SeleniumFixture.Model
 
         public override IWebDriver LocalDriver(object options)
         {
-            var driverFolder = Environment.GetEnvironmentVariable("GeckoWebDriver");
+            var driverFolder = ConfiguredFolder("GeckoWebDriver");
             FirefoxDriverService driverService = null;
             IWebDriver driver;
             try

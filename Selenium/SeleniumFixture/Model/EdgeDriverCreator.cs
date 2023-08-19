@@ -23,7 +23,7 @@ namespace SeleniumFixture.Model
 
         public EdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
         {
-            var driverFolder = Environment.GetEnvironmentVariable("EdgeWebDriver");
+            var driverFolder = ConfiguredFolder("EdgeWebDriver");
             try
             {
                 _driverService = GetDefaultService<EdgeDriverService>(driverFolder);

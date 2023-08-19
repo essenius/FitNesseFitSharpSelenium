@@ -27,7 +27,7 @@ namespace SeleniumFixture.Model
 
         public override IWebDriver LocalDriver(object options)
         {
-            var driverFolder = Environment.GetEnvironmentVariable("ChromeWebDriver");
+            var driverFolder = ConfiguredFolder("ChromeWebDriver");
             ChromeDriverService driverService = null;
             IWebDriver driver;
             try

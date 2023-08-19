@@ -18,6 +18,7 @@ namespace SeleniumFixtureTest
     public class MapTest
     {
         [TestMethod]
+        [TestCategory("Unit")]
         public void SimpleMapTest()
         {
             var test = new Map();

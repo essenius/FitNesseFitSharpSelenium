@@ -30,6 +30,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
+        [TestCategory("Unit")]
         public void KeyConverterSpecialKeysTest()
         {
             var k = new KeyConverter("^ac{Del}New Text~").ToSeleniumFormat;
