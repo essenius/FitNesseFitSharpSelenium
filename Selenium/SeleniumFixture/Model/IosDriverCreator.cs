@@ -27,14 +27,12 @@ namespace SeleniumFixture.Model
 
         public override IWebDriver LocalDriver(object options) => null;
 
-        public override DriverOptions Options() => new AppiumOptions { PlatformName = "iOS", Proxy = Proxy };
-
-        public override IWebDriver RemoteDriver(string baseAddress, Dictionary<string, object> capabilities)
+        public override DriverOptions Options() => new AppiumOptions
         {
-            var uri = BaseUri(baseAddress);
-            var options = RemoteOptions(capabilities);
-            return new IOSDriver<AppiumWebElement>(uri, options, Timeout);
-        }
+            PlatformName = "iOS",
+            Proxy = null, // TODO: add back when Appium supports it
+            AutomationName = "XCUITest"
+        };
 
         public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
         {

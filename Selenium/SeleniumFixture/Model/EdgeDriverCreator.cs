@@ -38,7 +38,7 @@ namespace SeleniumFixture.Model
 
         protected virtual EdgeOptions EdgeOptions()
         {
-            if (_driverService == null) throw new DriveNotFoundException("Could not find Edge driver");
+            if (_driverService == null) throw new DriverServiceNotFoundException("Could not find Edge driver");
             // this is still the case in the new Edge - it ignores proxy settings in Options
             if (Proxy.Kind != ProxyKind.System) throw new StopTestException(ErrorMessages.EdgeNeedsSystemProxy);
             var options = new EdgeOptions();
