@@ -1,4 +1,3 @@
-!|script                                |
-|Send Keys   |%{F4}%                    |
-|ClickElement|name:Don't Save|if visible|
-|Close                                  |
+!|script                                     |
+|Send Keys|^a{Del}%{F4}%|to element|${Editor}|
+|Close                                       |

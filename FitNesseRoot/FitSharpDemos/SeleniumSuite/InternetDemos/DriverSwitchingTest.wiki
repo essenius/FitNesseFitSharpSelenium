@@ -5,6 +5,8 @@ First open a couple of driver sessions
 
 |Script                    |!-SeleniumFixture.Selenium-!                                 |
 |$acceptCookieButtonGoogle=|echo                     |id:L2AGLb                          |
+|$acceptCookieButtonBing=  |echo                     |id:bnp_btn_accept                  |
+|$acceptCookieButtonYahoo= |echo                     |name:agree                         |
 |$resultStatsGoogle=       |echo                     |id:result-stats                    |
 |$chrome=                  |new browser              |Chrome                             |
 |$firefox=                 |new browser              |Firefox                            |
@@ -13,17 +15,21 @@ First open a couple of driver sessions
 |open                      |!-http://www.google.com?hl=en-!                              |
 |wait until title matches  |Google                                                       |
 |Click element             |$acceptCookieButtonGoogle|if visible                         |
+|show                      |screenshot                                                   |
 
 
 Do a Bing search on the Chrome driver
 
-!|script                                                    |
-|set driver              |$chrome                           |
-|open                    |http://www.bing.com               |
-|wait until title matches|Bing                              |
-|send keys               |Test Automation~|to element|name:q|
-|wait until title matches|^(?i)(Test Automation)            |
-|wait for element        |id:b_tween                        |
+!|script                                                          |
+|set driver              |$chrome                                 |
+|open                    |http://www.bing.com                     |
+|wait until title matches|Bing                                    |
+|Click element if visible|$acceptCookieButtonBing                 |
+|Click element           |name:q                                  |
+|send keys               |Test Automation{ENTER}|to element|name:q|
+|wait until title matches|^(?i)(Test Automation)                  |
+|show                    |screenshot                              |
+|wait for element        |id:b_tween                              |
 
 Do a Google search on the Firefox driver
 
@@ -32,27 +38,28 @@ Do a Google search on the Firefox driver
 |open                    |http://www.google.nl                       |
 |wait until title matches|Google                                     |
 |Click element           |$acceptCookieButtonGoogle|if visible       |
-|send keys               |Test Automation~         |to element|name:q|
+|send keys               |Test Automation{ENTER}   |to element|name:q|
 |wait until title matches|^(?i)(Test Automation)                     |
+|show                    |screenshot                                 |
 |wait for element        |$resultStatsGoogle                         |
 
 Do a Yahoo search on the remote driver
 
-!|script                                             |
-|set driver              |$remote                    |
-|open                    |https://search.yahoo.com   |
-|wait until title matches|Yahoo Search               |
-|click element if visible|ClassName:primary          |
-|send keys               |FitNesse~|to element|name:p|
-|wait until title matches|(?i)(FitNesse)             |
-|show                    |screenshot                 |
-|close                                               |
+!|script                                                   |
+|set driver              |$remote                          |
+|open                    |https://search.yahoo.com         |
+|wait until title matches|Yahoo                            |
+|click element if visible|$acceptCookieButtonYahoo         |
+|send keys               |FitNesse{Enter}|to element|name:p|
+|wait until title matches|(?i)(FitNesse)                   |
+|show                    |screenshot                       |
+|close                                                     |
 
 We already opened up Google on Headless. Also do a search here but search for something different than with Chrome so the screenshot is clearly different.
 
 !|script                                           |
 |set driver              |$headless                |
-|send keys               |Cheese~|to element|name:q|
+|send keys               |Cheese{ENTER}|to element|name:q|
 |wait until title matches|^(?i)(Cheese)            |
 |wait for element        |$resultStatsGoogle       |
 |show                    |screenshot               |

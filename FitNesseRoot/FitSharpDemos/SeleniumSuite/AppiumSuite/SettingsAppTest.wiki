@@ -1,25 +1,31 @@
 !|script                                                                               |
 |$settings=       |echo|XPath://android.widget.TextView[@text = 'Settings']            |
+|$moreSection=    |echo|XPath://android.widget.TextView[@text = 'More']                |
+|$accountSection= |echo|XPath://android.widget.TextView[@text = 'Accounts']            |
+|$airplaneMode=   |echo|id:android:id/switchWidget                                     |
 |$addAccount=     |echo|AndroidUiAutomator:new UiSelector().textContains("Add account")|
 |$textView=       |echo|ClassName:android.widget.TextView                              |
 |$aboutPhone=     |echo|XPath://android.widget.TextView[@text = 'About phone']         |
+|$systemUpdate=   |echo|XPath://android.widget.TextView[@text = 'System update']       |
 |$bluetoothSwitch=|echo|id:com.android.settings:id/switchWidget                        |
 
-!|script                                                             |
-|ensure|wait for element|$settings                                   |
-|ensure|tap element     |$settings                                   |
-|ensure|wait for element|$bluetoothSwitch                            |
-|check |text in element |$bluetoothSwitch|OFF                        |
-|reject|element         |$addAccount     |exists                     |
-|ensure|scroll          |down                                        |
-|ensure|wait for element|$addAccount                                 |
-|reject|element         |$bluetoothSwitch|exists                     |
-|ensure|scroll          |up              |to element|$bluetoothSwitch|
-|ensure|element         |$bluetoothSwitch|exists                     |
-|check |count of        |$textView       |elements  |>0              |
-|ensure|scroll          |from top        |to element|$aboutPhone     |
-|reject|element         |$bluetoothSwitch|exists                     |
-|ensure|scroll          |up              |to element|$bluetoothSwitch|
-|ensure|element         |$bluetoothSwitch|exists                     |
-
-
+!|script                                                                          |
+|ensure          |wait for element |$settings                                     |
+|ensure          |tap element      |$settings                                     |
+|wait for element|$moreSection                                                    |
+|tap element     |$moreSection                                                    |
+|check           |text in element  |$airplaneMode                    |OFF         |
+|press keycode   |Back                                                            |
+|wait for element|$settings                                                       |
+|reject          |element          |$accountSection                  |exists      |
+|scroll          |down                                                            |
+|wait for element|$accountSection                                                 |
+|reject          |element exists   |$moreSection                                  |
+|scroll          |up               |to element                       |$moreSection|
+|check           |count of elements|ClassName:android.widget.TextView|>0          |
+|scroll          |from top         |to element                       |$aboutPhone |
+|tap element     |$aboutPhone                                                     |
+|wait for element|$systemUpdate                                                   |
+|show            |screenshot                                                      |
+|press keycode   |Back                                                            |
+|scroll          |up               |to element                       |$moreSection|

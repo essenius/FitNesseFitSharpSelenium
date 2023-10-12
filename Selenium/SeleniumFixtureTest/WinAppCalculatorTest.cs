@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -9,9 +9,9 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.Appium;
 using SeleniumFixture;
 
 namespace SeleniumFixtureTest
@@ -37,15 +37,17 @@ namespace SeleniumFixtureTest
         [ClassInitialize]
         public static void ClassInitialize(TestContext _)
         {
-            var caps = new Dictionary<string, string>
-            {
-                { "app", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App" }
-            };
+            var options = Selenium.NewOptionsFor("WinApp") as AppiumOptions;
+            Assert.IsNotNull(options, "options != null");
+            options.App = @"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App";
+            options.DeviceName = "WindowsPC";
+            options.AutomationName = "Windows";
+
             Selenium.DefaultSearchMethod = "name";
             try
             {
                 Assert.IsTrue(
-                    Fixture.SetRemoteBrowserAtAddressWithCapabilities("WinApp", "http://127.0.0.1:4727", caps));
+                    Fixture.SetRemoteBrowserAtAddressWithOptions("WinApp", "http://127.0.0.1:4723", options));
             }
             catch (StopTestException)
             {

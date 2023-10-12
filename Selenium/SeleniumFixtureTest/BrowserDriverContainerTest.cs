@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -62,7 +62,7 @@ namespace SeleniumFixtureTest
             var chromeOptions = outCaps.GetCapability("goog:chromeOptions") as Dictionary<string, object>;
             Assert.IsNotNull(chromeOptions, "chromeOptions not null");
             var args = chromeOptions["args"] as IReadOnlyCollection<object>;
-            Assert.IsTrue(args.Contains("headless"), "headless present");
+            Assert.IsTrue(args?.Contains("headless"), "headless present");
 
             var ffOptions = BrowserDriverContainer.NewOptions("firefox");
             var ffOutCaps = ffOptions.ToCapabilities();
@@ -111,7 +111,7 @@ namespace SeleniumFixtureTest
         [DataRow("manual", true, 1)]
         [DataRow("DIRECT", true, 0)]
         [DataRow("MaNuAl", true, 1)]
-        [DataRow("proxyautoconfigure", true, 2)]
+        [DataRow(@"proxyautoconfigure", true, 2)]
         [DataRow("autodetect", true, 4)]
         [DataRow("unspecified", false, 6)]
         [DataRow("SYSTEM", true, 5)]

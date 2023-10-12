@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Rik Essenius
+﻿// Copyright 2021-20233 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -18,7 +18,7 @@ namespace SeleniumFixture.Model
     {
         public ByTrial(string elementIdentifier) : base(elementIdentifier)
         {
-            DisplayName = "ByTrial";
+            DisplayName = nameof(ByTrial);
             ByList.Add(Id(ElementIdentifier));
             ByList.Add(Name(ElementIdentifier));
             ByList.Add(LinkText(ElementIdentifier));

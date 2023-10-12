@@ -27,14 +27,14 @@ namespace SeleniumFixture.Model
         public const int MinValue = 1;
         private const string ProtectedModeKeyName = "2500";
 
-        private const string ZoneSubKey = "Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\{0}";
+        private const string ZoneSubKey = @"Microsoft\Windows\CurrentVersion\Internet Settings\Zones\{0}";
 
         private readonly Dictionary<string, string> _baseKeys = new()
         {
-            { "Machine Policies", "HKLM\\SOFTWARE\\Policies\\{0}" },
-            { "User Policies", "HKCU\\SOFTWARE\\Policies\\{0}" },
-            { "User", "HKCU\\SOFTWARE\\{0}" },
-            { "Machine", "HKLM\\SOFTWARE\\{0}" }
+            { "Machine Policies", @"HKLM\SOFTWARE\Policies\{0}" },
+            { "User Policies", @"HKCU\SOFTWARE\Policies\{0}" },
+            { "User", @"HKCU\SOFTWARE\{0}" },
+            { "Machine", @"HKLM\SOFTWARE\{0}" }
         };
 
         private string _foundIn;

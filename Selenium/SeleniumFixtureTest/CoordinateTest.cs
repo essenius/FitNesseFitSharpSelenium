@@ -40,7 +40,7 @@ namespace SeleniumFixtureTest
         [TestMethod]
         [TestCategory("Unit")]
         [ExpectedException(typeof(FormatException))]
-        public void CoordinateNonNUmmericCoordinateTest()
+        public void CoordinateNonNumericCoordinateTest()
         {
             var _ = new Coordinate("bogus,0");
         }

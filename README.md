@@ -1,7 +1,7 @@
 # FitNesseFitSharpSelenium
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
 
-For the moment it still depends on Selenium 3 as it seems WinAppDriver can't cope with Selenium 4 just yet.
+As Selenium 3 is now considered legacy, Selenium 4 is now used. This implies that the support for WinAppDriver is limited as that can't cope with Selenium 4 a this stage.
 
 # Installing the fixture and the examples
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
@@ -9,13 +9,13 @@ The steps to install are very similar to that of installing the [FibonacciDemo](
 Differences are:
 * Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
 * Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
-* If you have .NET 5 SDK installed:
-    * Build fixture solution: `dotnet build --configuration release Selenium.sln`
+* If you have .NET 6 SDK installed:
+    * Build fixture solution: `dotnet build --configuration release SeleniumFixture.sln`
     * Go to fixture folder: `cd SeleniumFixture`
-    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net5.0 --framework net5.0 --configuration release`
-* If you don't have .NET 5 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
+    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net6.0 --framework net6.0 --configuration release`
+* If you don't have .NET 6 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
 * Install browser drivers and other dependencies that you need (see below).
-* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net5.0`
+* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net6.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
 # Installing dependencies
@@ -27,8 +27,11 @@ We'll give the instructions for Windows here, for Mac it should be quite similar
 
 ## Browser Drivers
 
-* Choose a suitable folder that is already in the Path, or create new folder `%LOCALAPPDATA%\BrowserDrivers` and add that to the `Path`.
-* [Download the ChromeDriver version](https://chromedriver.chromium.org/downloads) that corresponds to the version of Chrome that you use. 
+As of Selenium 4, there is a Selenium Manager which takes care of downloading the right browser drivers. Unfortunately, it doesn't play nice with FitSharp, as it expects the selenium-manager folder under the FitSharp assembly folder rather than under the fixture assembly folder (where it is).
+There are two options to work around this: one is to create a symbolic link in the FitSharp assembly folder(s) to the selenium-manager folder in the fixture assembly; the other is preventing that Selenium Manager gets used. You can do that by downloading the drivers yourself into a folder of your choice,
+and setting the `DriverFolder` environment variable (or app setting) accordingly. A good location would be `%LOCALAPPDATA%\BrowserDrivers`.
+
+* [Download the ChromeDriver version](https://googlechromelabs.github.io/chrome-for-testing/) that corresponds to the version of Chrome that you use. 
 * Unblock the ZIP file and extract the contents into that folder.
 * Repeat the process to download drivers for [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), [Firefox (GeckoDriver)](https://github.com/mozilla/geckodriver/releases) and [Internet Explorer](https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver) (if you still need that)
 
@@ -46,7 +49,7 @@ TESTSITE=http://mytestsite.azurewebsites.net.
 
 ## Selenium Server
 
-If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.selenium.dev/downloads/ (you will need version 3.141.59 or a newer version 3 patch if that exists) and if you want to be able to run the unit tests, configure the Selenium Server URL in key `SeleniumServer` in `plugins.properties`. 
+If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.selenium.dev/downloads/ (you will need version 4.11 or a newer version 4 patch if that exists) and if you want to be able to run the unit tests, configure the Selenium Server URL in key `SeleniumServer` in `plugins.properties`. 
 
 ```
 SeleniumServer=!-http://127.0.0.1:6667-!
@@ -54,28 +57,26 @@ SeleniumServer=!-http://127.0.0.1:6667-!
 
 ## Appium
 
-If tou want to use Appium Desktop (https://appium.io) install that. For the moment only Appium 1 (Desktop) is supported. You might also need to configure an emulated Android device; Three variables of use here:
+If you want to use Appium Desktop (https://appium.io) install that. Only Appium 2 is supported. You might also need to configure an emulated Android device; Two variables of use here:
 * `AppiumServer`: the URL for Appium
 * `AndroidDevice`: the ID of the Android device you want to test with.
 
-The demo uses KitKat 4.4 with x86, 1GB, 720x1280 Xh-DPI. Ensure Appium is up and running and listening before you run the tests
+The demo uses Lollipop 5.1 with x86, 512MB, 720x1280 WXGA, API 22. Ensure Appium is up and running and listening before you run the tests
 
 ```
 AppiumServer=!-http://127.0.0.1:4723-!
-AndroidDevice=!-XH-DPI 4.65in Kit Kat 4.4-!
+AndroidDevice=!-4.7 WXGA API 22-!
 ```
 
 ## WinAppDriver
 
-Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required. Make sure that it listens to a different port than Appium (by default they listen to the same port).
-
-```
-WinAppServer=!-http://127.0.0.1:4727-!
-```
+Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required, and make sure that Appium has the Windows driver installed.
+WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so it isn't fully functional under Selenium 4.
+For the same reason, you will not be able to run via WinAppDriver directly.
 
 ## Firefox integrated authentication
 
-If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you wnat to enable it for.
+If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you what to enable it for.
 
 ```
 Firefox.IntegratedAuthentication=mydomain.com

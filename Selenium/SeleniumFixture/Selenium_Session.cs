@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -176,7 +176,7 @@ namespace SeleniumFixture
         public string GetKeyLikeFromWebStorage(string key) => BrowserStorage.FindFirstKeyLike(key);
 
         /// <summary>Creates a new browser instance and makes it current. See also <seealso cref="SetBrowser" /></summary>
-        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless, Opera</param>
+        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Firefox, Firefox Headless</param>
         /// <returns>an ID</returns>
         public string NewBrowser(string browserName) => NewBrowserWithOptions(browserName, null);
 
@@ -259,12 +259,12 @@ namespace SeleniumFixture
         public void ResetTimeout() => TimeoutInSeconds = DefaultTimeoutInSeconds;
 
         /// <summary>Sets the browser to be used</summary>
-        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Edge Headless, Firefox, Firefox Headless, Opera</param>
+        /// <param name="browserName">can be Chrome, Chrome Headless, IE, Edge, Edge Headless, Firefox, Firefox Headless</param>
         /// <returns>whether the operation succeeded</returns>
         public bool SetBrowser(string browserName) => !string.IsNullOrEmpty(NewBrowser(browserName));
 
         /// <summary>Sets the browser to be used</summary>
-        /// <param name="browserName">can be Chrome, Chrome Headless, Edge, Edge Headless, Firefox, Firefox Headless,IE, Opera</param>
+        /// <param name="browserName">can be Chrome, Chrome Headless, Edge, Edge Headless, Firefox, Firefox Headless,IE</param>
         /// <param name="options">options object (get via <seealso cref="NewOptionsFor" />)</param>
         /// <returns>whether the operation succeeded</returns>
         public bool SetBrowserWithOptions(string browserName, object options) =>

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -20,17 +20,6 @@ namespace SeleniumFixture.Utilities
     internal static class WebObjectExtensions
     {
         private static double _lastSetImplicitWaitSeconds;
-
-        [Obsolete]
-        public static void AddAdditionalOption(this DriverOptions options,
-            Dictionary<string, object> option)
-        {
-            if (option == null) return;
-            foreach (var entry in option.Keys)
-            {
-                options.AddAdditionalOption(entry, option[entry]);
-            }
-        }
 
         public static ReadOnlyCollection<IWebElement> FindElements(this IEnumerable<IWebElement> sourceElements, By by)
         {

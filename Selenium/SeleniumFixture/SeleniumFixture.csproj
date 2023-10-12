@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysysMode>AllEnabledByDefault</AnalysysMode>
-    <Version>3.3.0</Version>
+    <Version>4.0.1</Version>
     <Authors>Rik Essenius</Authors>
     <Description>A FitNesse/FitSharp fixture to drive Selenium WebDriver</Description>
-    <Copyright>Copyright © Rik Essenius 2015-2021</Copyright>
+    <Copyright>Copyright © Rik Essenius 2015-2023</Copyright>
     <RepositoryUrl>https://github.com/essenius/FitNesseFitSharpSelenium</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -21,14 +21,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Appium.WebDriver" Version="5.0.0-beta01" />
+    <PackageReference Include="Appium.WebDriver" Version="5.0.0-beta04" />
     <PackageReference Include="DotNetWindowsRegsitry" Version="0.1.0-alpha1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="Selenium.Support" Version="4.10.0" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.10.0" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
+    <PackageReference Include="Selenium.Support" Version="4.11.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.11.0" />
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>SeleniumFixtureTest</_Parameter1>
     </AssemblyAttribute>

@@ -1,32 +1,30 @@
-!|script                                                                        |
-|$menu=        |echo|id:com.android.calculator2:id/overflow_menu                |
-|$clearHistory=|echo|XPath://android.widget.TextView[@text = 'Clear history']   |
-|$clear=       |echo|id:com.android.calculator2:id/clear                        |
-|$digit7=      |echo|id:com.android.calculator2:id/digit7                       |
-|$digit8=      |echo|id:com.android.calculator2:id/digit8                       |
-|$multiply=    |echo|accessibilityId:multiply                                   |
-|$equals=      |echo|accessibilityId:equals                                     |
-|$resultBox=   |echo|xpath://android.widget.ViewSwitcher/android.widget.EditText|
+!|script                                                                                       |
+|$delete=  |echo|xpath://android.widget.Button[@content-desc='delete' or @content-desc='clear']|
+|$digit7=  |echo|id:com.android.calculator2:id/digit_7                                         |
+|$digit8=  |echo|id:com.android.calculator2:id/digit_8                                         |
+|$multiply=|echo|accessibilityId:times                                                         |
+|$formula= |echo|id:com.android.calculator2:id/formula                                         |
+|$equals=  |echo|accessibilityId:equals                                                        |
 Start the calculator, clear the history, execute a simple calculation (7*8=) and check the answer
 
-!|script                                                    |
-|wait for element|$calculator                               |
-|tap element     |$calculator                               |
-|tap element     |$menu                                     |
-|wait for element|$clearHistory                             |
-|tap element     |$clearHistory                             |
-|wait for element|$digit7                                   |
-|tap element     |$digit7                                   |
-|tap element     |$multiply                                 |
-|tap element     |$digit8                                   |
-|check           |text in element|$resultBox|7multiplied by8|
-|tap element     |$equals                                   |
-|wait for element|AccessibilityId:56                        |
-|check           |text in element|$resultBox|56             |
-Long pressing Home should take you to recent apps, which should now contain Calculator.
+!|script                                                |
+|Scroll            |Left                                |
+|wait for element  |${CalculatorIcon}                   |
+|tap element       |${CalculatorIcon}                   |
+|wait for element  |$formula                            |
+|long press element|$delete        |for     |0.5|seconds|
+|tap element       |$digit7                             |
+|tap element       |$multiply                           |
+|tap element       |$digit8                             |
+|check             |text in element|$formula|7×8        |
+|show              |screenshot                          |
+|tap element       |$equals                             |
+|check             |text in element|$formula|56         |
 
-!|script                                     |
-|press keycode      |Home                    |
-|wait for element   |$browser                |
-|long press key code|home                    |
-|wait for text      |Calculator|ignoring case|
+Pressing APP_SWITCH should take you to recent apps, which should now contain Calculator.
+
+!|script                                  |
+|press keycode   |Home                    |
+|wait for element|${BrowserIcon}          |
+|press key code  |Keycode_APP_SWITCH      |
+|wait for text   |Calculator|ignoring case|

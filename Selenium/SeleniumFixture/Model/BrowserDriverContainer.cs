@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -87,7 +87,8 @@ namespace SeleniumFixture.Model
                 exception is WebDriverException ||
                 exception is Win32Exception ||
                 exception is InvalidOperationException ||
-                exception is TargetInvocationException)
+                exception is TargetInvocationException ||
+                exception is NullReferenceException)
             {
                 CloseAllDrivers();
                 throw new StopTestException("Could not start browser: " + browserName, exception);

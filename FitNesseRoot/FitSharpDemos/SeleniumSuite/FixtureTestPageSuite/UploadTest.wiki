@@ -1,5 +1,5 @@
-test file is expected in the fixtures folder (=current directory).
+appsettings.json file is expected in the fixtures folder (=current directory).
 
 !|script                                                                             |
-|upload file|uploadTestFile.txt|in element |name:fileToUpload                        |
-|check      |text in element   |fileContent|=~/Small text file used for upload tests/|
+|upload file|appsettings.json|in element |name:fileToUpload                        |
+|check      |text in element   |fileContent|=~/TestSite/|

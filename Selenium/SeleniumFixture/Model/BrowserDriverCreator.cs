@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2023 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -12,9 +12,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {
@@ -33,6 +33,16 @@ namespace SeleniumFixture.Model
 
         protected static Uri BaseUri(string baseAddress) => new(baseAddress);
 
+        protected static string ConfiguredFolder(string specificFolder)
+        {
+            var driverFolder = AppConfig.Get(specificFolder);
+            if (string.IsNullOrEmpty(driverFolder))
+            {
+                driverFolder = AppConfig.Get("DriverFolder");
+            }
+            return driverFolder;
+        }
+
         // This is a workaround for the absence of an IDriverService interface, using reflection
         // T is the driver service to be instantiated (e.g. ChromeDriverService)
         internal static T GetDefaultService<T>(string driverFolder = null)
@@ -48,7 +58,15 @@ namespace SeleniumFixture.Model
 
             var methodInfo = serviceType.GetMethod("CreateDefaultService", typeList.ToArray());
             Debug.Assert(methodInfo != null, nameof(methodInfo) + " != null");
-            return (T)methodInfo.Invoke(serviceType, parameterList.ToArray());
+            try
+            {
+                return (T) methodInfo.Invoke(serviceType, parameterList.ToArray());
+            }
+            catch (TargetInvocationException)
+            {
+                // We might not need it, so ignore for now
+                return default;
+            }
         }
 
         // I tried to make these methods smarter (eliminate redundancy) e.g. via generics, but that is not easy with all the hard dependencies
@@ -62,7 +80,11 @@ namespace SeleniumFixture.Model
         {
             var uri = BaseUri(baseAddress);
             options ??= Options();
+            // We're being hit by this issue: https://github.com/SeleniumHQ/selenium/issues/12475
+            // Appium doesn't use it, so disabling the proxy for now. TODO: monitor resolution of the issue and revert when fixed.
+            options.Proxy = null;
             var result = new RemoteWebDriver(uri, options.ToCapabilities(), Timeout);
+            
             return result;
         }
     }

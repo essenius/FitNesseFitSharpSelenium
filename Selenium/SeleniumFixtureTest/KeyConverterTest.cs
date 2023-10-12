@@ -30,6 +30,7 @@ namespace SeleniumFixtureTest
         }
 
         [TestMethod]
+        [TestCategory("Unit")]
         public void KeyConverterSpecialKeysTest()
         {
             var k = new KeyConverter("^ac{Del}New Text~").ToSeleniumFormat;
@@ -50,7 +51,7 @@ namespace SeleniumFixtureTest
         [DataRow("special characters {%^~}", "{{}{%}{^}{~}{}}{[abc]}", "{%^~}[abc]")]
         [DataRow("{}", "{}", "")]
         [DataRow(@"{abc}def}", @"{abc}def}", @"abc}def")]
-        [DataRow(@"{a 5}", @"{a 5}", "aaaaa")]
+        [DataRow(@"{a 5}", @"{a 5}", @"aaaaa")]
         [DataRow(@"{abc 2}", @"{abc 2}", @"abcabc")]
         public void KeyConverterTest1(string testId, string input, string expected) =>
             Assert.AreEqual(expected, new KeyConverter(input).ToSeleniumFormat, testId);
