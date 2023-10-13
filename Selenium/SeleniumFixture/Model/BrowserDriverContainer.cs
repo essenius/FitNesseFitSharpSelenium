@@ -13,13 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Remote;
-using SeleniumFixture.Utilities;
 using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model

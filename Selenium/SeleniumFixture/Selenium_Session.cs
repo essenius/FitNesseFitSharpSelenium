@@ -19,7 +19,6 @@ using System.Threading;
 using DotNetWindowsRegistry;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture
 {

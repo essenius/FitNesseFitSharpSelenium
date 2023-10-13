@@ -13,7 +13,6 @@ using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
-using SeleniumFixture.Utilities;
 
 namespace SeleniumFixture.Model
 {

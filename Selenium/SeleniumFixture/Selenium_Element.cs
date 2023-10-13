@@ -595,7 +595,7 @@ namespace SeleniumFixture
             {
                 return drv.FindElement(new SearchParser(searchCriterion).By) != null;
             }
-            catch (NoSuchElementException nse)
+            catch (NoSuchElementException)
             {
                 return false;
             }
