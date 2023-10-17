@@ -76,13 +76,28 @@ namespace SeleniumFixture
             return true;
         });
 
+        ///// <summary>Click a specific element. Returns true or a NoSuchElementException</summary>
+        //public bool ClickElement(string searchCriterion)
+        //{
+        //    var element = Driver.FindElement(new SearchParser(searchCriterion).By);
+        //    element.Click();
+        //    return true;
+        //}
+
         /// <summary>Click a specific element. Returns true or a NoSuchElementException</summary>
-        public bool ClickElement(string searchCriterion)
+        public bool ClickElement(string searchCriterion, bool force = false) => DoOperationOnElement(searchCriterion, element =>
         {
-            var element = Driver.FindElement(new SearchParser(searchCriterion).By);
+            if (force)
+            {
+                element.Click();
+                return true;
+            }
+
+            MoveTo(element);
+            if (!WaitUntilIsClickable(element)) return false;
             element.Click();
             return true;
-        }
+        });
 
         /// <summary>Click a specific element if it is visible. Useful for e.g.cookie confirmations</summary>
         public bool? ClickElementIfVisible(string searchCriterion)
