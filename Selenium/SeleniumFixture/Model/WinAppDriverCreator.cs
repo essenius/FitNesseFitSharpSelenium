@@ -28,7 +28,7 @@ namespace SeleniumFixture.Model
         // Apparently the Windows driver doesn't expect /wd/hub, unlike all other drivers.
 
         //protected override string BasePath { get; set; } = "";
-        
+ 
         public override IWebDriver LocalDriver(object options) => null;
 
         public override DriverOptions Options() => WinAppOptions();

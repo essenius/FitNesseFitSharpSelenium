@@ -28,7 +28,7 @@ namespace SeleniumFixture.Model
 
         public override DriverOptions Options() => new AppiumOptions
         {
-            PlatformName = "iOS",
+            PlatformName = "iOS", 
             Proxy = null, // TODO: add back when Appium supports it
             AutomationName = "XCUITest"
         };
