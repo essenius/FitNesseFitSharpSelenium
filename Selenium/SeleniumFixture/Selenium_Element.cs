@@ -76,14 +76,6 @@ namespace SeleniumFixture
             return true;
         });
 
-        ///// <summary>Click a specific element. Returns true or a NoSuchElementException</summary>
-        //public bool ClickElement(string searchCriterion)
-        //{
-        //    var element = Driver.FindElement(new SearchParser(searchCriterion).By);
-        //    element.Click();
-        //    return true;
-        //}
-
         /// <summary>Click a specific element. Returns true or a NoSuchElementException</summary>
         public bool ClickElement(string searchCriterion, bool force = false) => DoOperationOnElement(searchCriterion, element =>
         {
