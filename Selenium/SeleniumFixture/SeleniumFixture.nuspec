@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SeleniumFixture</id>
-    <version>2.0.4</version>
+    <version>2.0.5</version>
     <title>SeleniumFixture</title>
     <authors>Rik Essenius</authors>
     <owners>Rik Essenius</owners>
@@ -10,11 +10,11 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <description>A FitNesse fixture to drive Selenium WebDriver</description>
     <releaseNotes>Updated Selenium Version</releaseNotes>
-    <copyright>Copyright © Rik Essenius 2015-2023</copyright>
+    <copyright>Copyright Â© Rik Essenius 2015-2023</copyright>
     <tags>ATDD TestAutomation</tags>
     <dependencies>
-      <dependency id="Selenium.Support" version="4.10.0" />
-      <dependency id="Selenium.WebDriver" version="4.10.0" />
+      <dependency id="Selenium.Support" version="4.14.1" />
+      <dependency id="Selenium.WebDriver" version="4.14.1" />
       <dependency id="ImageHandler" version="3.0.1" />
     </dependencies>
   </metadata>

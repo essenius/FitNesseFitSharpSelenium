@@ -69,6 +69,6 @@
 3.2.3    Eliminated NativeBrowserStorage as no longer used.
 3.3.0    Enabled Appium 2, introduced Set/NewBrowserWithOptions, NewOptionsFor, Set/NewRemoteBrowserAtAddressWithOptions,
          RemoteBrowserPath, made Edge path search for IE emulation smarter, cleaned up test site, added TableTestPage
-3.3.1   Updated packages to latest version and compatible with .Net 6
+3.3.1    Updated packages to latest version and compatible with .Net 6
 
 Note: we can't upgrade to Webdriver 4 until WinApp supports it.
