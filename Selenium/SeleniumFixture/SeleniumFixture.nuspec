@@ -1,21 +1,29 @@
 <?xml version="1.0"?>
 <package >
-  <metadata>
-    <id>SeleniumFixture</id>
-    <version>2.0.5</version>
-    <title>SeleniumFixture</title>
-    <authors>Rik Essenius</authors>
-    <owners>Rik Essenius</owners>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <description>A FitNesse fixture to drive Selenium WebDriver</description>
-    <releaseNotes>Updated Selenium Version</releaseNotes>
-    <copyright>Copyright © Rik Essenius 2015-2023</copyright>
-    <tags>ATDD TestAutomation</tags>
-    <dependencies>
-      <dependency id="Selenium.Support" version="4.14.1" />
-      <dependency id="Selenium.WebDriver" version="4.14.1" />
-      <dependency id="ImageHandler" version="3.0.1" />
-    </dependencies>
-  </metadata>
+	<metadata>
+		<id>SeleniumFixture</id>
+		<version>2.0.6</version>
+		<title>SeleniumFixture</title>
+		<authors>Rik Essenius</authors>
+		<owners>Rik Essenius</owners>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+		<description>A FitNesse fixture to drive Selenium WebDriver</description>
+		<releaseNotes>Updated Selenium Version</releaseNotes>
+		<copyright>Copyright © Rik Essenius 2015-2023</copyright>
+		<tags>ATDD TestAutomation</tags>
+		<dependencies>
+			<dependency id="Appium.WebDriver" version="5.0.0-beta04" />
+			<dependency id="DotNetWindowsRegsitry" version="0.1.0-alpha1" />
+			<dependency id="Microsoft.Extensions.Configuration" version="6.0.0" />
+			<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="6.0.0" />
+			<dependency id="Microsoft.Extensions.Configuration.Json" version="6.0.0" />
+			<dependency id="Microsoft.Win32.Registry" version="6.0.0-preview.5.21301.5" />
+			<dependency id="Selenium.Support" version="4.14.1" />
+			<dependency id="Selenium.WebDriver" version="4.14.1" />
+			<dependency id="Selenium.Support" version="4.14.1" />
+			<dependency id="Selenium.WebDriver" version="4.14.1" />
+			<dependency id="ImageHandler" version="3.0.1" />
+		</dependencies>
+	</metadata>
 </package>
