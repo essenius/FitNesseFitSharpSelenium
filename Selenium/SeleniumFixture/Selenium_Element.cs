@@ -77,8 +77,14 @@ namespace SeleniumFixture
         });
 
         /// <summary>Click a specific element. Returns true or a NoSuchElementException</summary>
-        public bool ClickElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
+        public bool ClickElement(string searchCriterion, bool force = false) => DoOperationOnElement(searchCriterion, element =>
         {
+            if (force)
+            {
+                element.Click();
+                return true;
+            }
+
             MoveTo(element);
             if (!WaitUntilIsClickable(element)) return false;
             element.Click();
