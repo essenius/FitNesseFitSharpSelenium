@@ -792,10 +792,10 @@ namespace SeleniumFixtureTest
                 VerifySendKeysToElementWithFallback("2014-07-02", "date", "date", "2014-07-02");
                 VerifySendKeysToElementWithFallback("01:23", "time", "time", "01:23");
                 VerifySendKeysToElementWithFallback(
-                    "09242014{RIGHT}0123A", 
+                    "09092014{RIGHT}0123A", 
                     "datetime-local", 
                     "datetime-local",
-                    "2014-09-24T01:23");
+                    "2014-09-09T01:23");
             }
             else
             {

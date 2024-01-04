@@ -27,12 +27,12 @@ namespace SeleniumFixtureTest
 
         [TestMethod]
         [TestCategory("Experiments")]
-        public void FrameSwitchTestWithSeleniumApiDocumentation()
+        public void FrameSwitchTestWithQuackIt()
         {
-            const string deprecatedText = "DEPRECATED";
-            const string contentFrameName = "classFrame";
+            const string textInFrame = "ZappyHost";
+            const string contentFrameName = "content";
             _browserDriver = new ChromeDriver();
-            _browserDriver.Navigate().GoToUrl(new Uri("https://www.selenium.dev/selenium/docs/api/java/index.html?overview-summary.html"));
+            _browserDriver.Navigate().GoToUrl(new Uri("https://www.quackit.com/html/templates/frames/frames_example_4.html"));
 
             Thread.Sleep(2000);
             Debug.Print("___________________________________________________");
@@ -41,19 +41,19 @@ namespace SeleniumFixtureTest
             var element = _browserDriver.FindElement(By.Name(contentFrameName));
             try
             {
-                _browserDriver.FindElement(By.LinkText(deprecatedText));
-                Assert.Fail("Found Deprecated before switching frames");
+                _browserDriver.FindElement(By.LinkText(textInFrame));
+                Assert.Fail("Found text before switching frames");
             }
             catch (NoSuchElementException)
             {
             }
-            Debug.Print("found classFrame");
+            Debug.Print("found content frame");
             _browserDriver.SwitchTo().Frame(element);
             Debug.Print("switched to classFrame");
             Debug.Print("___________________________________________________");
             Debug.Print(_browserDriver.PageSource);
             Debug.Print("___________________________________________________");
-            Assert.IsNotNull(_browserDriver.FindElement(By.LinkText(deprecatedText)));
+            Assert.IsNotNull(_browserDriver.FindElement(By.LinkText(textInFrame)));
         }
 
         [TestCleanup]

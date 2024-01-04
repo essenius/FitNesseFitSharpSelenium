@@ -61,18 +61,30 @@ If you want to use Appium Desktop (https://appium.io) install that. Only Appium 
 * `AppiumServer`: the URL for Appium
 * `AndroidDevice`: the ID of the Android device you want to test with.
 
-The demo uses Lollipop 5.1 with x86, 512MB, 720x1280 WXGA, API 22. Ensure Appium is up and running and listening before you run the tests
+The demo uses: 
+* Lollipop 5.1 with x86, 512MB, 720x1280 WXGA, API 22. 
+* Pie 9.0 Pixel 2, API 28
+
+Ensure Appium is up and running and listening before you run the tests
 
 ```
 AppiumServer=!-http://127.0.0.1:4723-!
 AndroidDevice=!-4.7 WXGA API 22-!
 ```
 
+also make sure that the right driver is installed:
+```
+appium driver install uiautomator2
+```
 ## WinAppDriver
 
 Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required, and make sure that Appium has the Windows driver installed.
 WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so it isn't fully functional under Selenium 4.
 For the same reason, you will not be able to run via WinAppDriver directly.
+
+```
+appium driver install --source=npm appium-windows-driver
+```
 
 ## Firefox integrated authentication
 

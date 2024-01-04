@@ -30,15 +30,24 @@ namespace SeleniumFixtureTest
         [TestCategory("Native")]
         public void Appium2CalculatorTest()
         {
+            const string calculatorIcon = "XPath://*[@content-desc = 'Calculator']";
+            const string digit7 = "id:com.android.calculator2:id/digit_7";
+            const string digit8 = "id:com.android.calculator2:id/digit_8";
+            const string multiply = "AccessibilityId:multiply";
+            const string formula = "id:com.android.calculator2:id/formula";
+            const string equals = "AccessibilityId:equals";
+            const string result = "id:com.android.calculator2:id/result";
+
             Assert.IsTrue(Fixture.Scroll("Down"), "Scroll down");
-            Assert.IsTrue(Fixture.ClickElement("XPath://*[@content-desc = 'Calculator']"));
-            Assert.IsTrue(Fixture.WaitForElement("id:com.android.calculator2:id/digit_7"));
-            Assert.IsTrue(Fixture.ClickElement("id:com.android.calculator2:id/digit_7"));
-            Assert.IsTrue(Fixture.ClickElement("AccessibilityId:multiply"));
-            Assert.IsTrue(Fixture.ClickElement("id:com.android.calculator2:id/digit_8"));
-            Assert.AreEqual("7×8", Fixture.TextInElement("id:com.android.calculator2:id/formula"));
-            Assert.IsTrue(Fixture.ClickElement("AccessibilityId:equals"));
-            Assert.AreEqual("56", Fixture.TextInElement("id:com.android.calculator2:id/result"));
+            Assert.IsTrue(Fixture.WaitForElement(calculatorIcon));
+            Assert.IsTrue(Fixture.ClickElement(calculatorIcon));
+            Assert.IsTrue(Fixture.WaitForElement(digit7));
+            Assert.IsTrue(Fixture.ClickElement(digit7));
+            Assert.IsTrue(Fixture.ClickElement(multiply));
+            Assert.IsTrue(Fixture.ClickElement(digit8));
+            Assert.AreEqual("7×8", Fixture.TextInElement(formula));
+            Assert.IsTrue(Fixture.ClickElement(equals));
+            Assert.AreEqual("56", Fixture.TextInElement(result));
         }
 
         [ClassCleanup]

@@ -9,6 +9,7 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
+using System.ComponentModel.Design;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium.Appium;
@@ -57,7 +58,7 @@ namespace SeleniumFixtureTest
 
         private static bool ResultOk(string expectedResult, string rawResult)
         {
-            var result = new Regex(@".*\s([-+]?[0-9]*\.?[0-9]+)\s.*").Matches(rawResult);
+            var result = new Regex(@".*\s([-+]?[0-9]*[\.|,]?[0-9]+)\s.*").Matches(rawResult);
             return result[0].Groups.Count > 1 && result[0].Groups[1].Value.Equals(expectedResult);
         }
 
@@ -98,6 +99,12 @@ namespace SeleniumFixtureTest
             Assert.AreEqual(
                 "Expression is sine radians (1)",
                 Fixture.TextInElement("AccessibilityId:CalculatorExpression"), "Expression OK");
+
+            // put back to default (so the test can be run again)
+            Assert.IsTrue(Fixture.ClickElement("AccessibilityId:radButton"), "Click Rad");
+            Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:gradButton"), "Wait for Grad");
+            Assert.IsTrue(Fixture.ClickElement("AccessibilityId:gradButton"), "Click Grad");
+            Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:degButton"), "Wait for Deg");
         }
 
         [TestMethod]
@@ -121,7 +128,8 @@ namespace SeleniumFixtureTest
             Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:Value2"), "Wait for value2");
             Assert.IsTrue(Fixture.ClickElement("AccessibilityId:Value2"), "Click value2");
             Assert.IsTrue(Fixture.SetElementTo("AccessibilityId:Value2", "10"), "Set value2 to 10");
-            Assert.IsTrue(ResultOk("37.85412", Fixture.TextInElement("AccessibilityId:Value1")), "Value1 OK");
+            var actualValue = Fixture.TextInElement("AccessibilityId:Value1");
+            Assert.IsTrue(ResultOk("37.85412", actualValue), $"Value1 ({actualValue}) OK");
         }
     }
 }
