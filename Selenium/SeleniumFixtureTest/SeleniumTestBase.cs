@@ -12,26 +12,25 @@
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SeleniumFixtureTest
+namespace SeleniumFixtureTest;
+
+/// <summary>
+///     Base class for end to end test classes on different browser configurations, containing the constant parts.
+///     The child classes will be test classes with a ClassInitialize that differs per configuration
+///     We can't inherit static classes, so we need to put TestCleanup and ClassCleanup in the child as well or they won't get run.
+/// </summary>
+public class SeleniumTestBase
 {
-    /// <summary>
-    ///     Base class for end to end test classes on different browser configurations, containing the constant parts.
-    ///     The child classes will be test classes with a ClassInitialize that differs per configuration
-    ///     We can't inherit static classes, so we need to put TestCleanup and ClassCleanup in the child as well or they won't get run.
-    /// </summary>
-    public class SeleniumTestBase
+    protected static readonly EndToEndTest Test = new();
+
+    [TestMethod]
+    [TestCategory("Browser")]
+    [EndToEndTestCases]
+    public void RunTest(MethodInfo testCase)
     {
-        protected static readonly EndToEndTest Test = new();
-
-        [TestMethod]
-        [TestCategory("Browser")]
-        [EndToEndTestCases]
-        public void RunTest(MethodInfo testCase)
-        {
-            testCase.Invoke(Test, BindingFlags.DoNotWrapExceptions, null, null, null);
-        }
-
-        [TestCleanup]
-        public void TestCleanup() => Test.TestCleanup();
+        testCase.Invoke(Test, BindingFlags.DoNotWrapExceptions, null, null, null);
     }
+
+    [TestCleanup]
+    public void TestCleanup() => Test.TestCleanup();
 }

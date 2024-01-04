@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -16,39 +16,38 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using SeleniumFixture.Model;
 
-namespace SeleniumFixtureTest
+namespace SeleniumFixtureTest;
+
+[TestClass]
+public class BrowserDriverCreatorTest
 {
-    [TestClass]
-    public class BrowserDriverCreatorTest
+    [TestMethod]
+    [TestCategory("Unit")]
+    public void BrowserDriverCreatorGetDefaultServiceFirefoxTest()
     {
-        [TestMethod]
-        [TestCategory("Unit")]
-        public void BrowserDriverCreatorGetDefaultServiceFirefoxTest()
+        using var service1 = BrowserDriverCreator.GetDefaultService<FirefoxDriverService>();
+        Assert.IsInstanceOfType(service1, typeof(FirefoxDriverService));
+        Assert.IsFalse(service1.IsRunning);
+    }
+
+    [TestMethod]
+    [TestCategory("Unit")]
+    public void BrowserDriverCreatorGetDefaultServiceTest()
+    {
+        using (var service1 = BrowserDriverCreator.GetDefaultService<InternetExplorerDriverService>())
         {
-            using var service1 = BrowserDriverCreator.GetDefaultService<FirefoxDriverService>();
-            Assert.IsInstanceOfType(service1, typeof(FirefoxDriverService));
+            Assert.IsInstanceOfType(service1, typeof(InternetExplorerDriverService));
             Assert.IsFalse(service1.IsRunning);
         }
-
-        [TestMethod]
-        [TestCategory("Unit")]
-        public void BrowserDriverCreatorGetDefaultServiceTest()
+        try
         {
-            using (var service1 = BrowserDriverCreator.GetDefaultService<InternetExplorerDriverService>())
-            {
-                Assert.IsInstanceOfType(service1, typeof(InternetExplorerDriverService));
-                Assert.IsFalse(service1.IsRunning);
-            }
-            try
-            {
-                var x = BrowserDriverCreator.GetDefaultService<ChromeDriverService>(@"c:\");
-                x.Start();
-                Assert.Fail("Expected exception didn't happen");
-            }
-            catch (Win32Exception ex)
-            {
-                Assert.IsTrue(ex.Message.StartsWith(@"An error occurred trying to start process 'c:\chromedriver.exe'"));
-            }
+            var x = BrowserDriverCreator.GetDefaultService<ChromeDriverService>(@"c:\");
+            x.Start();
+            Assert.Fail("Expected exception didn't happen");
+        }
+        catch (Win32Exception ex)
+        {
+            Assert.IsTrue(ex.Message.StartsWith(@"An error occurred trying to start process 'c:\chromedriver.exe'"));
         }
     }
 }

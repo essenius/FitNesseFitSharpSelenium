@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -15,44 +15,43 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 
-namespace SeleniumFixtureTest
-{
-    [TestClass]
-    public class JavaScriptFunctionTest
-    {
-        [TestMethod]
-        [TestCategory("Integration")]
-        public void JavaScriptFunctionTestWithFibonacci()
-        {
-            // protected mode must be off for this to work in IE
-            var selenium = new Selenium();
-            try
-            {
-                Assert.IsTrue(selenium.SetBrowser("firefox"));
-                Assert.IsTrue(selenium.Open(EndToEndTest.CreateTestPageUri()));
-                selenium.WaitForElement("id:sectionJavaScript");
-                var javaScriptFunction = new JavaScriptFunction();
-                javaScriptFunction.Reset();
-                javaScriptFunction.Set("value", 10);
-                Assert.AreEqual(Convert.ToInt64(55), javaScriptFunction.Get("Fibonacci"));
-                javaScriptFunction.Reset();
-                javaScriptFunction.Set("value", "aq");
-                Assert.AreEqual("Input should be numerical", javaScriptFunction.Get("Fibonacci"));
-            }
-            finally
-            {
-                Assert.IsTrue(selenium.Close());
-            }
-        }
+namespace SeleniumFixtureTest;
 
-        [TestMethod]
-        [TestCategory("Unit")]
-        [ExpectedException(typeof(NoNullAllowedException))]
-        public void JavaScriptFunctionTestWithoutBrowser()
+[TestClass]
+public class JavaScriptFunctionTest
+{
+    [TestMethod]
+    [TestCategory("Integration")]
+    public void JavaScriptFunctionTestWithFibonacci()
+    {
+        // protected mode must be off for this to work in IE
+        var selenium = new Selenium();
+        try
         {
-            BrowserDriverContainer.Current = null;
+            Assert.IsTrue(selenium.SetBrowser("firefox"));
+            Assert.IsTrue(selenium.Open(EndToEndTest.CreateTestPageUri()));
+            selenium.WaitForElement("id:sectionJavaScript");
             var javaScriptFunction = new JavaScriptFunction();
             javaScriptFunction.Reset();
+            javaScriptFunction.Set("value", 10);
+            Assert.AreEqual(Convert.ToInt64(55), javaScriptFunction.Get("Fibonacci"));
+            javaScriptFunction.Reset();
+            javaScriptFunction.Set("value", "aq");
+            Assert.AreEqual("Input should be numerical", javaScriptFunction.Get("Fibonacci"));
         }
+        finally
+        {
+            Assert.IsTrue(selenium.Close());
+        }
+    }
+
+    [TestMethod]
+    [TestCategory("Unit")]
+    [ExpectedException(typeof(NoNullAllowedException))]
+    public void JavaScriptFunctionTestWithoutBrowser()
+    {
+        BrowserDriverContainer.Current = null;
+        var javaScriptFunction = new JavaScriptFunction();
+        javaScriptFunction.Reset();
     }
 }

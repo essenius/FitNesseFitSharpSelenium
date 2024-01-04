@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -14,38 +14,37 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class AndroidDriverCreator : BrowserDriverCreator
 {
-    internal class AndroidDriverCreator : BrowserDriverCreator
+    private AppiumOptions _options;
+
+    public AndroidDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
     {
-        private AppiumOptions _options;
+    }
 
-        public AndroidDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
+    public override string Name => "ANDROID";
+
+    public override IWebDriver LocalDriver(object options) => null;
+
+    public override DriverOptions Options()
+    {
+        if (_options != null) return _options;
+        // disabled proxy since it's not supported in Appium
+        // TODO: add proxy support when it's fixed
+        _options = new AppiumOptions
         {
-        }
+            PlatformName = "Android", 
+            Proxy = null,
+            AutomationName = "UiAutomator2"
+        };
+        return _options;
+    }
 
-        public override string Name => "ANDROID";
-
-        public override IWebDriver LocalDriver(object options) => null;
-
-        public override DriverOptions Options()
-        {
-            if (_options != null) return _options;
-            // disabled proxy since it's not supported in Appium
-            // TODO: add proxy support when it's fixed
-            _options = new AppiumOptions
-            {
-                PlatformName = "Android", 
-                Proxy = null,
-                AutomationName = "UiAutomator2"
-            };
-            return _options;
-        }
-
-        public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
-        {
-            var uri = BaseUri(baseAddress);
-            return new AndroidDriver(uri, options, Timeout);
-        }
+    public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+    {
+        var uri = BaseUri(baseAddress);
+        return new AndroidDriver(uri, options, Timeout);
     }
 }

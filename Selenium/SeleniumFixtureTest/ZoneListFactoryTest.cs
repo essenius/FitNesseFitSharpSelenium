@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -15,27 +15,26 @@ using DotNetWindowsRegistry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture.Model;
 
-namespace SeleniumFixtureTest
+namespace SeleniumFixtureTest;
+
+[TestClass]
+[SupportedOSPlatform("windows")]
+public class ZoneListFactoryTest
 {
-    [TestClass]
-    [SupportedOSPlatform("windows")]
-    public class ZoneListFactoryTest
+    [TestMethod]
+    [TestCategory("Unit")]
+    public void ZoneListFactoryCreateTest()
     {
-        [TestMethod]
-        [TestCategory("Unit")]
-        public void ZoneListFactoryCreateTest()
+        var registry = new InMemoryRegistry();
+        var zoneListFactory = new ZoneListFactory(registry);
+        var zoneList = zoneListFactory.CreateZoneList();
+        Assert.AreEqual(4, zoneList.Count, "count is 4");
+        var index = 1;
+        foreach (var zone in zoneList)
         {
-            var registry = new InMemoryRegistry();
-            var zoneListFactory = new ZoneListFactory(registry);
-            var zoneList = zoneListFactory.CreateZoneList();
-            Assert.AreEqual(4, zoneList.Count, "count is 4");
-            var index = 1;
-            foreach (var zone in zoneList)
-            {
-                Assert.AreEqual(index++, zone.Id);
-                var expectedItemsList = new[] { string.Empty, "Machine Policies", "User Policies", "User", "Machine" };
-                Assert.IsTrue(expectedItemsList.Contains(zone.FoundIn), "[" + zone.FoundIn + " not found");
-            }
+            Assert.AreEqual(index++, zone.Id);
+            var expectedItemsList = new[] { string.Empty, "Machine Policies", "User Policies", "User", "Machine" };
+            Assert.IsTrue(expectedItemsList.Contains(zone.FoundIn), "[" + zone.FoundIn + " not found");
         }
     }
 }

@@ -9,18 +9,17 @@
 //   is distributed on an "AS IS" BASIS WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and limitations under the License.
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+/// <summary> Finds element on content of the element.</summary>
+internal class ByContent : CustomBy
 {
-    /// <summary> Finds element on content of the element.</summary>
-    internal class ByContent : CustomBy
+    public ByContent(string elementIdentifier) : base(elementIdentifier)
     {
-        public ByContent(string elementIdentifier) : base(elementIdentifier)
+        DisplayName = "ByContent";
+        foreach (var element in new[] { "button", "input", "meter", "progress", "select", "textArea" })
         {
-            DisplayName = "ByContent";
-            foreach (var element in new[] { "button", "input", "meter", "progress", "select", "textArea" })
-            {
-                ByList.Add(XPath($"//{element}[normalize-space(text())='{ElementIdentifier}']"));
-            }
+            ByList.Add(XPath($"//{element}[normalize-space(text())='{ElementIdentifier}']"));
         }
     }
 }

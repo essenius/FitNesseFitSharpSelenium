@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -14,29 +14,28 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.iOS;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class IosDriverCreator : BrowserDriverCreator
 {
-    internal class IosDriverCreator : BrowserDriverCreator
+    public IosDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
     {
-        public IosDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-        {
-        }
+    }
 
-        public override string Name { get; } = "IOS";
+    public override string Name => "IOS";
 
-        public override IWebDriver LocalDriver(object options) => null;
+    public override IWebDriver LocalDriver(object options) => null;
 
-        public override DriverOptions Options() => new AppiumOptions
-        {
-            PlatformName = "iOS", 
-            Proxy = null, // TODO: add back when Appium supports it
-            AutomationName = "XCUITest"
-        };
+    public override DriverOptions Options() => new AppiumOptions
+    {
+        PlatformName = "iOS", 
+        Proxy = null, // TODO: add back when Appium supports it
+        AutomationName = "XCUITest"
+    };
 
-        public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
-        {
-            var uri = BaseUri(baseAddress);
-            return new IOSDriver(uri, options, Timeout);
-        }
+    public override IWebDriver RemoteDriver(string baseAddress, DriverOptions options)
+    {
+        var uri = BaseUri(baseAddress);
+        return new IOSDriver(uri, options, Timeout);
     }
 }

@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SeleniumFixtureTestSite.Pages
-{
-    public class IndexModel : PageModel
-    {
+namespace SeleniumFixtureTestSite.Pages;
 
-        public void OnGet()
-        {
-        }
+public class IndexModel : PageModel
+{
+
+    public void OnGet()
+    {
     }
 }

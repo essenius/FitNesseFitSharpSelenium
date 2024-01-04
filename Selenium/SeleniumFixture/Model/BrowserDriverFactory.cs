@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,72 +13,71 @@ using System;
 using System.Collections.Generic;
 using OpenQA.Selenium;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class BrowserDriverFactory
 {
-    internal class BrowserDriverFactory
+    private const StringComparison IgnoreCase = StringComparison.InvariantCultureIgnoreCase;
+    private readonly List<BrowserDriverCreator> _browserDriverCreators;
+
+    public BrowserDriverFactory(Proxy proxy, TimeSpan timeout) =>
+        _browserDriverCreators = new List<BrowserDriverCreator>
+        {
+            new AndroidDriverCreator(proxy, timeout),
+            new ChromeDriverCreator(proxy, timeout),
+            new HeadlessChromeDriverCreator(proxy, timeout),
+            new EdgeDriverCreator(proxy, timeout),
+            new HeadlessEdgeDriverCreator(proxy, timeout),
+            new FireFoxDriverCreator(proxy, timeout),
+            new HeadlessFirefoxDriverCreator(proxy, timeout),
+            new InternetExplorerDriverCreator(proxy, timeout),
+            new IosDriverCreator(proxy, timeout),
+            new SafariDriverCreator(timeout),
+            new WinAppDriverCreator(proxy, timeout),
+            new NoBrowserDriverCreator()
+        };
+
+    private BrowserDriverCreator BrowserDriverCreatorFor(string browserName)
     {
-        private const StringComparison IgnoreCase = StringComparison.InvariantCultureIgnoreCase;
-        private readonly List<BrowserDriverCreator> _browserDriverCreators;
-
-        public BrowserDriverFactory(Proxy proxy, TimeSpan timeout) =>
-            _browserDriverCreators = new List<BrowserDriverCreator>
-            {
-                new AndroidDriverCreator(proxy, timeout),
-                new ChromeDriverCreator(proxy, timeout),
-                new HeadlessChromeDriverCreator(proxy, timeout),
-                new EdgeDriverCreator(proxy, timeout),
-                new HeadlessEdgeDriverCreator(proxy, timeout),
-                new FireFoxDriverCreator(proxy, timeout),
-                new HeadlessFirefoxDriverCreator(proxy, timeout),
-                new InternetExplorerDriverCreator(proxy, timeout),
-                new IosDriverCreator(proxy, timeout),
-                new SafariDriverCreator(timeout),
-                new WinAppDriverCreator(proxy, timeout),
-                new NoBrowserDriverCreator()
-            };
-
-        private BrowserDriverCreator BrowserDriverCreatorFor(string browserName)
+        var standardBrowserName = StandardizeBrowserName(browserName);
+        foreach (var creator in _browserDriverCreators)
         {
-            var standardBrowserName = StandardizeBrowserName(browserName);
-            foreach (var creator in _browserDriverCreators)
-            {
-                if (creator.Name.Equals(standardBrowserName, IgnoreCase)) return creator;
-            }
-            throw new StopTestException("Unrecognized browser: " + browserName);
+            if (creator.Name.Equals(standardBrowserName, IgnoreCase)) return creator;
         }
+        throw new StopTestException("Unrecognized browser: " + browserName);
+    }
 
-        public DriverOptions CreateOptions(string browserName)
-        {
-            var browserDriverCreator = BrowserDriverCreatorFor(browserName);
-            return browserDriverCreator.Options();
-        }
+    public DriverOptions CreateOptions(string browserName)
+    {
+        var browserDriverCreator = BrowserDriverCreatorFor(browserName);
+        return browserDriverCreator.Options();
+    }
 
-        public IWebDriver CreateLocalDriver(string browserName, object options)
-        {
-            var browserDriverCreator = BrowserDriverCreatorFor(browserName);
-            return browserDriverCreator.LocalDriver(options);
-        }
+    public IWebDriver CreateLocalDriver(string browserName, object options)
+    {
+        var browserDriverCreator = BrowserDriverCreatorFor(browserName);
+        return browserDriverCreator.LocalDriver(options);
+    }
 
-        public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, DriverOptions options)
-        {
-            var browserDriverCreator = BrowserDriverCreatorFor(browserName);
-            return browserDriverCreator.RemoteDriver(baseAddress, options);
-        }
+    public IWebDriver CreateRemoteDriver(string browserName, string baseAddress, DriverOptions options)
+    {
+        var browserDriverCreator = BrowserDriverCreatorFor(browserName);
+        return browserDriverCreator.RemoteDriver(baseAddress, options);
+    }
 
-        private static string StandardizeBrowserName(string browserName)
+    private static string StandardizeBrowserName(string browserName)
+    {
+        var browserInUpperCase = browserName.Replace(" ", string.Empty).ToUpperInvariant();
+        return browserInUpperCase switch
         {
-            var browserInUpperCase = browserName.Replace(" ", string.Empty).ToUpperInvariant();
-            return browserInUpperCase switch
-            {
-                @"GOOGLECHROME" => @"CHROME",
-                @"GOOGLECHROMEHEADLESS" => @"CHROMEHEADLESS",
-                @"MICROSOFTEDGE" => @"EDGE",
-                @"MSEDGE" => @"EDGE",
-                @"FF" => @"FIREFOX",
-                @"FFHEADLESS" => @"FIREFOXHEADLESS",
-                @"INTERNETEXPLORER" => @"IE",
-                _ => browserInUpperCase
-            };
-        }
+            @"GOOGLECHROME" => @"CHROME",
+            @"GOOGLECHROMEHEADLESS" => @"CHROMEHEADLESS",
+            @"MICROSOFTEDGE" => @"EDGE",
+            @"MSEDGE" => @"EDGE",
+            @"FF" => @"FIREFOX",
+            @"FFHEADLESS" => @"FIREFOXHEADLESS",
+            @"INTERNETEXPLORER" => @"IE",
+            _ => browserInUpperCase
+        };
     }
 }

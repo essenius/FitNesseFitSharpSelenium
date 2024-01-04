@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -15,41 +15,40 @@ using System.Linq;
 using OpenQA.Selenium;
 using SeleniumFixture.Utilities;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+/// <summary>Local or session storage</summary>
+public enum StorageType
 {
-    /// <summary>Local or session storage</summary>
-    public enum StorageType
-    {
-        /// <summary>Local storage</summary>
-        Local,
+    /// <summary>Local storage</summary>
+    Local,
 
-        /// <summary>Session storage</summary>
-        Session
+    /// <summary>Session storage</summary>
+    Session
+}
+
+internal abstract class BrowserStorage
+{
+    protected BrowserStorage(IWebDriver browserDriver)
+    {
+        Debug.Assert(browserDriver != null, "browserDriver != null");
     }
 
-    internal abstract class BrowserStorage
+    public string this[string key]
     {
-        protected BrowserStorage(IWebDriver browserDriver)
-        {
-            Debug.Assert(browserDriver != null, "browserDriver != null");
-        }
-
-        public string this[string key]
-        {
-            get => GetItem(key);
-            set => SetItem(key, value);
-        }
-
-        public abstract IEnumerable<string> KeySet { get; }
-
-        public abstract bool Clear();
-
-        public string FindFirstKeyLike(string glob) => KeySet.FirstOrDefault(entry => entry.IsLike(glob));
-
-        public abstract string GetItem(string key);
-
-        public abstract bool RemoveItem(string key);
-
-        public abstract void SetItem(string key, string value);
+        get => GetItem(key);
+        set => SetItem(key, value);
     }
+
+    public abstract IEnumerable<string> KeySet { get; }
+
+    public abstract bool Clear();
+
+    public string FindFirstKeyLike(string glob) => KeySet.FirstOrDefault(entry => entry.IsLike(glob));
+
+    public abstract string GetItem(string key);
+
+    public abstract bool RemoveItem(string key);
+
+    public abstract void SetItem(string key, string value);
 }

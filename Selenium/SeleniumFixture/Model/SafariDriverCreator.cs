@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,43 +13,42 @@ using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Safari;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class SafariDriverCreator : BrowserDriverCreator
 {
-    internal class SafariDriverCreator : BrowserDriverCreator
+    // didn't find a way to enable proxies or integrated authentication on Safari
+
+    public SafariDriverCreator(TimeSpan timeout) : base(null, timeout)
     {
-        // didn't find a way to enable proxies or integrated authentication on Safari
+    }
 
-        public SafariDriverCreator(TimeSpan timeout) : base(null, timeout)
+    public override string Name => "SAFARI";
+
+    public override IWebDriver LocalDriver(object options)
+    {
+        SafariDriverService driverService = null;
+        IWebDriver driver;
+        try
         {
+            driverService = GetDefaultService<SafariDriverService>();
+            var safariOptions = options == null ? SafariOptions() : (SafariOptions)options;
+            driver = new SafariDriver(driverService, safariOptions, Timeout);
         }
-
-        public override string Name => "SAFARI";
-
-        public override IWebDriver LocalDriver(object options)
+        catch
         {
-            SafariDriverService driverService = null;
-            IWebDriver driver;
-            try
-            {
-                driverService = GetDefaultService<SafariDriverService>();
-                var safariOptions = options == null ? SafariOptions() : (SafariOptions)options;
-                driver = new SafariDriver(driverService, safariOptions, Timeout);
-            }
-            catch
-            {
-                driverService?.Dispose();
-                throw;
-            }
-            return driver;
+            driverService?.Dispose();
+            throw;
         }
+        return driver;
+    }
 
-        public override DriverOptions Options() => SafariOptions();
+    public override DriverOptions Options() => SafariOptions();
 
-        private static SafariOptions SafariOptions()
-        {
-            var options = new SafariOptions();
-            options.AddAdditionalOption("safari.options", "skipExtensionInstallation");
-            return options;
-        }
+    private static SafariOptions SafariOptions()
+    {
+        var options = new SafariOptions();
+        options.AddAdditionalOption("safari.options", "skipExtensionInstallation");
+        return options;
     }
 }

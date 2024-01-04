@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,23 +13,22 @@ using System;
 using System.Collections.Generic;
 using OpenQA.Selenium;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class NoBrowserStorage : BrowserStorage
 {
-    internal class NoBrowserStorage : BrowserStorage
+    public NoBrowserStorage(IWebDriver browserDriver) : base(browserDriver)
     {
-        public NoBrowserStorage(IWebDriver browserDriver) : base(browserDriver)
-        {
-        }
-
-        public override IEnumerable<string> KeySet => null;
-
-        public override bool Clear() => false;
-
-        public override string GetItem(string key) => null;
-
-        public override bool RemoveItem(string key) => false;
-
-        public override void SetItem(string key, string value) =>
-            throw new NotImplementedException(ErrorMessages.NoWebStorage);
     }
+
+    public override IEnumerable<string> KeySet => null;
+
+    public override bool Clear() => false;
+
+    public override string GetItem(string key) => null;
+
+    public override bool RemoveItem(string key) => false;
+
+    public override void SetItem(string key, string value) =>
+        throw new NotImplementedException(ErrorMessages.NoWebStorage);
 }

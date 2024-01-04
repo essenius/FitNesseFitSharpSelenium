@@ -11,24 +11,23 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SeleniumFixtureTest
-{
-    // The Internet Explorer driver currently has an issue with timing out on page load.
-    // see https://gitmemory.com/issue/SeleniumHQ/selenium/7833/567543368 
-    [TestClass]
-    public class SeleniumLocalInternetExplorerTest : SeleniumTestBase
-    {
-        [ClassCleanup]
-        public static void ClassCleanup() => Test.ClassCleanup();
+namespace SeleniumFixtureTest;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+// The Internet Explorer driver currently has an issue with timing out on page load.
+// see https://gitmemory.com/issue/SeleniumHQ/selenium/7833/567543368 
+[TestClass]
+public class SeleniumLocalInternetExplorerTest : SeleniumTestBase
+{
+    [ClassCleanup]
+    public static void ClassCleanup() => Test.ClassCleanup();
+
+    [ClassInitialize]
+    public static void ClassInitialize(TestContext _)
+    {
+        Test.ClassInitialize("ie", false);
+        if (!Test.ProtectedModesAreEqual())
         {
-            Test.ClassInitialize("ie", false);
-            if (!Test.ProtectedModesAreEqual())
-            {
-                Assert.Inconclusive("Protected Modes are not all equal");
-            }
+            Assert.Inconclusive("Protected Modes are not all equal");
         }
     }
 }

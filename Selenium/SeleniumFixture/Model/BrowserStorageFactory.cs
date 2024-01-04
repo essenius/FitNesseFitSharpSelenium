@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,18 +13,17 @@ using System.Diagnostics;
 using OpenQA.Selenium;
 using SeleniumFixture.Utilities;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal static class BrowserStorageFactory
 {
-    internal static class BrowserStorageFactory
+    public static BrowserStorage Create(IWebDriver browserDriver, StorageType storageType)
     {
-        public static BrowserStorage Create(IWebDriver browserDriver, StorageType storageType)
-        {
-            Debug.Assert(browserDriver != null, "browserDriver != null");
-            var javaScriptExecutor = (IJavaScriptExecutor)browserDriver;
-            var javaScriptSupportsStorage =
-                javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
-            if (javaScriptSupportsStorage) return new JavaScriptBrowserStorage(browserDriver, storageType);
-            return new NoBrowserStorage(browserDriver);
-        }
+        Debug.Assert(browserDriver != null, "browserDriver != null");
+        var javaScriptExecutor = (IJavaScriptExecutor)browserDriver;
+        var javaScriptSupportsStorage =
+            javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
+        if (javaScriptSupportsStorage) return new JavaScriptBrowserStorage(browserDriver, storageType);
+        return new NoBrowserStorage(browserDriver);
     }
 }

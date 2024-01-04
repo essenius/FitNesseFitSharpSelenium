@@ -190,7 +190,7 @@ public sealed partial class Selenium
         return true;
     }
 
-    private Point CenterOfElement(IWebElement element)
+    private static Point CenterOfElement(IWebElement element)
     {
         var location = element.Location;
         var size = element.Size;

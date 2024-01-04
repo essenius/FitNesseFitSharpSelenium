@@ -12,17 +12,16 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFixture;
 
-namespace SeleniumFixtureTest
+namespace SeleniumFixtureTest;
+
+[TestClass]
+public class ImageTest
 {
-    [TestClass]
-    public class ImageTest
+    [TestMethod]
+    [TestCategory("Unit")]
+    public void ImageParseTest()
     {
-        [TestMethod]
-        [TestCategory("Unit")]
-        public void ImageParseTest()
-        {
-            var image = Image.Parse("ABC");
-            Assert.AreEqual("<img alt=\"Parsed image\" src=\"data:image/png;base64,ABC\" />", image.Rendering);
-        }
+        var image = Image.Parse("ABC");
+        Assert.AreEqual("<img alt=\"Parsed image\" src=\"data:image/png;base64,ABC\" />", image.Rendering);
     }
 }

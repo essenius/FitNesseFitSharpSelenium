@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -12,41 +12,39 @@
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using OpenQA.Selenium;
 using SeleniumFixture.Model;
 
-namespace SeleniumFixture
+namespace SeleniumFixture;
+
+/// <summary>"Dynamic Decision Table Fixture to test JavaScript functions</summary>
+
+public class JavaScriptFunction
 {
-    /// <summary>"Dynamic Decision Table Fixture to test JavaScript functions</summary>
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by FitSharp")]
-    public class JavaScriptFunction
+    private readonly ArrayList _paramList = new();
+
+    /// <summary>Dynamic Decision Table Interface (get column value)</summary>
+    public object Get(string requestedValue)
     {
-        private readonly ArrayList _paramList = new();
+        var scriptExecutor = (IJavaScriptExecutor)BrowserDriverContainer.Current;
+        var parameters = string.Join(", ", _paramList.ToArray());
+        var script = "return " + requestedValue + "(" + parameters + ");";
+        return scriptExecutor.ExecuteScript(script);
+    }
 
-        /// <summary>Dynamic Decision Table Interface (get column value)</summary>
-        public object Get(string requestedValue)
-        {
-            var scriptExecutor = (IJavaScriptExecutor)BrowserDriverContainer.Current;
-            var parameters = string.Join(", ", _paramList.ToArray());
-            var script = "return " + requestedValue + "(" + parameters + ");";
-            return scriptExecutor.ExecuteScript(script);
-        }
+    /// <summary>Dynamic Decision Table Interface (reset row so it's ready for the next line)</summary>
+    public void Reset()
+    {
+        if (BrowserDriverContainer.Current == null)
+            throw new NoNullAllowedException("Set browser first using the Selenium script");
+        _paramList.Clear();
+    }
 
-        /// <summary>Dynamic Decision Table Interface (reset row so it's ready for the next line)</summary>
-        public void Reset()
-        {
-            if (BrowserDriverContainer.Current == null)
-                throw new NoNullAllowedException("Set browser first using the Selenium script");
-            _paramList.Clear();
-        }
-
-        /// <summary>Dynamic Decision Table Interface (set column value). Name is for clarity only - ignored</summary>
-        public void Set(string name, object value)
-        {
-            Debug.Assert(!string.IsNullOrEmpty(name));
-            var delimiter = value is string ? "'" : string.Empty;
-            _paramList.Add(delimiter + value + delimiter);
-        }
+    /// <summary>Dynamic Decision Table Interface (set column value). Name is for clarity only - ignored</summary>
+    public void Set(string name, object value)
+    {
+        Debug.Assert(!string.IsNullOrEmpty(name));
+        var delimiter = value is string ? "'" : string.Empty;
+        _paramList.Add(delimiter + value + delimiter);
     }
 }

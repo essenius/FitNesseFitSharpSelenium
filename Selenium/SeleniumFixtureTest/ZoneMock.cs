@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -11,19 +11,18 @@
 
 using SeleniumFixture.Model;
 
-namespace SeleniumFixtureTest
-{
-    internal class ZoneMock : IZone
-    {
-        public ZoneMock(int id, bool isProtected)
-        {
-            Id = id;
-            IsProtected = isProtected;
-            FoundIn = "User";
-        }
+namespace SeleniumFixtureTest;
 
-        public string FoundIn { get; }
-        public int Id { get; }
-        public bool IsProtected { get; }
+internal class ZoneMock : IZone
+{
+    public ZoneMock(int id, bool isProtected)
+    {
+        Id = id;
+        IsProtected = isProtected;
+        FoundIn = "User";
     }
+
+    public string FoundIn { get; }
+    public int Id { get; }
+    public bool IsProtected { get; }
 }

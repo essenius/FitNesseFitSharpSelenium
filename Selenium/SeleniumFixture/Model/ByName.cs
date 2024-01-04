@@ -12,18 +12,17 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+/// <summary>
+///     Finds element on class name. First tries normal By, then MobileBy
+/// </summary>
+internal class ByName : CustomBy
 {
-    /// <summary>
-    ///     Finds element on class name. First tries normal By, then MobileBy
-    /// </summary>
-    internal class ByName : CustomBy
+    public ByName(string elementIdentifier) : base(elementIdentifier)
     {
-        public ByName(string elementIdentifier) : base(elementIdentifier)
-        {
-            DisplayName = nameof(ByName);
-            ByList.Add(By.Name(ElementIdentifier));
-            ByList.Add(MobileBy.Name(ElementIdentifier));
-        }
+        DisplayName = nameof(ByName);
+        ByList.Add(By.Name(ElementIdentifier));
+        ByList.Add(MobileBy.Name(ElementIdentifier));
     }
 }

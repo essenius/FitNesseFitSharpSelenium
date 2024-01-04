@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,50 +13,49 @@ using System;
 using System.Reflection;
 using static System.FormattableString;
 
-namespace SeleniumFixture
+namespace SeleniumFixture;
+
+/// <summary>Provide fixture metadata</summary>
+public static class ApplicationInfo
 {
-    /// <summary>Provide fixture metadata</summary>
-    public static class ApplicationInfo
+    /// <summary>Name of the fixture</summary>
+    public static string ApplicationName { get; } = ThisAssembly.GetName().Name;
+
+    /// <summary>Copyright notice</summary>
+    public static string Copyright { get; } =
+        ThisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
+
+    /// <summary> Description of the fixture</summary>
+    public static string Description { get; } =
+        ThisAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
+
+    /// <summary> Name, version, description and copyright</summary>
+    public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");
+
+    private static Assembly ThisAssembly => Assembly.GetExecutingAssembly();
+
+    /// <summary>Version of the fixture</summary>
+    public static string Version { get; } = ThisAssembly.GetName().Version?.ToString();
+
+    /// <summary> Version info</summary>
+    /// <param name="qualifier">Short or Extended</param>
+    public static string VersionInfo(string qualifier)
     {
-        /// <summary>Name of the fixture</summary>
-        public static string ApplicationName { get; } = ThisAssembly.GetName().Name;
-
-        /// <summary>Copyright notice</summary>
-        public static string Copyright { get; } =
-            ThisAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
-
-        /// <summary> Description of the fixture</summary>
-        public static string Description { get; } =
-            ThisAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
-
-        /// <summary> Name, version, description and copyright</summary>
-        public static string ExtendedInfo => Invariant($"{ApplicationName} {Version}. {Description}. {Copyright}");
-
-        private static Assembly ThisAssembly => Assembly.GetExecutingAssembly();
-
-        /// <summary>Version of the fixture</summary>
-        public static string Version { get; } = ThisAssembly.GetName().Version?.ToString();
-
-        /// <summary> Version info</summary>
-        /// <param name="qualifier">Short or Extended</param>
-        public static string VersionInfo(string qualifier)
+        return qualifier.ToUpperInvariant() switch
         {
-            return qualifier.ToUpperInvariant() switch
-            {
-                "SHORT" => Version,
-                "EXTENDED" => ExtendedInfo,
-                _ => Invariant($"{ApplicationName} {Version}")
-            };
-        }
+            "SHORT" => Version,
+            "EXTENDED" => ExtendedInfo,
+            _ => Invariant($"{ApplicationName} {Version}")
+        };
+    }
 
-        /// <summary>Check for minimal version</summary>
-        /// <param name="versionString">minimally required version</param>
-        /// <returns>true if version is at least that</returns>
-        public static bool VersionIsAtLeast(string versionString)
-        {
-            var versionCompared = new Version(versionString);
-            var version = new Version(Version);
-            return version.CompareTo(versionCompared) >= 0;
-        }
+    /// <summary>Check for minimal version</summary>
+    /// <param name="versionString">minimally required version</param>
+    /// <returns>true if version is at least that</returns>
+    public static bool VersionIsAtLeast(string versionString)
+    {
+        var versionCompared = new Version(versionString);
+        var version = new Version(Version);
+        return version.CompareTo(versionCompared) >= 0;
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,21 +13,20 @@ using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class HeadlessEdgeDriverCreator : EdgeDriverCreator
 {
-    internal class HeadlessEdgeDriverCreator : EdgeDriverCreator
+    public HeadlessEdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
     {
-        public HeadlessEdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-        {
-        }
+    }
 
-        public override string Name => @"EDGEHEADLESS";
+    public override string Name => @"EDGEHEADLESS";
 
-        protected override EdgeOptions EdgeOptions()
-        {
-            var options = base.EdgeOptions();
-            options.AddArguments("headless");
-            return options;
-        }
+    protected override EdgeOptions EdgeOptions()
+    {
+        var options = base.EdgeOptions();
+        options.AddArguments("headless");
+        return options;
     }
 }

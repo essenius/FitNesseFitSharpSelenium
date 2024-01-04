@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,25 +13,24 @@ using System.Collections.Generic;
 using System.Runtime.Versioning;
 using SeleniumFixture.Model;
 
-namespace SeleniumFixtureTest
+namespace SeleniumFixtureTest;
+
+[SupportedOSPlatform("windows")]
+internal class ZoneListFactoryMock : IZoneListFactory
 {
-    [SupportedOSPlatform("windows")]
-    internal class ZoneListFactoryMock : IZoneListFactory
+    private readonly bool[] _isProtected;
+
+    public ZoneListFactoryMock(bool[] isProtected) => _isProtected = isProtected;
+
+    public List<IZone> CreateZoneList()
     {
-        private readonly bool[] _isProtected;
-
-        public ZoneListFactoryMock(bool[] isProtected) => _isProtected = isProtected;
-
-        public List<IZone> CreateZoneList()
+        var zoneList = new List<IZone>();
+        for (var zone = Zone.MinValue; zone <= Zone.MaxValue; zone++)
         {
-            var zoneList = new List<IZone>();
-            for (var zone = Zone.MinValue; zone <= Zone.MaxValue; zone++)
-            {
-                zoneList.Add(Create(zone));
-            }
-            return zoneList;
+            zoneList.Add(Create(zone));
         }
-
-        private IZone Create(int id) => new ZoneMock(id, _isProtected[id - 1]);
+        return zoneList;
     }
+
+    private IZone Create(int id) => new ZoneMock(id, _isProtected[id - 1]);
 }

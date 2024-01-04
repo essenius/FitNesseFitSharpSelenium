@@ -15,20 +15,19 @@ using System.Globalization;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SeleniumFixtureTest
-{
-    [AttributeUsage(AttributeTargets.Method)]
-    public class EndToEndTestCasesAttribute : Attribute, ITestDataSource
-    {
-        public IEnumerable<object[]> GetData(MethodInfo methodInfo) => EndToEndTest.TestCases;
+namespace SeleniumFixtureTest;
 
-        public string GetDisplayName(MethodInfo methodInfo, object[] data)
-        {
-            if (data == null) return null;
-            var endToEndMethod = data[0] as MethodInfo;
-            return endToEndMethod == null
-                ? null
-                : string.Format(CultureInfo.CurrentCulture, "{0} - {1}", methodInfo.ReflectedType?.Name, endToEndMethod.Name);
-        }
+[AttributeUsage(AttributeTargets.Method)]
+public class EndToEndTestCasesAttribute : Attribute, ITestDataSource
+{
+    public IEnumerable<object[]> GetData(MethodInfo methodInfo) => EndToEndTest.TestCases;
+
+    public string GetDisplayName(MethodInfo methodInfo, object[] data)
+    {
+        if (data == null) return null;
+        var endToEndMethod = data[0] as MethodInfo;
+        return endToEndMethod == null
+            ? null
+            : string.Format(CultureInfo.CurrentCulture, "{0} - {1}", methodInfo.ReflectedType?.Name, endToEndMethod.Name);
     }
 }

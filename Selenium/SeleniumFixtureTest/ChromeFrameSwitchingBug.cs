@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2021 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -16,47 +16,46 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace SeleniumFixtureTest
+namespace SeleniumFixtureTest;
+
+[TestClass]
+public sealed class ChromeFrameSwitchingBug : IDisposable
 {
-    [TestClass]
-    public sealed class ChromeFrameSwitchingBug : IDisposable
+    private IWebDriver _browserDriver;
+
+    public void Dispose() => _browserDriver?.Dispose();
+
+    [TestMethod]
+    [TestCategory("Experiments")]
+    public void FrameSwitchTestWithQuackIt()
     {
-        private IWebDriver _browserDriver;
+        const string textInFrame = "ZappyHost";
+        const string contentFrameName = "content";
+        _browserDriver = new ChromeDriver();
+        _browserDriver.Navigate().GoToUrl(new Uri("https://www.quackit.com/html/templates/frames/frames_example_4.html"));
 
-        public void Dispose() => _browserDriver?.Dispose();
-
-        [TestMethod]
-        [TestCategory("Experiments")]
-        public void FrameSwitchTestWithQuackIt()
+        Thread.Sleep(2000);
+        Debug.Print("___________________________________________________");
+        Debug.Print(_browserDriver.PageSource);
+        Debug.Print("___________________________________________________");
+        var element = _browserDriver.FindElement(By.Name(contentFrameName));
+        try
         {
-            const string textInFrame = "ZappyHost";
-            const string contentFrameName = "content";
-            _browserDriver = new ChromeDriver();
-            _browserDriver.Navigate().GoToUrl(new Uri("https://www.quackit.com/html/templates/frames/frames_example_4.html"));
-
-            Thread.Sleep(2000);
-            Debug.Print("___________________________________________________");
-            Debug.Print(_browserDriver.PageSource);
-            Debug.Print("___________________________________________________");
-            var element = _browserDriver.FindElement(By.Name(contentFrameName));
-            try
-            {
-                _browserDriver.FindElement(By.LinkText(textInFrame));
-                Assert.Fail("Found text before switching frames");
-            }
-            catch (NoSuchElementException)
-            {
-            }
-            Debug.Print("found content frame");
-            _browserDriver.SwitchTo().Frame(element);
-            Debug.Print("switched to classFrame");
-            Debug.Print("___________________________________________________");
-            Debug.Print(_browserDriver.PageSource);
-            Debug.Print("___________________________________________________");
-            Assert.IsNotNull(_browserDriver.FindElement(By.LinkText(textInFrame)));
+            _browserDriver.FindElement(By.LinkText(textInFrame));
+            Assert.Fail("Found text before switching frames");
         }
-
-        [TestCleanup]
-        public void MyTestCleanup() => _browserDriver.Quit();
+        catch (NoSuchElementException)
+        {
+        }
+        Debug.Print("found content frame");
+        _browserDriver.SwitchTo().Frame(element);
+        Debug.Print("switched to classFrame");
+        Debug.Print("___________________________________________________");
+        Debug.Print(_browserDriver.PageSource);
+        Debug.Print("___________________________________________________");
+        Assert.IsNotNull(_browserDriver.FindElement(By.LinkText(textInFrame)));
     }
+
+    [TestCleanup]
+    public void MyTestCleanup() => _browserDriver.Quit();
 }

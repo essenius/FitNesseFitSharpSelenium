@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2019 Rik Essenius
+﻿// Copyright 2015-2024 Rik Essenius
 //
 //   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
 //   except in compliance with the License. You may obtain a copy of the License at
@@ -13,42 +13,41 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SeleniumFixture.Model
+namespace SeleniumFixture.Model;
+
+internal class ProtectedMode
 {
-    internal class ProtectedMode
+    private readonly List<IZone> _zones;
+
+    public ProtectedMode(IZoneListFactory zoneListFactory) => _zones = zoneListFactory.CreateZoneList();
+
+    public Collection<Collection<object>> State
     {
-        private readonly List<IZone> _zones;
-
-        public ProtectedMode(IZoneListFactory zoneListFactory) => _zones = zoneListFactory.CreateZoneList();
-
-        public Collection<Collection<object>> State
+        get
         {
-            get
-            {
-                var response = new Collection<Collection<object>>();
-                foreach (var zone in _zones)
-                {
-                    var row = new Collection<object> { zone.Id, zone.IsProtected, zone.FoundIn };
-                    response.Add(row);
-                }
-
-                return response;
-            }
-        }
-
-        public bool AllAre(bool state) => _zones.All(zone => zone.IsProtected == state);
-
-        public bool AllAreSame()
-        {
-            var orResult = false;
-            var andResult = true;
+            var response = new Collection<Collection<object>>();
             foreach (var zone in _zones)
             {
-                orResult = orResult || zone.IsProtected;
-                andResult = andResult && zone.IsProtected;
+                var row = new Collection<object> { zone.Id, zone.IsProtected, zone.FoundIn };
+                response.Add(row);
             }
 
-            return orResult == andResult;
+            return response;
         }
+    }
+
+    public bool AllAre(bool state) => _zones.All(zone => zone.IsProtected == state);
+
+    public bool AllAreSame()
+    {
+        var orResult = false;
+        var andResult = true;
+        foreach (var zone in _zones)
+        {
+            orResult = orResult || zone.IsProtected;
+            andResult = andResult && zone.IsProtected;
+        }
+
+        return orResult == andResult;
     }
 }

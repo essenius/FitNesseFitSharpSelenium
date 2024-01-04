@@ -11,15 +11,14 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SeleniumFixtureTest
-{
-    [TestClass]
-    public class SeleniumRemoteEdgeTest : SeleniumTestBase
-    {
-        [ClassCleanup]
-        public static void ClassCleanup() => Test.ClassCleanup();
+namespace SeleniumFixtureTest;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext _) => Test.ClassInitialize("edge", true);
-    }
+[TestClass]
+public class SeleniumRemoteEdgeTest : SeleniumTestBase
+{
+    [ClassCleanup]
+    public static void ClassCleanup() => Test.ClassCleanup();
+
+    [ClassInitialize]
+    public static void ClassInitialize(TestContext _) => Test.ClassInitialize("edge", true);
 }
