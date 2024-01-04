@@ -69,5 +69,6 @@
 3.2.3    Eliminated NativeBrowserStorage as no longer used.
 3.3.0    Enabled Appium 2, introduced Set/NewBrowserWithOptions, NewOptionsFor, Set/NewRemoteBrowserAtAddressWithOptions,
          RemoteBrowserPath, made Edge path search for IE emulation smarter, cleaned up test site, added TableTestPage
-
-Note: we can't upgrade to Webdriver 4 until WinApp supports it.
+4.0.0    Migrated to Selenium Webdriver 4 (WinApp no longer fully works - it's abandoned it seems)
+4.1.0    Migrated to .Net 6
+4.2.0    Migrated to WebDriver 4.16.2 and introduced JustClickElement to do a plain click (without move or wait)

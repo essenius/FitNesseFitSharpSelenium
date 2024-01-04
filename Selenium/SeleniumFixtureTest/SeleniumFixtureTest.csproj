@@ -4,10 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysysMode>AllEnabledByDefault</AnalysysMode>
-    <Version>4.0.1</Version>
+    <Version>4.2.0</Version>
     <Authors>Rik Essenius</Authors>
     <Description>Test assembly for FitNesse/FitSharp fixture to drive Selenium WebDriver</Description>
-    <Copyright>Copyright © Rik Essenius 2015-2023</Copyright>
+    <Copyright>Copyright © Rik Essenius 2015-2024</Copyright>
     <RepositoryUrl>https://github.com/essenius/FitNesseFitSharpSelenium</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
