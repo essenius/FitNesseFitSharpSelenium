@@ -28,12 +28,15 @@ We'll give the instructions for Windows here, for Mac it should be quite similar
 ## Browser Drivers
 
 As of Selenium 4, there is a Selenium Manager which takes care of downloading the right browser drivers. Unfortunately, it doesn't play nice with FitSharp, as it expects the selenium-manager folder under the FitSharp assembly folder rather than under the fixture assembly folder (where it is).
-There are two options to work around this: one is to create a symbolic link in the FitSharp assembly folder(s) to the selenium-manager folder in the fixture assembly; the other is preventing that Selenium Manager gets used. You can do that by downloading the drivers yourself into a folder of your choice,
-and setting the `DriverFolder` environment variable (or app setting) accordingly. A good location would be `%LOCALAPPDATA%\BrowserDrivers`.
 
-* [Download the ChromeDriver version](https://googlechromelabs.github.io/chrome-for-testing/) that corresponds to the version of Chrome that you use. 
-* Unblock the ZIP file and extract the contents into that folder.
-* Repeat the process to download drivers for [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), [Firefox (GeckoDriver)](https://github.com/mozilla/geckodriver/releases) and [Internet Explorer](https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver) (if you still need that)
+There are three options to work around this:
+1. Simplest: set the environment variable `SE_MANAGER_PATH` to the full path of selenium-manager (including the executable itself).
+2. Create a symbolic link in the FitSharp assembly folder(s) to the selenium-manager folder in the fixture assembly
+3. Prevent that Selenium Manager gets used. You can do that by downloading the drivers yourself into a folder of your choice,
+and setting the `DriverFolder` environment variable (or app setting) accordingly. A good location would be `%LOCALAPPDATA%\BrowserDrivers`.
+    * [Download the ChromeDriver version](https://googlechromelabs.github.io/chrome-for-testing/) that corresponds to the version of Chrome that you use. 
+    * Unblock the ZIP file and extract the contents into that folder.
+    * Repeat the process to download drivers for [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), [Firefox (GeckoDriver)](https://github.com/mozilla/geckodriver/releases) and [Internet Explorer](https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver) (if you still need that).
 
 The default browser for the test pages is Chrome Headless. If you want to use a different browser set `BROWSER` in `plugins.properties`.
 ```
