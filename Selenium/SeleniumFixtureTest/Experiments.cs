@@ -53,7 +53,6 @@ public class Experiments
         var selenium = new Selenium();
         var options = Selenium.NewOptionsFor("ie") as InternetExplorerOptions;
         Assert.IsNotNull(options, "Options is not null");
-        Console.WriteLine(options.ToString());
         selenium.SetBrowserWithOptions("ie", options);
         selenium.Open(new Uri("http://www.google.com?hl=en"));
         selenium.Close();
@@ -78,7 +77,6 @@ public class Experiments
         var selenium = new Selenium();
         var options = Selenium.NewOptionsFor("chrome") as ChromeOptions;
         Assert.IsNotNull(options, "Options is not null");
-        Console.WriteLine(options.ToString());
         selenium.SetRemoteBrowserAtAddressWithOptions("chrome", "http://localhost:6667", options);
         selenium.Open(new Uri("http://www.google.com?hl=en"));
         selenium.Close();

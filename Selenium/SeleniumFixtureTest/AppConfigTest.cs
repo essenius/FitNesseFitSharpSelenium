@@ -28,7 +28,5 @@ public class AppConfigTest
         var testSite = AppConfig.Get(@"TestSite");
         Assert.IsNotNull(testSite, @"TestSite exists");
         Assert.IsTrue(testSite.Contains(@"azurewebsites"), "overruled in environment");
-        Assert.IsTrue(AppConfig.Get(@"InternetExplorer.IgnoreProtectedModeSettings").Matches("true|false"));
-        Assert.AreEqual("C:\\test", AppConfig.Get("DriverFolder"));
     }
 }

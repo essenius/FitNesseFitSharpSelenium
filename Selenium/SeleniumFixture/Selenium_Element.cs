@@ -487,8 +487,6 @@ public sealed partial class Selenium
     {
         var realType = AttributeOfElement("type", searchCriterion);
         if (expectedType != realType) return null;
-        // TODO remove this line
-        Console.WriteLine($@"Type of {searchCriterion} is {realType}");
         return SendKeysToElement(keys, searchCriterion);
     }
 
