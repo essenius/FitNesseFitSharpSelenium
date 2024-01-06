@@ -349,7 +349,7 @@ public sealed partial class Selenium
         return true;
     });
 
-    /// <summary>Right click an element (a.k.a. context click)</summary>
+    /// <summary>Right-click an element (a.k.a. context click)</summary>
     public bool RightClickElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
     {
         // Does not work right for Chrome. It opens the menu, but does not seem to be able to interact with it.

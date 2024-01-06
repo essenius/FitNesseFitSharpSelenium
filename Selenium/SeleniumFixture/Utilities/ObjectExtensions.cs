@@ -55,7 +55,7 @@ internal static class ObjectExtensions
 
     /// <summary>
     ///     Convert a graceful name to the corresponding method (or property) name.
-    ///     If the name doesn't have spaces, it only capitalizes the first letter. Otherwise it capitalizes the first letter
+    ///     If the name doesn't have spaces, it only capitalizes the first letter. Otherwise, it capitalizes the first letter
     ///     of each word and makes the rest lower case.
     /// </summary>
     /// <param name="gracefulName">the graceful name (can be with spaces)</param>

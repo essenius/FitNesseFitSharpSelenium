@@ -17,10 +17,6 @@ namespace SeleniumFixture.Model;
 
 internal class NoBrowserStorage : BrowserStorage
 {
-    public NoBrowserStorage(IWebDriver browserDriver) : base(browserDriver)
-    {
-    }
-
     public override IEnumerable<string> KeySet => null;
 
     public override bool Clear() => false;

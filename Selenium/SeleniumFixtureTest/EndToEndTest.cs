@@ -32,7 +32,7 @@ namespace SeleniumFixtureTest;
 ///     Since we can't make class initialization and class cleanup data driven, we make different test classes per
 ///     browser configuration, and we use one test method in those classes with a test data source attribute to
 ///     define which tests we are going to run. We use reflection because the test data needs to be static,
-///     and because it allows simplification: just add a new test method here and it will be added in all browser tests.
+///     and because it allows simplification: just add a new test method here, and it will be added in all browser tests.
 ///     Test methods are defined as private instance methods without parameters or return values, ending in "Test"
 /// </summary>
 /// <remarks>
@@ -235,7 +235,9 @@ public class EndToEndTest
 
     private void AlertTest()
     {
-        _selenium.SetTimeoutSeconds(3);
+        var driver = _selenium.Driver;
+        var timeout = driver.IsIe() ? 10 : 3;
+        _selenium.SetTimeoutSeconds(timeout);
         var ok = _selenium.WaitForTextIgnoringCase("data load completed");
         Assert.IsTrue(ok, "Wait for data load completed");
         Assert.IsFalse(_selenium.AlertIsPresent());
@@ -266,6 +268,7 @@ public class EndToEndTest
 
         _selenium.ClickElement("trial:Prompt");
         _selenium.DismissAlert();
+        Selenium.WaitSeconds(0.1); // IE is a bit late sometimes
         Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss prompt alert succeeded");
 
         _selenium.ClickElement("id:promptButton");
@@ -533,7 +536,7 @@ public class EndToEndTest
         Assert.IsTrue(_selenium.ElementIsVisible(@"imageLightbulb"), "Light bulb is visible");
 
         var status = _selenium.TextInElement("status");
-        // usually status is 'Hovering..", but Chrome may be too fast
+        // usually status is "Hovering..", but Chrome may be too fast
         var statusOk = status.Equals("Hovering over image") || status.Equals("OK");
         Assert.IsTrue(statusOk, "Status is 'Hovering' or 'OK'");
         Assert.IsTrue(

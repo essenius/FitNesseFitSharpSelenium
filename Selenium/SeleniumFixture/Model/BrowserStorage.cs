@@ -29,10 +29,6 @@ public enum StorageType
 
 internal abstract class BrowserStorage
 {
-    protected BrowserStorage(IWebDriver browserDriver)
-    {
-        Debug.Assert(browserDriver != null, "browserDriver != null");
-    }
 
     public string this[string key]
     {

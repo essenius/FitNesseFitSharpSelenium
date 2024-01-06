@@ -81,9 +81,8 @@ public class WinAppCalculatorTest
     [TestCategory("Native")]
     public void WinAppCalcScientificTest()
     {
-        Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");
-        Assert.IsTrue(Fixture.WaitForElement("Scientific Calculator"), "Wait for scientific");
-        Assert.IsTrue(Fixture.ClickElement("Scientific Calculator"), "Click scientific");
+        // Alt-2 is scientific mode
+        Assert.IsTrue(Fixture.SendKeysToElement("%2%", "Calculator"));
         Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:piButton"), "Wait for Pi");
         Assert.IsTrue(Fixture.ClickElement("AccessibilityId:degButton"), "Click Deg");
         Assert.IsTrue(Fixture.WaitForElement("AccessibilityId:radButton"), "Wait for Rad");

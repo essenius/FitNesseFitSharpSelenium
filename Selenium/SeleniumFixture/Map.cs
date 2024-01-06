@@ -45,13 +45,6 @@ public class Map
         _map.Add(_key, _value);
     }
 
-    /// <summary>Prepare for next test case</summary>
-    public void Reset()
-    {
-        _key = null;
-        _value = null;
-    }
-
     /// <returns>the map</returns>
     public Dictionary<string, string> Content() => _map;
 }

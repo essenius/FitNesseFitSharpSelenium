@@ -124,7 +124,7 @@ internal class KeyConverter
         }
 
         //Replace content if it is a special key; otherwise just leave as is
-        var singleResult = KeyDictionary.TryGetValue(finalKey, out var value) ? value : finalKey;
+        var singleResult = KeyDictionary.GetValueOrDefault(finalKey, finalKey);
         return string.Concat(Enumerable.Repeat(singleResult, repeater));
     }
 

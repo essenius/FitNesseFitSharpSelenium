@@ -32,7 +32,7 @@ public class JavaScriptFunction
         return scriptExecutor.ExecuteScript(script);
     }
 
-    /// <summary>Dynamic Decision Table Interface (reset row so it's ready for the next line)</summary>
+    /// <summary>Dynamic Decision Table Interface (reset row, so it's ready for the next line)</summary>
     public void Reset()
     {
         if (BrowserDriverContainer.Current == null)

@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using OpenQA.Selenium;
 using static System.Globalization.CultureInfo;
 
@@ -21,8 +22,9 @@ internal class JavaScriptBrowserStorage : BrowserStorage
     private readonly IJavaScriptExecutor _javaScriptExecutor;
     private readonly string _javaScriptStore;
 
-    public JavaScriptBrowserStorage(IWebDriver browserDriver, StorageType storageType) : base(browserDriver)
+    public JavaScriptBrowserStorage(IWebDriver browserDriver, StorageType storageType)
     {
+        Debug.Assert(browserDriver != null, "browserDriver != null");
         _javaScriptExecutor = (IJavaScriptExecutor)browserDriver;
         _javaScriptStore = storageType == StorageType.Local ? "window.localStorage" : "window.sessionStorage";
     }

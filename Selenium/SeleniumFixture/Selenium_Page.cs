@@ -101,7 +101,7 @@ public sealed partial class Selenium
     }
 
     /// <summary>
-    ///     Take a screenshot and return it rendered as an html img. May return black if you run the browser driver from within a
+    ///     Take a screenshot and return it rendered as an HTML img. May return black if you run the browser driver from within a
     ///     service
     /// </summary>
     public static string Screenshot() => ScreenshotObject().Rendering;
@@ -117,7 +117,7 @@ public sealed partial class Selenium
         var startY = (int)(screenSize.Height * 0.5);
         var endX = startX;
         var endY = startY;
-        // do this before the iOS check so we know the parameter value is right
+        // do this before the iOS check, so we know the parameter value is right
         switch (direction?.ToUpperInvariant())
         {
             case "UP":
@@ -181,7 +181,7 @@ public sealed partial class Selenium
     /// <summary>Check if a certain text exists on the page</summary>
     public bool TextExists(string textToSearch) => TextExists(textToSearch, false);
 
-    /// <summary>Check if a certain text exists on the page (case insensitive search)</summary>
+    /// <summary>Check if a certain text exists on the page (case-insensitive search)</summary>
     public bool TextExistsIgnoringCase(string textToSearch) => TextExists(textToSearch, true);
 
     /// <summary>Get the title of the current page</summary>
@@ -200,10 +200,10 @@ public sealed partial class Selenium
     private bool WaitForText(string textToSearch, bool caseInsensitive) =>
         WaitFor(_ => TextExists(textToSearch, caseInsensitive));
 
-    /// <summary>Waits for a certain text to be present (case sensitive search)</summary>
+    /// <summary>Waits for a certain text to be present (case-sensitive search)</summary>
     public bool WaitForText(string textToSearch) => WaitForText(textToSearch, false);
 
-    /// <summary>Waits for a certain text to be present (case insensitive search)</summary>
+    /// <summary>Waits for a certain text to be present (case-insensitive search)</summary>
     public bool WaitForTextIgnoringCase(string textToSearch) => WaitForText(textToSearch, true);
 
     /// <summary>Wait until the page source has the specified minimum length. Useful when pages are built dynamically and asynchronously</summary>

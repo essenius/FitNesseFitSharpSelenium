@@ -39,7 +39,7 @@ public class ExtractTableValuesTest
     {
         _selenium.SetBrowser("chrome");
         _selenium.Open(EndToEndTest.CreateTestPageUri());
-        // Tricky stuff happening here - attempts to logon behind the scenes
+        // Tricky stuff happening here - attempts to log on behind the scenes
         _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
         TestTable("XPath://table[@id='normalTable']", 0, new[]
         {

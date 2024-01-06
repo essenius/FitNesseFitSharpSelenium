@@ -42,6 +42,11 @@ public class BrowserDriverContainerTest
         }
     }
 
+    private static bool ContainsHeadless(IReadOnlyCollection<object> collection)
+    {
+        return collection.Any(entry => entry.ToString()?.StartsWith("headless") ?? false);
+    }
+
     [TestMethod]
     [TestCategory("Unit")]
     public void BrowserDriverContainerNewOptionsTest()
@@ -54,13 +59,13 @@ public class BrowserDriverContainerTest
         var options = BrowserDriverContainer.NewOptions("chrome headless", caps);
         var outCaps = options.ToCapabilities();
         Assert.AreEqual("chrome", options.BrowserName, "Browser name is Chrome");
-        Assert.IsTrue(((ChromeOptions)options).Arguments.Contains("headless"),"is headless");
+        Assert.IsTrue(ContainsHeadless(((ChromeOptions)options).Arguments), "is headless");
         Assert.AreEqual("value", outCaps.GetCapability("string"), "contains extra capability");
         Assert.AreEqual("chrome", outCaps.GetCapability(CapabilityType.BrowserName), "contains browser name as capability");
         var chromeOptions = outCaps.GetCapability("goog:chromeOptions") as Dictionary<string, object>;
         Assert.IsNotNull(chromeOptions, "chromeOptions not null");
         var args = chromeOptions["args"] as IReadOnlyCollection<object>;
-        Assert.IsTrue(args?.Contains("headless"), "headless present");
+        Assert.IsTrue(ContainsHeadless(args), "headless present");
 
         var ffOptions = BrowserDriverContainer.NewOptions("firefox");
         var ffOutCaps = ffOptions.ToCapabilities();
@@ -72,7 +77,6 @@ public class BrowserDriverContainerTest
         Assert.IsTrue(ffPrefs.Count >= 4, "ff prefs count ok");
         Assert.IsTrue(ffPrefs.ContainsKey(@"plugin.state.npctrl"), "ff silverlight enabled");
         Assert.IsTrue(ffPrefs.ContainsKey(@"network.negotiate-auth.trusted-uris"), "ff integrated authentication enabled");
-
     }
 
     [TestMethod]

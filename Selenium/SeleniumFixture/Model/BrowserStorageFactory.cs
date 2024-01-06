@@ -24,6 +24,6 @@ internal static class BrowserStorageFactory
         var javaScriptSupportsStorage =
             javaScriptExecutor.ExecuteScript("return typeof(Storage) !== 'undefined';").ToBool();
         if (javaScriptSupportsStorage) return new JavaScriptBrowserStorage(browserDriver, storageType);
-        return new NoBrowserStorage(browserDriver);
+        return new NoBrowserStorage();
     }
 }

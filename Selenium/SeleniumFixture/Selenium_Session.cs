@@ -116,6 +116,14 @@ public sealed partial class Selenium
         return true;
     }
 
+    /// <summary>Get a value for a configuration key. Useful for debugging.</summary>
+    /// <param name="key">the key to get a value for</param>
+    /// <returns>the key value</returns>
+    public static string Config(string key)
+    {
+        return AppConfig.Get(key);
+    }
+
     /// <summary>Return the input. Useful to set symbols</summary>
     /// <remarks>Exists in CommonFunctions too, but didn't want to take a dependency on that just for this</remarks>
     public static object Echo(object input) => input;
@@ -179,7 +187,7 @@ public sealed partial class Selenium
     public string NewBrowser(string browserName) => NewBrowserWithOptions(browserName, null);
 
     /// <summary>
-    ///     Create a new browser instance with a predefined options object. Cab be useful in case additional options are needed.
+    ///     Create a new browser instance with a predefined options object. Can be useful in case additional options are needed.
     /// </summary>
     /// <param name="browserName"></param>
     /// <param name="options"></param>

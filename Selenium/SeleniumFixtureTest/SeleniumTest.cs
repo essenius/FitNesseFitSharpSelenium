@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using SeleniumFixture;
 using SeleniumFixture.Model;
+using SeleniumFixture.Utilities;
 
 namespace SeleniumFixtureTest;
 
@@ -63,6 +64,15 @@ public class SeleniumTest
         {
             Selenium.CommandTimeoutSeconds = 60;
         }
+    }
+
+
+    [TestMethod]
+    [TestCategory("Unit")]
+    public void SeleniumConfigTest()
+    {
+        var protectedMode = Selenium.Config("InternetExplorer.IgnoreProtectedModeSettings");
+        Assert.IsTrue(protectedMode.Matches("true|false"));
     }
 
     [TestMethod]
@@ -232,7 +242,7 @@ public class SeleniumTest
     [DataRow("two on", new[] { false, true, false, true }, false, false)]
     public void SeleniumProtectedModesAreTest(string testId, bool[] zones, bool expectedAllOn, bool expectedAllSame)
     {
-        // including deprecated functions here - don't want to duplicate the whole test. Hence also the #pragma warning disable 618
+        // including deprecated functions here - don't want to duplicate the whole test. Hence, also the #pragma warning disable 618
         if (!OperatingSystem.IsWindows()) return;
         Selenium.ExceptionOnDeprecatedFunctions = false;
 

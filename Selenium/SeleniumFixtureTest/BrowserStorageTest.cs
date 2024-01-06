@@ -46,9 +46,9 @@ public class BrowserStorageTest
         Assert.IsNull(bs.FindFirstKeyLike("key*"), @"JSFFS FindFirst after clear");
     }
 
-    private void BrowserStorageNoTest()
+    private static void BrowserStorageNoTest()
     {
-        var bs = new NoBrowserStorage(_driver);
+        var bs = new NoBrowserStorage();
         Assert.IsNull(bs.KeySet);
         Assert.IsNull(bs.GetItem("N key"));
         Assert.IsFalse(bs.Clear());
@@ -78,7 +78,7 @@ public class BrowserStorageTest
     [TestInitialize]
     public void TestInitialize()
     {
-        _driverHandle = BrowserDriverContainer.NewDriver("chrome headless", null);
+        _driverHandle = BrowserDriverContainer.NewDriver("edge headless", null);
         _driver = BrowserDriverContainer.Current;
         _driver.Navigate().GoToUrl(EndToEndTest.CreateTestPageUri());
     }

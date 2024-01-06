@@ -113,7 +113,7 @@ public sealed partial class Selenium
     }
 
     /// <summary>
-    ///     "Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name).
+    ///     Selects a window using a window handle (which was returned using Wait For New Window Name or Current Window Name).
     ///     If no handle is specified, it will select the window that was used for the Open command.
     /// </summary>
     public bool SelectWindow(string windowName)
