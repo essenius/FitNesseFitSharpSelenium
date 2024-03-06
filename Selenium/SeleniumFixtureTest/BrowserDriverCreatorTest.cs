@@ -31,7 +31,7 @@ public class BrowserDriverCreatorTest
     }
 
     [TestMethod]
-    [TestCategory("Unit")]
+    [TestCategory("Integration")]
     public void BrowserDriverCreatorGetDefaultServiceTest()
     {
         using (var service1 = BrowserDriverCreator.GetDefaultService<InternetExplorerDriverService>())
