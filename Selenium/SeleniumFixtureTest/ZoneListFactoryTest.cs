@@ -22,7 +22,7 @@ namespace SeleniumFixtureTest;
 public class ZoneListFactoryTest
 {
     [TestMethod]
-    [TestCategory("Unit")]
+    [TestCategory("Integration")]
     public void ZoneListFactoryCreateTest()
     {
         var registry = new InMemoryRegistry();
