@@ -1,9 +1,9 @@
-# FitNesseFitSharpSelenium
+# Selenium Fixture ![workflow badge](../../actions/workflows/ci.yml/badge.svg)
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
 
 As Selenium 3 is now considered legacy, Selenium 4 is now used. This implies that the support for WinAppDriver is limited as that can't cope with Selenium 4 a this stage.
 
-# Installing the fixture and the examples
+## Installing the fixture and the examples
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
 
 Differences are:
@@ -18,14 +18,14 @@ Differences are:
 * Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net6.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
-# Installing dependencies
+## Installing dependencies
 
 All the settings mentioned in this section can be configured both in `plugins.properties` and on FitNesse pages (e.g. `!define BROWSER {chrome}`).
 Settings on test pages overrule the settings in `plugins.properties`.
 
 We'll give the instructions for Windows here, for Mac it should be quite similar.
 
-## Browser Drivers
+### Browser Drivers
 
 As of Selenium 4, there is a Selenium Manager which takes care of downloading the right browser drivers. Unfortunately, it doesn't play nice with FitSharp, as it expects the selenium-manager folder under the FitSharp assembly folder rather than under the fixture assembly folder (where it is).
 
@@ -43,14 +43,14 @@ The default browser for the test pages is Chrome Headless. If you want to use a 
 BROWSER=Chrome Headless
 ```
 
-## Test site
+### Test site
 
 If you want to execute the tests, publish the test site in the `SeleniumFixtureTestSite` project to e.g. an azure website, and configure the URL in `TESTSITE`.
 ```
 TESTSITE=http://mytestsite.azurewebsites.net.
 ```
 
-## Selenium Server
+### Selenium Server
 
 If you want to be able to execute remote Selenium tests, install Selenium Server from https://www.selenium.dev/downloads/ (you will need version 4.11 or a newer version 4 patch if that exists) and if you want to be able to run the unit tests, configure the Selenium Server URL in key `SeleniumServer` in `plugins.properties`. 
 
@@ -58,7 +58,7 @@ If you want to be able to execute remote Selenium tests, install Selenium Server
 SeleniumServer=!-http://127.0.0.1:6667-!
 ```
 
-## Appium
+### Appium
 
 If you want to use Appium Desktop (https://appium.io) install that. Only Appium 2 is supported. You might also need to configure an emulated Android device; Two variables of use here:
 * `AppiumServer`: the URL for Appium
@@ -79,7 +79,7 @@ also make sure that the right driver is installed:
 ```
 appium driver install uiautomator2
 ```
-## WinAppDriver
+### WinAppDriver
 
 Install WinAppDriver (https://github.com/microsoft/WinAppDriver) if required, and make sure that Appium has the Windows driver installed.
 WinAppDriver support is not complete as Microsoft hasn't upgraded WinAppDriver to use the W3C protocol, so it isn't fully functional under Selenium 4.
@@ -89,7 +89,7 @@ For the same reason, you will not be able to run via WinAppDriver directly.
 appium driver install --source=npm appium-windows-driver
 ```
 
-## Firefox integrated authentication
+### Firefox integrated authentication
 
 If you want to enable Windows Integrated authentication in Firefox, set `Firefox.IntegratedAuthenticationDomain` to the domain you what to enable it for.
 
@@ -97,14 +97,14 @@ If you want to enable Windows Integrated authentication in Firefox, set `Firefox
 Firefox.IntegratedAuthentication=mydomain.com
 ```
 
-# Running the unit tests
+## Running the unit tests
 If you want to run the unit tests, configure `appsettings.json`:
 
 1. Similarly to plugins.properties for `TestSite` and `RemoteSelenium`.
 2. If you are using Firefox and you want to use integrated authentication, set the key `Firefox.IntegratedAuthenticationDomain` to the desired domain.
 
-# Tutorial and Reference
+## Tutorial and Reference
 See the [Wiki](../../wiki)
 
-# Contribute
+## Contribute
 Enter an [issue](../../issues) or provide a [pull request](../../pulls). 
