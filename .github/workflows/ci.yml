@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore ./Selenium/SeleniumFixture.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal --filter "TestCategory=Unit"
+      run: dotnet test --no-build --verbosity normal --filter "TestCategory=Unit" ./Selenium/SeleniumFixture.sln
