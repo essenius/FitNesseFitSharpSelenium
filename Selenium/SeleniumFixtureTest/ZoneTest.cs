@@ -60,7 +60,7 @@ public class ZoneTest
     }
 
     [TestMethod]
-    [TestCategory("Unit")]
+    [TestCategory("Integration")]
     [ExpectedException(typeof(ArgumentException))]
     [SupportedOSPlatform("windows")]
     public void ZoneIsProtectedInInvalidKeyTest()

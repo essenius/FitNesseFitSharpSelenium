@@ -19,7 +19,7 @@ namespace SeleniumFixtureTest;
 public class AppConfigTest
 {
     [TestMethod]
-    [TestCategory("Unit")]
+    [TestCategory("Integration")]
     public void AppConfigGetTest()
     {
         Assert.IsTrue(AppConfig.Get(@"HOMEDRIVE").Matches("[A-Za-z]:"));
