@@ -28,7 +28,7 @@ public class BrowserDriverContainerTest
     public void BrowserDriverMissingBrowserCleansUpAndRaisesStopTestException()
     {
         var driverCount = BrowserDriverContainer.DriverCount;
-        BrowserDriverContainer.NewDriver("Chrome Headless", null);
+        BrowserDriverContainer.NewDriver("Edge Headless", null);
         Assert.AreEqual(driverCount + 1, BrowserDriverContainer.DriverCount, "One more browser open");
         try
         {
@@ -42,7 +42,7 @@ public class BrowserDriverContainerTest
         }
     }
 
-    private static bool ContainsHeadless(IReadOnlyCollection<object> collection)
+    private static bool ContainsHeadless(IEnumerable<object> collection)
     {
         return collection.Any(entry => entry.ToString()?.StartsWith("headless") ?? false);
     }
@@ -100,7 +100,7 @@ public class BrowserDriverContainerTest
     [TestCategory("Integration")]
     public void BrowserDriverSetCurrentTest()
     {
-        var browser1 = BrowserDriverContainer.NewDriver("chrome headless", null);
+        var browser1 = BrowserDriverContainer.NewDriver("edge headless", null);
         var browser2 = BrowserDriverContainer.NewDriver("firefox headless", null);
         Assert.AreEqual(browser2, BrowserDriverContainer.CurrentId);
         BrowserDriverContainer.SetCurrent(browser1);

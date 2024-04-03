@@ -814,7 +814,7 @@ public class EndToEndTest
             VerifySendKeysToElementWithFallback("2014-07-02", "date", "date", "2014-07-02");
             VerifySendKeysToElementWithFallback("01:23", "time", "time", "01:23");
             VerifySendKeysToElementWithFallback(
-                "09092014{RIGHT}0123A", 
+                "090920140123A", 
                 "datetime-local", 
                 "datetime-local",
                 "2014-09-09T01:23");

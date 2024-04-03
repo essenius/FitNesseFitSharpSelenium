@@ -33,7 +33,7 @@ public class DragDropTest
         var driver1 = _selenium.Driver;
         var target = driver1.FindElement(By.Id("dropTarget"));
 
-        var driverHandle2 = _selenium.NewBrowser("chrome");
+        var driverHandle2 = _selenium.NewBrowser("firefox");
         _selenium.Open(url);
         Assert.IsTrue(_selenium.WaitForElement("dragSource"), "Wait for DragSource in browser 2");
         var driver2 = _selenium.Driver;

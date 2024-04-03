@@ -66,7 +66,7 @@ public class KeyConverterTest
         try
         {
             _selenium.SetTimeoutSeconds(20);
-            Assert.IsTrue(_selenium.SetBrowser("chrome"));
+            Assert.IsTrue(_selenium.SetBrowser("edge"));
             Assert.IsTrue(_selenium.Open(EndToEndTest.CreateTestPageUri()));
             Assert.IsTrue(_selenium.WaitForElement("text1"));
             Assert.IsTrue(_selenium.SetElementTo("text1", new KeyConverter("^a").ToSeleniumFormat), "Text 1");
