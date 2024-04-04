@@ -536,7 +536,7 @@ public class EndToEndTest
         Assert.IsTrue(_selenium.ElementIsVisible(@"imageLightbulb"), "Light bulb is visible");
 
         var status = _selenium.TextInElement("status");
-        // usually status is "Hovering..", but Chrome may be too fast
+        // usually status is "Hovering…", but Chrome may be too fast
         var statusOk = status.Equals("Hovering over image") || status.Equals("OK");
         Assert.IsTrue(statusOk, "Status is 'Hovering' or 'OK'");
         Assert.IsTrue(

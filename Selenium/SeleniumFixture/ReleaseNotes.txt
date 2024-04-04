@@ -73,3 +73,5 @@
 4.1.0    Migrated to .Net 6
 4.2.0    Migrated to WebDriver 4.16.2 and introduced JustClickElement to do a plain click (without move or wait)
 4.2.1    Added Config fixture function and fixed several static analysis findings
+4.2.2    Upgraded to WebDriver 4.19.1, MSTest 3.2.2, coverlet 6.0.2, Test SDK 17.9.0, moved some test to Integration category,
+         accomodated new behavior of Firefox with local dates, fixed ReSharper findings
