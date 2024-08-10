@@ -370,12 +370,7 @@ public sealed partial class Selenium
         // If that is used, we first scroll up to the top, and then start scrolling down.
         if (Regex.Replace(direction, @"\s+", string.Empty).Equals(@"fromtop", StringComparison.OrdinalIgnoreCase))
         {
-            do
-            {
-                oldHash = contentHash;
-                Scroll("up");
-                contentHash = Driver.PageSource.GetHashCode();
-            } while (oldHash != contentHash);
+            contentHash = ScrollToTop(contentHash);
             direction = "down";
         }
 
@@ -387,6 +382,19 @@ public sealed partial class Selenium
             contentHash = Driver.PageSource.GetHashCode();
         } while (oldHash != contentHash);
         return false;
+    }
+
+    private int ScrollToTop(int contentHash)
+    {
+        int oldHash;
+        do
+        {
+            oldHash = contentHash;
+            Scroll("up");
+            contentHash = Driver.PageSource.GetHashCode();
+        } while (oldHash != contentHash);
+
+        return contentHash;
     }
 
     /// <returns>the fist selected item text of a listbox(single or multi - value)</returns>

@@ -235,7 +235,7 @@ public class EndToEndTest
 
     private void AssertOpenAlert(string testElementLocator, string buttonLocator = null)
     {
-        if (buttonLocator == null) buttonLocator = testElementLocator;
+        buttonLocator ??= testElementLocator;
         Assert.IsFalse(_selenium.AlertIsPresent(), $"Alert not present for {buttonLocator}");
         Assert.IsTrue(_selenium.ElementExists(testElementLocator));
         _selenium.ClickElement(buttonLocator);
