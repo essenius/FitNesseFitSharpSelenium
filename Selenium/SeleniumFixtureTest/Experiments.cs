@@ -12,6 +12,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using SeleniumFixture;
@@ -54,6 +55,18 @@ public class Experiments
         var options = Selenium.NewOptionsFor("ie") as InternetExplorerOptions;
         Assert.IsNotNull(options, "Options is not null");
         selenium.SetBrowserWithOptions("ie", options);
+        selenium.Open(new Uri("http://www.google.com?hl=en"));
+        selenium.Close();
+    }
+
+    [TestMethod]
+    [TestCategory("Experiments")]
+    public void SeleniumEdgeTest()
+    {
+        var selenium = new Selenium();
+        var options = Selenium.NewOptionsFor("edge") as EdgeOptions;
+        Assert.IsNotNull(options, "Options is not null");
+        selenium.SetBrowserWithOptions("edge", options);
         selenium.Open(new Uri("http://www.google.com?hl=en"));
         selenium.Close();
     }

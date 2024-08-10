@@ -61,4 +61,23 @@ public class PlainSeleniumTest
         driver.Quit();
     }
 
+    [TestMethod, TestCategory("Experiments")]
+    public void TestEdgeStartupWithGoogle()
+
+    {
+        var driver = new EdgeDriver();
+        driver.Navigate().GoToUrl("https://google.com");
+        Assert.IsTrue(driver.FindElement(By.Name("q")).Displayed);
+        driver.Quit();
+    }
+
+    [TestMethod, TestCategory("Experiments")]
+    public void TestChromeStartupWithGoogle()
+
+    {
+        var driver = new ChromeDriver();
+        driver.Navigate().GoToUrl("https://google.com");
+        Assert.IsTrue(driver.FindElement(By.Name("q")).Displayed);
+        driver.Quit();
+    }
 }

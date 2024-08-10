@@ -242,11 +242,17 @@ internal static class DragDrop
         /// <returns>the X coordinate relative to the width</returns>
         public int GetX(int width)
         {
-            if (TopLeft.Equals(this) || Left.Equals(this) || BottomLeft.Equals(this)) return 1;
-            if (Top.Equals(this) || Center.Equals(this) || Bottom.Equals(this)) return width / 2;
-            if (TopRight.Equals(this) || Right.Equals(this) || BottomRight.Equals(this)) return width - 1;
+            if (IsAtLeft()) return 1;
+            if (IsInMiddleX()) return width / 2;
+            if (IsAtRight()) return width - 1;
             return 0;
         }
+
+        private bool IsInMiddleX() => Top.Equals(this) || Center.Equals(this) || Bottom.Equals(this);
+
+        private bool IsAtRight() => TopRight.Equals(this) || Right.Equals(this) || BottomRight.Equals(this);
+
+        private bool IsAtLeft() => TopLeft.Equals(this) || Left.Equals(this) || BottomLeft.Equals(this);
 
         /// <summary>
         ///     Calculate relative Y coordinate corresponding to a position
@@ -255,10 +261,16 @@ internal static class DragDrop
         /// <returns>the Y coordinate relative to the height</returns>
         public int GetY(int height)
         {
-            if (TopLeft.Equals(this) || Top.Equals(this) || TopRight.Equals(this)) return 1;
-            if (Left.Equals(this) || Center.Equals(this) || Right.Equals(this)) return height / 2;
-            if (BottomLeft.Equals(this) || Bottom.Equals(this) || BottomRight.Equals(this)) return height - 1;
+            if (IsAtTop()) return 1;
+            if (IsInMiddleY()) return height / 2;
+            if (IsAtBottom()) return height - 1;
             return 0;
         }
+
+        private bool IsInMiddleY() => Left.Equals(this) || Center.Equals(this) || Right.Equals(this);
+
+        private bool IsAtBottom() => BottomLeft.Equals(this) || Bottom.Equals(this) || BottomRight.Equals(this);
+
+        private bool IsAtTop() => TopLeft.Equals(this) || Top.Equals(this) || TopRight.Equals(this);
     }
 }

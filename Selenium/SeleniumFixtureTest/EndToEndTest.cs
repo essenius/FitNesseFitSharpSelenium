@@ -233,6 +233,15 @@ public class EndToEndTest
 
     #region Test Cases
 
+    private void AssertOpenAlert(string testElementLocator, string buttonLocator = null)
+    {
+        if (buttonLocator == null) buttonLocator = testElementLocator;
+        Assert.IsFalse(_selenium.AlertIsPresent(), $"Alert not present for {buttonLocator}");
+        Assert.IsTrue(_selenium.ElementExists(testElementLocator));
+        _selenium.ClickElement(buttonLocator);
+        Assert.IsTrue(_selenium.AlertIsPresent(), $"Alert present for {buttonLocator}");
+
+    }
     private void AlertTest()
     {
         var driver = _selenium.Driver;
@@ -240,40 +249,34 @@ public class EndToEndTest
         _selenium.SetTimeoutSeconds(timeout);
         var ok = _selenium.WaitForTextIgnoringCase("data load completed");
         Assert.IsTrue(ok, "Wait for data load completed");
-        Assert.IsFalse(_selenium.AlertIsPresent());
-        Assert.IsTrue(_selenium.ElementExists("trial:alertButton"));
-        _selenium.ClickElement("content:Alert");
-        Assert.IsTrue(_selenium.AlertIsPresent(), "Alert present");
+        AssertOpenAlert( "trial:alertButton", "content:Alert" );
         Assert.IsTrue(_selenium.DismissAlert(), "Dismissed alert");
-        Assert.IsFalse(_selenium.AlertIsPresent(), "Alert not present");
 
-        _selenium.ClickElement("id:alertButton");
-        Assert.IsTrue(_selenium.AlertIsPresent());
+        AssertOpenAlert("id:alertButton");
         Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert");
-        Assert.IsFalse(_selenium.AlertIsPresent(), "Alert not present after accept");
-        Assert.IsTrue(_selenium.ElementExists("id:alertButton"), "Alert button exists");
-        _selenium.ClickElement("id:confirmButton");
-        Assert.IsTrue(_selenium.AlertIsPresent(), "Confirm alert present");
+
+        AssertOpenAlert("id:alertButton", "id:confirmButton");
+
         Assert.IsTrue(_selenium.AcceptAlert(), "Accept alert (2)");
         Assert.AreEqual("You pressed OK", _selenium.TextInElement("status"), "Pressed OK");
 
-        _selenium.ClickElement(@"partialcontent:Confir");
+        AssertOpenAlert(@"partialcontent:Confir");
+
         Assert.IsTrue(_selenium.DismissAlert(), "Dismiss alert");
         Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss succeeded");
 
-        _selenium.ClickElement("Content:Prompt");
-        Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert present");
+        AssertOpenAlert("Content:Prompt");
+
         _selenium.AcceptAlert();
         Assert.AreEqual("You returned: sure", _selenium.TextInElement("status"), "Prompt alert accepted");
 
-        _selenium.ClickElement("trial:Prompt");
+        AssertOpenAlert("trial:Prompt");
         _selenium.DismissAlert();
-        Selenium.WaitSeconds(0.1); // IE is a bit late sometimes
+//        Selenium.WaitSeconds(0.1); // IE is a bit late sometimes
         Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss prompt alert succeeded");
 
-        _selenium.ClickElement("id:promptButton");
-        Selenium.WaitSeconds(0.5);
-        Assert.IsTrue(_selenium.AlertIsPresent(), "Prompt alert is present (2)");
+        AssertOpenAlert("id:promptButton");
+//        Selenium.WaitSeconds(0.5);
         _ = _selenium.RespondToAlert(@"naah");
         Assert.AreEqual(@"You returned: naah", _selenium.TextInElement("status"));
     }
