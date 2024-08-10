@@ -1,4 +1,4 @@
-# Selenium Fixture ![workflow badge](../../actions/workflows/ci.yml/badge.svg) [![CodeScene Code Health](https://codescene.io/projects/57097/status-badges/code-health)](https://codescene.io/projects/57097)
+# Selenium Fixture ![workflow badge](../../actions/workflows/ci.yml/badge.svg) [![CodeScene Code Health](https://codescene.io/projects/57095/status-badges/code-health)](https://codescene.io/projects/57095)
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
 
 As Selenium 3 is now considered legacy, Selenium 4 is now used. This implies that the support for WinAppDriver is limited as that can't cope with Selenium 4 a this stage.
