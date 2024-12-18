@@ -1,7 +1,7 @@
 # Selenium Fixture ![workflow badge](../../actions/workflows/ci.yml/badge.svg) [![CodeScene Code Health](https://codescene.io/projects/57095/status-badges/code-health)](https://codescene.io/projects/57095)
 This repo contains a fixture to enable automated testing of web applications using Selenium WebDriver, along with a number of demo FitNesse pages.
 
-As Selenium 3 is now considered legacy, Selenium 4 is now used. This implies that the support for WinAppDriver is limited as that can't cope with Selenium 4 a this stage.
+As Selenium 3 is considered legacy, Selenium 4 is now used. This implies that the support for WinAppDriver is limited as that can't cope with Selenium 4 a this stage.
 
 ## Installing the fixture and the examples
 The steps to install are very similar to that of installing the [FibonacciDemo](../../../FitNesseFitSharpFibonacciDemo).
@@ -9,13 +9,13 @@ The steps to install are very similar to that of installing the [FibonacciDemo](
 Differences are:
 * Download the repo code as a zip file and extract the contents of the folder `FitNesseFitSharpSelenium-branch`. 
 * Go to solution folder: `cd /D %LOCALAPPDATA%\FitNesse\Selenium`
-* If you have .NET 6 SDK installed:
+* If you have .NET 8 SDK installed:
     * Build fixture solution: `dotnet build --configuration release SeleniumFixture.sln`
     * Go to fixture folder: `cd SeleniumFixture`
-    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net6.0 --framework net6.0 --configuration release`
+    * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net8.0 --framework net8.0 --configuration release`
 * If you don't have .NET 6 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
 * Install browser drivers and other dependencies that you need (see below).
-* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net6.0`
+* Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net8.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
 
 ## Installing dependencies

@@ -11,14 +11,12 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace SeleniumFixture;
 
 /// <summary>StopTestException stops execution of a test page</summary>
-[Serializable]
 [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Clashes with other static analysis findings")]
 public class StopTestException : Exception
 {
@@ -30,13 +28,8 @@ public class StopTestException : Exception
     {
     }
 
-
     public StopTestException(string message, Exception innerException) : base(message, innerException)
 
-    {
-    }
-
-    protected StopTestException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }
