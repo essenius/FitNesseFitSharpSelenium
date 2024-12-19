@@ -16,13 +16,9 @@ using OpenQA.Selenium.Appium.Android;
 
 namespace SeleniumFixture.Model;
 
-internal class AndroidDriverCreator : BrowserDriverCreator
+internal class AndroidDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
     private AppiumOptions _options;
-
-    public AndroidDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
 
     public override string Name => "ANDROID";
 

@@ -14,12 +14,8 @@ using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model;
 
-internal class NoBrowserDriverCreator : BrowserDriverCreator
+internal class NoBrowserDriverCreator() : BrowserDriverCreator(null, TimeSpan.Zero)
 {
-    public NoBrowserDriverCreator() : base(null, TimeSpan.Zero)
-    {
-    }
-
     public override string Name => "NONE";
     public override IWebDriver LocalDriver(object options) => null;
 

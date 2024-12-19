@@ -65,6 +65,7 @@ public sealed class Appium2Test
         options.AutomationName = "UiAutomator2";
         options.PlatformVersion = "9";
         Fixture.SetTimeoutSeconds(60);
+        Fixture.RemoteBrowserBasePath = "";
         try
         {
             Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4723", options));

@@ -15,13 +15,9 @@ using OpenQA.Selenium.Safari;
 
 namespace SeleniumFixture.Model;
 
-internal class SafariDriverCreator : BrowserDriverCreator
+internal class SafariDriverCreator(TimeSpan timeout) : BrowserDriverCreator(null, timeout)
 {
     // didn't find a way to enable proxies or integrated authentication on Safari
-
-    public SafariDriverCreator(TimeSpan timeout) : base(null, timeout)
-    {
-    }
 
     public override string Name => "SAFARI";
 

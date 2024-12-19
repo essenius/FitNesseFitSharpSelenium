@@ -17,7 +17,6 @@ namespace SeleniumFixture.Model;
 
 internal static class AppConfig
 {
-    private static IConfigurationBuilder _builder;
     private static IConfigurationRoot _root;
 
     private static IConfigurationRoot Root
@@ -33,11 +32,11 @@ internal static class AppConfig
             var assemblyFile = Path.Combine(assemblyLocation, jsonFileName);
 
             // order is important. Later in the list means more priority
-            _builder = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .AddJsonFile(baseFile, true, true)
                 .AddJsonFile(assemblyFile, true, true)
                 .AddEnvironmentVariables();
-            _root = _builder.Build();
+            _root = builder.Build();
             return _root;
         }
     }

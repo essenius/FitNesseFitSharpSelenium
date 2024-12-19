@@ -16,12 +16,8 @@ using DotNetWindowsRegistry;
 namespace SeleniumFixture.Model;
 
 [SupportedOSPlatform("windows")]
-internal class ZoneListFactory : IZoneListFactory
+internal class ZoneListFactory(IRegistry registry) : IZoneListFactory
 {
-    public ZoneListFactory(IRegistry registry) => _registry = registry;
-
-    private readonly IRegistry _registry;
-
     public List<IZone> CreateZoneList()
     {
         var zoneList = new List<IZone>();
@@ -32,7 +28,7 @@ internal class ZoneListFactory : IZoneListFactory
         return zoneList;
     }
 
-    private IZone Create(int id) => new Zone(id, _registry);
+    private IZone Create(int id) => new Zone(id, registry);
 }
 
 internal interface IZoneListFactory

@@ -51,6 +51,7 @@ public class WinAppNotepadTest
         Assert.IsNotNull(options, "options != null");
         options.App = "notepad.exe";
         options.AutomationName = "Windows";
+        Fixture.RemoteBrowserBasePath = "";
 
         Selenium.DefaultSearchMethod = "ClassName";
         Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("WinApp", "http://127.0.0.1:4723", options));
@@ -75,7 +76,6 @@ public class WinAppNotepadTest
         if (!_isAtLeastWindows10) return;
 
         Fixture.SetTimeoutSeconds(2);
-
         const string testMessage = "The quick brown fox jumps over the lazy dog.";
 
         Assert.IsTrue(Fixture.SetElementTo(_editorClass, testMessage), "Set element value OK");

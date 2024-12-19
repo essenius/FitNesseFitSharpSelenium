@@ -15,12 +15,8 @@ using OpenQA.Selenium.Firefox;
 
 namespace SeleniumFixture.Model;
 
-internal class FireFoxDriverCreator : BrowserDriverCreator
+internal class FireFoxDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
-    public FireFoxDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public static string IntegratedAuthenticationDomain { get; set; } =
         AppConfig.Get("Firefox.IntegratedAuthenticationDomain");
 

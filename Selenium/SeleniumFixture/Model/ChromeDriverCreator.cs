@@ -15,12 +15,8 @@ using OpenQA.Selenium.Chrome;
 
 namespace SeleniumFixture.Model;
 
-internal class ChromeDriverCreator : BrowserDriverCreator
+internal class ChromeDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
-    public ChromeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public override string Name => "CHROME";
 
     protected virtual ChromeOptions ChromeOptions() => new() { Proxy = Proxy };

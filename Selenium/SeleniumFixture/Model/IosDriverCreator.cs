@@ -16,12 +16,8 @@ using OpenQA.Selenium.Appium.iOS;
 
 namespace SeleniumFixture.Model;
 
-internal class IosDriverCreator : BrowserDriverCreator
+internal class IosDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
-    public IosDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public override string Name => "IOS";
 
     public override IWebDriver LocalDriver(object options) => null;

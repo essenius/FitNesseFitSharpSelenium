@@ -60,6 +60,7 @@ public class BrowserStorageTest
         }
         catch (NotImplementedException)
         {
+            // ignore
         }
     }
 
@@ -78,6 +79,7 @@ public class BrowserStorageTest
     [TestInitialize]
     public void TestInitialize()
     {
+        BrowserDriverContainer.SetProxyType("system");
         _driverHandle = BrowserDriverContainer.NewDriver("edge headless", null);
         _driver = BrowserDriverContainer.Current;
         _driver.Navigate().GoToUrl(EndToEndTest.CreateTestPageUri());

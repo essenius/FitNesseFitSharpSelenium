@@ -15,33 +15,27 @@ using SeleniumFixture.Utilities;
 
 namespace SeleniumFixtureTest;
 
-public class ExpectedExceptionWithMessageAttribute : ExpectedExceptionBaseAttribute
+public class ExpectedExceptionWithMessageAttribute(Type exceptionType, string expectedMessage) : ExpectedExceptionBaseAttribute
 {
-    public ExpectedExceptionWithMessageAttribute(Type exceptionType, string expectedMessage)
+    private Type ExceptionType { get; } = exceptionType;
+
+    private string ExpectedMessage { get; } = expectedMessage;
+
+    protected override void Verify(Exception exception)
     {
-        ExceptionType = exceptionType;
-        ExpectedMessage = expectedMessage;
-    }
-
-    private Type ExceptionType { get; }
-
-    private string ExpectedMessage { get; }
-
-    protected override void Verify(Exception e)
-    {
-        if (e.GetType() != ExceptionType)
+        if (exception.GetType() != ExceptionType)
         {
             Assert.Fail(
                 $"ExpectedExceptionWithMessageAttribute failed. Expected exception type: {ExceptionType.FullName}. " +
-                $"Actual exception type: {e.GetType().FullName}. Exception message: {e.Message}"
+                $"Actual exception type: {exception.GetType().FullName}. Exception message: {exception.Message}"
             );
         }
 
-        var actualMessage = e.Message.Trim();
+        var actualMessage = exception.Message.Trim();
 
         if (ExpectedMessage != null)
         {
-            Assert.IsTrue(actualMessage.IsLike(ExpectedMessage), $"Message {e.Message} is like {actualMessage}");
+            Assert.IsTrue(actualMessage.IsLike(ExpectedMessage), $"Message {exception.Message} is like {actualMessage}");
         }
     }
 }

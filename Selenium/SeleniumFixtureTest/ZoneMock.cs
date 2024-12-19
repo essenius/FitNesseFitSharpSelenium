@@ -13,16 +13,9 @@ using SeleniumFixture.Model;
 
 namespace SeleniumFixtureTest;
 
-internal class ZoneMock : IZone
+internal class ZoneMock(int id, bool isProtected) : IZone
 {
-    public ZoneMock(int id, bool isProtected)
-    {
-        Id = id;
-        IsProtected = isProtected;
-        FoundIn = "User";
-    }
-
-    public string FoundIn { get; }
-    public int Id { get; }
-    public bool IsProtected { get; }
+    public string FoundIn { get; } = "User";
+    public int Id { get; } = id;
+    public bool IsProtected { get; } = isProtected;
 }

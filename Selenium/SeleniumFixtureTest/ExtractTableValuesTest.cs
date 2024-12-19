@@ -41,24 +41,23 @@ public class ExtractTableValuesTest
         _selenium.Open(EndToEndTest.CreateTestPageUri());
         // Tricky stuff happening here - attempts to log on behind the scenes
         _selenium.WaitUntilTitleMatches("SeleniumFixtureTestPage");
-        TestTable("XPath://table[@id='normalTable']", 0, new[]
-        {
-            new[] { new[] { "header1", "value 1" }, new[] { "header2", "10" } },
-            new[] { new[] { "header1", "value 2" }, new[] { "header2", "20" } },
-            new[] { new[] { "header1", "value 3" }, new[] { "header2", "30" } }
-        });
+        TestTable("XPath://table[@id='normalTable']", 0, [
+            [["header1", "value 1"], ["header2", "10"]],
+            [["header1", "value 2"], ["header2", "20"]],
+            [["header1", "value 3"], ["header2", "30"]]
+        ]);
 
-        TestTable("CssSelector: table#tableWithoutHeaders", 0, new[]
-        {
-            new[] { new[] { "Column 1", "value 4" }, new[] { "Column 2", "40" } },
-            new[] { new[] { "Column 1", "value 5" }, new[] { "Column 2", "50" } }
-        });
+        TestTable("CssSelector: table#tableWithoutHeaders", 0,
+        [
+            [["Column 1", "value 4"], ["Column 2", "40"]],
+            [["Column 1", "value 5"], ["Column 2", "50"]]
+        ]);
 
-        TestTable("id:tableWithEmptyHeaders", 0, new[]
-        {
-            new[] { new[] { "Column 1", "value 6" }, new[] { "Column 2", "60" } },
-            new[] { new[] { "Column 1", "value 7" }, new[] { "Column 2", "70" } }
-        });
+        TestTable("id:tableWithEmptyHeaders", 0,
+        [
+            [["Column 1", "value 6"], ["Column 2", "60"]],
+            [["Column 1", "value 7"], ["Column 2", "70"]]
+        ]);
     }
 
     [TestInitialize]
@@ -78,19 +77,17 @@ public class ExtractTableValuesTest
         Assert.IsTrue(_selenium.Open(EndToEndTest.CreateUri("TableTestPage")));
         Assert.IsTrue(_selenium.WaitUntilElementIsVisible("XPath://table[@role=\"grid\"]"));
 
-        TestTable("XPath://table[@role='grid']", 2, new[]
-        {
-            new[]
-            {
-                new[] { "Contact Name", @"Maria Anders" }, new[] { "Contact Title", "Sales Representative" },
-                new[] { "Company Name", @"Alfreds Futterkiste" }, new[] { "Country", "Germany" }
-            },
-            new[]
-            {
-                new[] { "Contact Name", "Ana Trujillo" }, new[] { "Contact Title", "Owner" },
-                new[] { "Company Name", @"Ana Trujillo Emparedados y helados" }, new[] { "Country", "Mexico" }
-            }
-        });
+        TestTable("XPath://table[@role='grid']", 2,
+        [
+            [
+                ["Contact Name", @"Maria Anders"], ["Contact Title", "Sales Representative"],
+                ["Company Name", @"Alfreds Futterkiste"], ["Country", "Germany"]
+            ],
+            [
+                ["Contact Name", "Ana Trujillo"], ["Contact Title", "Owner"],
+                ["Company Name", @"Ana Trujillo Emparedados y helados"], ["Country", "Mexico"]
+            ]
+        ]);
     }
 
     private static void TestTable(string xPathQuery, int max, string[][][] expectedValues)

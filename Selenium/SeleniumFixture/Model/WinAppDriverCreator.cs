@@ -17,17 +17,10 @@ using OpenQA.Selenium.Appium.Windows;
 
 namespace SeleniumFixture.Model;
 
-internal class WinAppDriverCreator : BrowserDriverCreator
+internal class WinAppDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
-    public WinAppDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public override string Name => @"WINAPP";
 
-    // Apparently the Windows driver doesn't expect /wd/hub, unlike all other drivers.
-
-    //protected override string BasePath { get; set; } = "";
 
     public override IWebDriver LocalDriver(object options) => null;
 

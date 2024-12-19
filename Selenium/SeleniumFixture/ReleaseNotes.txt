@@ -75,3 +75,6 @@
 4.2.1    Added Config fixture function and fixed several static analysis findings
 4.2.2    Upgraded to WebDriver 4.19.1, MSTest 3.2.2, coverlet 6.0.2, Test SDK 17.9.0, moved some test to Integration category,
          accomodated new behavior of Firefox with local dates, fixed ReSharper findings
+4.3.0	 Migrated to .NET 8, upgraded to WebDriver 4.23.0, MSTest 3.2.3, coverlet 6.0.2, Test SDK 17.9.0, fixed ReSharper findings
+4.3.1    Upgraded Appium driver to 6.0.1, Selenium to 4.27, Microsoft.Extensions.Configuration to 9.0.0, fixed a number of ReSharper 
+         and SonarLint findings, fixed a few Appium and Edge specific tests and made tests working with public sites pass again.

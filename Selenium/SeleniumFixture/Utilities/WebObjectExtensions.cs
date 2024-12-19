@@ -44,7 +44,7 @@ internal static class WebObjectExtensions
 
     public static string GetValueBy(this IWebElement element, string method) =>
         method.Equals("value", StringComparison.OrdinalIgnoreCase)
-            ? element.GetAttribute("value")
+            ? element.GetDomAttribute("value")
             : element.Text;
 
     public static bool IsAndroid(this IWebDriver driver) => driver.IsPlatform("android");
@@ -65,6 +65,7 @@ internal static class WebObjectExtensions
         platformName.Equals(driverWithCapabilities.Capabilities.GetCapability("platformName")?.ToString(),
             StringComparison.OrdinalIgnoreCase);
 
+    // TODO: replace GetAttribute by GetDomAttribute, and cater for the differences in the two methods
     public static bool SetAttribute(this IWebElement element, string attributeName, string value)
     {
         var javascript = GetJavaScriptExecutor(element);

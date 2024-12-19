@@ -44,6 +44,7 @@ public class WinAppCalculatorTest
         options.AutomationName = "Windows";
 
         Selenium.DefaultSearchMethod = "name";
+        Fixture.RemoteBrowserBasePath = "";
         try
         {
             Assert.IsTrue(

@@ -155,6 +155,7 @@ public sealed class AppiumTest
         options.AddAdditionalAppiumOption("adbExecTimeout", "60000");
 
         Fixture.SetTimeoutSeconds(10);
+        Fixture.RemoteBrowserBasePath = "";
         try
         {
             Assert.IsTrue(Fixture.SetRemoteBrowserAtAddressWithOptions("Android", "http://127.0.0.1:4723", options));

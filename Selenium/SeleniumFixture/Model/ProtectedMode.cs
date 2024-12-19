@@ -15,11 +15,9 @@ using System.Linq;
 
 namespace SeleniumFixture.Model;
 
-internal class ProtectedMode
+internal class ProtectedMode(IZoneListFactory zoneListFactory)
 {
-    private readonly List<IZone> _zones;
-
-    public ProtectedMode(IZoneListFactory zoneListFactory) => _zones = zoneListFactory.CreateZoneList();
+    private readonly List<IZone> _zones = zoneListFactory.CreateZoneList();
 
     public Collection<Collection<object>> State
     {

@@ -17,7 +17,7 @@ using SeleniumFixture.Model;
 
 namespace SeleniumFixture;
 
-/// <summary>"Dynamic Decision Table Fixture to test JavaScript functions</summary>
+/// <summary>Dynamic Decision Table Fixture to test JavaScript functions</summary>
 
 public class JavaScriptFunction
 {

@@ -37,6 +37,6 @@ public class BrowserDriverFactoryTest
     {
         var method = typeof(BrowserDriverFactory).GetMethod("StandardizeBrowserName", BindingFlags.Static | BindingFlags.NonPublic);
         Assert.IsNotNull(method);
-        Assert.AreEqual(expected, method.Invoke(null, new object[] { input })?.ToString());
+        Assert.AreEqual(expected, method.Invoke(null, [input])?.ToString());
     }
 }

@@ -120,6 +120,7 @@ public class SeleniumTest
         }
         catch (StopTestException)
         {
+            // do nothing
         }
     }
 
@@ -157,9 +158,9 @@ public class SeleniumTest
     {
         var keycodeMethod = typeof(Selenium).GetMethod("KeyCode", BindingFlags.Static | BindingFlags.NonPublic);
         Assert.IsNotNull(keycodeMethod);
-        Assert.AreEqual(66, keycodeMethod.Invoke(null, new object[] { "Enter" }));
-        Assert.AreEqual(4, keycodeMethod.Invoke(null, new object[] { "4" }));
-        Assert.IsNull(keycodeMethod.Invoke(null, new object[] { "NonExistingKeyCode" }));
+        Assert.AreEqual(66, keycodeMethod.Invoke(null, ["Enter"]));
+        Assert.AreEqual(4, keycodeMethod.Invoke(null, ["4"]));
+        Assert.IsNull(keycodeMethod.Invoke(null, ["NonExistingKeyCode"]));
     }
 
     [TestMethod]
@@ -182,7 +183,7 @@ public class SeleniumTest
     public void SeleniumLocalChromeNsTest()
     {
         Selenium.DefaultSearchMethod = "trial";
-        const string cookiesOkButton = "cssSelector:button.cookie-notice__btn-accept.hide-in-settings";
+        const string cookiesOkButton = "cssSelector:button#onetrust-accept-btn-handler";
         Assert.IsTrue(Selenium.SetProxyType("System"), "Set Proxy System");
         Assert.IsTrue(_selenium.SetBrowser("Chrome"), "Set Browser Chrome");
         Assert.IsTrue(_selenium.Open(new Uri("http://www.ns.nl")), "Open Uri");

@@ -34,7 +34,7 @@ public class KeyConverterTest
     public void KeyConverterSpecialKeysTest()
     {
         var k = new KeyConverter("^ac{Del}New Text~").ToSeleniumFormat;
-        int[] expected = { 57353, 97, 99, 57367, 78, 101, 119, 32, 84, 101, 120, 116, 57351 };
+        int[] expected = [57353, 97, 99, 57367, 78, 101, 119, 32, 84, 101, 120, 116, 57351];
         Assert.AreEqual(expected.Length, k.Length, "expected size {0} but got {1}", expected.Length, k.Length);
         for (var i = 0; i < k.Length; i++)
         {

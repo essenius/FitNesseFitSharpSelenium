@@ -37,7 +37,7 @@ internal class JavaScriptBrowserStorage : BrowserStorage
             var result = new List<string>();
             for (var i = 0; i < count; i++)
             {
-                var key = CallViaJavascript(FormattableString.Invariant($"key({i});"));
+                var key = CallViaJavascript(string.Create(InvariantCulture, $"key({i});"));
                 result.Add(key.ToString());
             }
 
@@ -47,7 +47,7 @@ internal class JavaScriptBrowserStorage : BrowserStorage
 
     private object CallViaJavascript(string scriptSnippet) =>
         _javaScriptExecutor.ExecuteScript(
-            FormattableString.Invariant($"return {_javaScriptStore}.{scriptSnippet};"));
+            string.Create(InvariantCulture, $"return {_javaScriptStore}.{scriptSnippet};"));
 
     public override bool Clear()
     {
@@ -56,14 +56,14 @@ internal class JavaScriptBrowserStorage : BrowserStorage
     }
 
     public override string GetItem(string key) =>
-        CallViaJavascript(FormattableString.Invariant($"getItem('{key}')")).ToString();
+        CallViaJavascript(string.Create(InvariantCulture, $"getItem('{key}')")).ToString();
 
     public override bool RemoveItem(string key)
     {
-        CallViaJavascript(FormattableString.Invariant($"removeItem('{key}')"));
+        CallViaJavascript(string.Create(InvariantCulture, $"removeItem('{key}')"));
         return true;
     }
 
     public override void SetItem(string key, string value) =>
-        CallViaJavascript(FormattableString.Invariant($"setItem('{key}','{value}')"));
+        CallViaJavascript(string.Create(InvariantCulture, $"setItem('{key}','{value}')"));
 }

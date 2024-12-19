@@ -15,27 +15,24 @@ using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model;
 
-internal class BrowserDriverFactory
+internal class BrowserDriverFactory(Proxy proxy, TimeSpan timeout)
 {
     private const StringComparison IgnoreCase = StringComparison.InvariantCultureIgnoreCase;
-    private readonly List<BrowserDriverCreator> _browserDriverCreators;
-
-    public BrowserDriverFactory(Proxy proxy, TimeSpan timeout) =>
-        _browserDriverCreators = new List<BrowserDriverCreator>
-        {
-            new AndroidDriverCreator(proxy, timeout),
-            new ChromeDriverCreator(proxy, timeout),
-            new HeadlessChromeDriverCreator(proxy, timeout),
-            new EdgeDriverCreator(proxy, timeout),
-            new HeadlessEdgeDriverCreator(proxy, timeout),
-            new FireFoxDriverCreator(proxy, timeout),
-            new HeadlessFirefoxDriverCreator(proxy, timeout),
-            new InternetExplorerDriverCreator(proxy, timeout),
-            new IosDriverCreator(proxy, timeout),
-            new SafariDriverCreator(timeout),
-            new WinAppDriverCreator(proxy, timeout),
-            new NoBrowserDriverCreator()
-        };
+    private readonly List<BrowserDriverCreator> _browserDriverCreators =
+    [
+        new AndroidDriverCreator(proxy, timeout),
+        new ChromeDriverCreator(proxy, timeout),
+        new HeadlessChromeDriverCreator(proxy, timeout),
+        new EdgeDriverCreator(proxy, timeout),
+        new HeadlessEdgeDriverCreator(proxy, timeout),
+        new FireFoxDriverCreator(proxy, timeout),
+        new HeadlessFirefoxDriverCreator(proxy, timeout),
+        new InternetExplorerDriverCreator(proxy, timeout),
+        new IosDriverCreator(proxy, timeout),
+        new SafariDriverCreator(timeout),
+        new WinAppDriverCreator(proxy, timeout),
+        new NoBrowserDriverCreator()
+    ];
 
     private BrowserDriverCreator BrowserDriverCreatorFor(string browserName)
     {

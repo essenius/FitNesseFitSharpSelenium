@@ -19,7 +19,7 @@ using static System.Globalization.CultureInfo;
 
 namespace SeleniumFixture.Model;
 
-internal class Zone : IZone
+internal class Zone(int zoneId, IRegistry registry) : IZone
 {
     public const int Enabled = 0;
     public const int Disabled = 3; 
@@ -40,14 +40,6 @@ internal class Zone : IZone
     private string _foundIn;
     private bool? _isProtected;
 
-    public Zone(int zoneId, IRegistry registry)
-    {
-        Id = zoneId;
-        _registry = registry;
-    }
-
-    private readonly IRegistry _registry;
-
     public string FoundIn
     {
         get
@@ -57,7 +49,7 @@ internal class Zone : IZone
         }
     }
 
-    public int Id { get; }
+    public int Id { get; } = zoneId;
 
     public bool IsProtected
     {
@@ -115,6 +107,6 @@ internal class Zone : IZone
     [SupportedOSPlatform("windows")]
     private IRegistryKey RootKeyOf(string keyString) =>
         keyString.StartsWith(@"HKLM", StringComparison.Ordinal)
-            ? _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
-            : _registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default);
+            ? registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)
+            : registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default);
 }

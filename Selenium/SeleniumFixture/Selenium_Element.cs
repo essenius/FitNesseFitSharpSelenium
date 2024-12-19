@@ -22,7 +22,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Appium.Android;
+using OpenQA.Selenium.Appium.Android.Enums;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumFixture.Model;
@@ -56,6 +56,7 @@ public sealed partial class Selenium
                 .Select(option => option.GetValueBy(method)).ToList()));
 
     /// <returns>an attribute value of a certain element</returns>
+    /// TODO: replace GetAttribute with GetDomAttribute. However, behavior is different, so needs more work.
     public string AttributeOfElement(string attribute, string searchCriterion) =>
         DoOperationOnElement(searchCriterion, element => element.GetAttribute(attribute));
 
@@ -148,7 +149,7 @@ public sealed partial class Selenium
         throw new StaleElementReferenceException(ErrorMessages.StaleAfterRetry, staleElementReferenceException);
     }
 
-    /// <summary>Double click an element</summary>
+    /// <summary>Double-click an element</summary>
     public bool DoubleClickElement(string searchCriterion) => DoOperationOnElement(searchCriterion, element =>
     {
         MoveTo(element);

@@ -19,7 +19,7 @@ namespace SeleniumFixture.Model;
 
 internal class CustomBy : By
 {
-    protected readonly List<By> ByList = new();
+    protected readonly List<By> ByList = [];
     protected readonly string ElementIdentifier;
 
     protected string DisplayName;

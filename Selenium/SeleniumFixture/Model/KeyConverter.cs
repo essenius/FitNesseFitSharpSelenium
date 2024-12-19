@@ -13,11 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using OpenQA.Selenium;
 
 namespace SeleniumFixture.Model;
 
-internal class KeyConverter
+internal class KeyConverter(string keys)
 {
     private const char EndDelimiter = '}';
     private const char StartDelimiter = '{';
@@ -63,46 +64,42 @@ internal class KeyConverter
             { @"F12", Keys.F12 }
         };
 
-    private readonly string _keys;
-
-    public KeyConverter(string keys) => _keys = keys;
-
     public string ToSeleniumFormat
     {
         get
         {
-            var result = string.Empty;
-            for (var i = 0; i < _keys.Length; i++)
+            var builder = new StringBuilder();
+            for (var i = 0; i < keys.Length; i++)
             {
-                switch (_keys[i])
+                switch (keys[i])
                 {
                     case '+':
-                        result += Keys.Shift;
+                        builder.Append(Keys.Shift);
                         break;
                     case '^':
-                        result += Keys.Control;
+                        builder.Append(Keys.Control);
                         break;
                     case '%':
-                        result += Keys.Alt;
+                        builder.Append(Keys.Alt);
                         break;
                     case '~':
-                        result += Keys.Enter;
+                        builder.Append(Keys.Enter);
                         break;
                     case StartDelimiter:
                         // we have an opening curly brace. Find the corresponding closing one
                         var endDelimiterPosition = FindEndDelimiterPosition(i);
                         // Handle the content between the curly braces
-                        var key = _keys.Substring(i + 1, endDelimiterPosition - i - 1);
-                        result += EscapedContent(key);
+                        var key = keys.Substring(i + 1, endDelimiterPosition - i - 1);
+                        builder.Append(EscapedContent(key));
                         // start next iteration after the closing curly brace
                         i = endDelimiterPosition;
                         break;
                     default:
-                        result += _keys[i];
+                        builder.Append(keys[i]);
                         break;
                 }
             }
-            return result;
+            return builder.ToString();
         }
     }
 
@@ -130,15 +127,15 @@ internal class KeyConverter
 
     private int FindEndDelimiterPosition(int startDelimiterPosition)
     {
-        var endDelimiterPosition = _keys.IndexOf('}', startDelimiterPosition + 1);
+        var endDelimiterPosition = keys.IndexOf('}', startDelimiterPosition + 1);
         if (endDelimiterPosition == -1)
         {
             throw new ArgumentException("Could not find end delimiter '" + EndDelimiter + "'");
         }
 
-        var secondEndDelimiterPosition = _keys.IndexOf(EndDelimiter, endDelimiterPosition + 1);
+        var secondEndDelimiterPosition = keys.IndexOf(EndDelimiter, endDelimiterPosition + 1);
         if (secondEndDelimiterPosition != -1 &&
-            !_keys.Substring(endDelimiterPosition + 1, secondEndDelimiterPosition - endDelimiterPosition - 1)
+            !keys.Substring(endDelimiterPosition + 1, secondEndDelimiterPosition - endDelimiterPosition - 1)
                 .Contains(StartDelimiter.ToString(CultureInfo.InvariantCulture)))
         {
             // we have two closing curly braces without an opening curly brace in between. Everything between

@@ -151,7 +151,7 @@ public sealed partial class Selenium
     {
         var scriptExecutor = (IJavaScriptExecutor)Driver;
         var argsToUse = new List<object>();
-        foreach (var locator in args ?? new Collection<string>())
+        foreach (var locator in args ?? [])
         {
             if (locator.Contains(SearchParser.Delimiter))
             {

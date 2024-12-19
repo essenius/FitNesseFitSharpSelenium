@@ -16,12 +16,8 @@ using SeleniumFixture.Model;
 namespace SeleniumFixtureTest;
 
 [SupportedOSPlatform("windows")]
-internal class ZoneListFactoryMock : IZoneListFactory
+internal class ZoneListFactoryMock(bool[] isProtected) : IZoneListFactory
 {
-    private readonly bool[] _isProtected;
-
-    public ZoneListFactoryMock(bool[] isProtected) => _isProtected = isProtected;
-
     public List<IZone> CreateZoneList()
     {
         var zoneList = new List<IZone>();
@@ -32,5 +28,5 @@ internal class ZoneListFactoryMock : IZoneListFactory
         return zoneList;
     }
 
-    private IZone Create(int id) => new ZoneMock(id, _isProtected[id - 1]);
+    private IZone Create(int id) => new ZoneMock(id, isProtected[id - 1]);
 }

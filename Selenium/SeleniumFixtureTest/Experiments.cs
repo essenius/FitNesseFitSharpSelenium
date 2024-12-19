@@ -64,23 +64,12 @@ public class Experiments
     public void SeleniumEdgeTest()
     {
         var selenium = new Selenium();
+        Selenium.SetProxyType("system");
         var options = Selenium.NewOptionsFor("edge") as EdgeOptions;
         Assert.IsNotNull(options, "Options is not null");
         selenium.SetBrowserWithOptions("edge", options);
         selenium.Open(new Uri("http://www.google.com?hl=en"));
         selenium.Close();
-    }
-
-    [TestMethod]
-    [TestCategory("Experiments")]
-    public void SeleniumFfTest()
-    {
-        var options = Selenium.NewOptionsFor("ff") as FirefoxOptions;
-        var service = FirefoxDriverService.CreateDefaultService();
-        service.Host = "127.0.0.1";
-        var ff = new FirefoxDriver(service, options, TimeSpan.FromSeconds(10));
-        ff.Navigate().GoToUrl(new Uri("http://www.google.com?hl=en"));
-        ff.Quit();
     }
 
     [TestMethod]

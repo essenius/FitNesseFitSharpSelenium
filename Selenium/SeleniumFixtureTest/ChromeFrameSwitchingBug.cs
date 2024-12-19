@@ -46,6 +46,7 @@ public sealed class ChromeFrameSwitchingBug : IDisposable
         }
         catch (NoSuchElementException)
         {
+            // do nothing
         }
         Debug.Print("found content frame");
         _browserDriver.SwitchTo().Frame(element);

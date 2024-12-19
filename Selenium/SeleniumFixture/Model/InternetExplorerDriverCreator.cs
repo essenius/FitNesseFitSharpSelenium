@@ -16,12 +16,8 @@ using OpenQA.Selenium.IE;
 
 namespace SeleniumFixture.Model;
 
-internal class InternetExplorerDriverCreator : BrowserDriverCreator
+internal class InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
-    public InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public override string Name => "IE";
 
     private static string EdgePath()

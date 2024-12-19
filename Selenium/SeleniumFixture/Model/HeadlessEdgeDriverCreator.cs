@@ -15,12 +15,8 @@ using OpenQA.Selenium.Edge;
 
 namespace SeleniumFixture.Model;
 
-internal class HeadlessEdgeDriverCreator : EdgeDriverCreator
+internal class HeadlessEdgeDriverCreator(Proxy proxy, TimeSpan timeout) : EdgeDriverCreator(proxy, timeout)
 {
-    public HeadlessEdgeDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public override string Name => @"EDGEHEADLESS";
 
     protected override EdgeOptions EdgeOptions()

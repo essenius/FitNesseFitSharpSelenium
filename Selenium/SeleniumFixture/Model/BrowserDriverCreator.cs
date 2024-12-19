@@ -18,16 +18,10 @@ using OpenQA.Selenium.Remote;
 
 namespace SeleniumFixture.Model;
 
-internal abstract class BrowserDriverCreator
+internal abstract class BrowserDriverCreator(Proxy proxy, TimeSpan timeout)
 {
-    protected readonly Proxy Proxy;
-    protected readonly TimeSpan Timeout;
-
-    protected BrowserDriverCreator(Proxy proxy, TimeSpan timeout)
-    {
-        Proxy = proxy;
-        Timeout = timeout;
-    }
+    protected readonly Proxy Proxy = proxy;
+    protected readonly TimeSpan Timeout = timeout;
 
     public abstract string Name { get; }
 

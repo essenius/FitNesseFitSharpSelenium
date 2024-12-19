@@ -15,12 +15,8 @@ using OpenQA.Selenium.Firefox;
 
 namespace SeleniumFixture.Model;
 
-internal class HeadlessFirefoxDriverCreator : FireFoxDriverCreator
+internal class HeadlessFirefoxDriverCreator(Proxy proxy, TimeSpan timeout) : FireFoxDriverCreator(proxy, timeout)
 {
-    public HeadlessFirefoxDriverCreator(Proxy proxy, TimeSpan timeout) : base(proxy, timeout)
-    {
-    }
-
     public override string Name => @"FIREFOXHEADLESS";
 
     protected override FirefoxOptions FirefoxOptions()

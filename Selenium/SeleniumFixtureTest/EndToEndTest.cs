@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,6 +23,7 @@ using OpenQA.Selenium;
 using SeleniumFixture;
 using SeleniumFixture.Model;
 using SeleniumFixture.Utilities;
+
 
 // ReSharper disable UnusedMember.Local -- we use reflection to call the test methods
 
@@ -38,6 +40,7 @@ namespace SeleniumFixtureTest;
 /// <remarks>
 ///     It's a bit bigger than I would like, but splitting it in partial classes doesn't make it much better.
 /// </remarks>
+[SuppressMessage("SonarLint", "S1144:Unused private types or members should be removed", Justification = "This member is used by reflection.")]
 public class EndToEndTest
 {
     #region Support fields and properties
@@ -272,11 +275,9 @@ public class EndToEndTest
 
         AssertOpenAlert("trial:Prompt");
         _selenium.DismissAlert();
-//        Selenium.WaitSeconds(0.1); // IE is a bit late sometimes
         Assert.AreEqual("You pressed Cancel", _selenium.TextInElement("status"), "Dismiss prompt alert succeeded");
 
         AssertOpenAlert("id:promptButton");
-//        Selenium.WaitSeconds(0.5);
         _ = _selenium.RespondToAlert(@"naah");
         Assert.AreEqual(@"You returned: naah", _selenium.TextInElement("status"));
     }
@@ -332,8 +333,8 @@ public class EndToEndTest
     private void ClearTest()
     {
         var originalValue = _selenium.AttributeOfElement("value", "Label:Text 1");
-        Assert.IsTrue(_selenium.ClearElement("text1"));
-        Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", "id:text1")));
+        Assert.IsTrue(_selenium.ClearElement("text1"), "text1 cleared");
+        Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", "id:text1")), "text1 null or empty");
         _selenium.SetElementTo("text1", originalValue);
     }
 
@@ -760,8 +761,7 @@ public class EndToEndTest
         Assert.IsTrue(_selenium.SendKeysToElement("^ac", "text1"), "Send Select All-Copy All to text1");
         Assert.IsTrue(_selenium.MoveToElement("text2"), "Move to text2");
         _selenium.ExecuteScriptWithParameters(
-            "document.getElementById(arguments[0]).focus(); ",
-            new Collection<string> { "text2" });
+            "document.getElementById(arguments[0]).focus(); ", ["text2"]);
         Assert.IsTrue(_selenium.SendKeys("^av"), "Send Select All-Paste to text2");
         Assert.AreEqual(@"ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "text 1 didn't change");
         Assert.AreEqual(
@@ -980,7 +980,7 @@ public class EndToEndTest
         Assert.IsNotNull(handle);
         _selenium.SelectWindow(handle);
         Assert.AreEqual(handle, _selenium.CurrentWindowName, "Switched to new window");
-        Assert.IsTrue(_selenium.WaitForElement(@"tagname:h1"));
+        Assert.IsTrue(_selenium.WaitForElement(@"tagname:h1"), "Wait for tag name h1");
         Assert.AreEqual("Test site for Selenium Fixture", _selenium.TextInElement(@"tagname:h1"), "on new page");
         _selenium.SelectWindow(string.Empty);
         Assert.AreEqual(
