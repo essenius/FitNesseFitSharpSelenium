@@ -69,6 +69,7 @@ public class WinAppCalculatorTest
         Assert.IsTrue(Fixture.ClickElement("AccessibilityId:TogglePaneButton"), "Open menu");
         Assert.IsTrue(Fixture.WaitForElement("Standard Calculator"), "Wait for standard");
         Assert.IsTrue(Fixture.ClickElement("Standard Calculator"), "Click standard");
+        Assert.IsTrue(Fixture.WaitForElement("Clear"), "Wait for Clear");
         Fixture.ClickElement("Clear");
         AssertResult("0");
         Assert.IsTrue(Fixture.ClickElement("One"), "Click 1");

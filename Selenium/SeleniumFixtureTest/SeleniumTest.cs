@@ -377,6 +377,6 @@ public class SeleniumTest
         var registry = new WindowsRegistry();
         var protectedModes = new ProtectedMode(new ZoneListFactory(registry));
         var same = protectedModes.AllAreSame();
-        Assert.IsTrue(same);
+        Assert.IsTrue(same, "All zones are equal");
     }
 }

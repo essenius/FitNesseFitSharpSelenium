@@ -15,6 +15,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
 
 namespace SeleniumFixtureTest;
 
@@ -78,6 +79,25 @@ public class PlainSeleniumTest
         var driver = new ChromeDriver();
         driver.Navigate().GoToUrl("https://google.com");
         Assert.IsTrue(driver.FindElement(By.Name("q")).Displayed);
+        driver.Quit();
+    }
+
+
+    [TestMethod, TestCategory("Experiments")]
+    public void TestInternetExplorerStartup()
+
+    {
+        var ieOptions = new InternetExplorerOptions
+        {
+            AttachToEdgeChrome = true,
+            EdgeExecutablePath = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+        };
+
+        var driver = new InternetExplorerDriver(ieOptions);
+        driver.Navigate().GoToUrl("https://bing.com");
+        driver.FindElement(By.Id("sb_form_q")).SendKeys("WebDriver");
+        driver.FindElement(By.Id("sb_form")).Submit();
+
         driver.Quit();
     }
 }

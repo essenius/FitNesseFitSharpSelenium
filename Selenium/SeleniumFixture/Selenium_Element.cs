@@ -55,10 +55,9 @@ public sealed partial class Selenium
             new ReadOnlyCollection<string>(new SelectElement(element).Options
                 .Select(option => option.GetValueBy(method)).ToList()));
 
-    /// <returns>an attribute value of a certain element</returns>
-    /// TODO: replace GetAttribute with GetDomAttribute. However, behavior is different, so needs more work.
-    public string AttributeOfElement(string attribute, string searchCriterion) =>
-        DoOperationOnElement(searchCriterion, element => element.GetAttribute(attribute));
+
+
+
 
     private static void ChooseAction(bool choice, Action trueAction, Action falseAction)
     {
@@ -118,6 +117,14 @@ public sealed partial class Selenium
 
     /// <returns>the number of elements matching the criteria</returns>
     public int CountOfElements(string searchCriterion) => ElementsMatching(searchCriterion)?.Count ?? 0;
+
+    /// <returns>the DOM attribute of a certain element</returns>
+    public string DomAttributeOfElement(string attribute, string searchCriterion) =>
+        DoOperationOnElement(searchCriterion, element => element.GetDomAttribute(attribute));
+
+    /// <returns>the DOM property of a certain element</returns>
+    public string DomPropertyOfElement(string attribute, string searchCriterion) =>
+        DoOperationOnElement(searchCriterion, element => element.GetDomProperty(attribute));
 
     /// <returns>a CSS property of a certain element (e.g. color)</returns>
     public string CssPropertyOfElement(string cssProperty, string searchCriterion) =>
@@ -257,9 +264,14 @@ public sealed partial class Selenium
     /// <returns>whether a certain element exists on the page</returns>
     public bool ElementExists(string searchCriterion) => Driver != null && ElementsMatching(searchCriterion).Any();
 
-    /// <returns>whether a certain element has the specified attribute</returns>
-    public bool ElementHasAttribute(string searchCriterion, string attribute) =>
-        AttributeOfElement(attribute, searchCriterion) != null;
+
+    /// <returns>whether a certain element has the specified property</returns>
+    public bool ElementHasDomAttribute(string searchCriterion, string attribute) =>
+        DomPropertyOfElement(attribute, searchCriterion) != null;
+
+    /// <returns>whether a certain element has the specified property</returns>
+    public bool ElementHasDomProperty(string searchCriterion, string attribute) =>
+        DomPropertyOfElement(attribute, searchCriterion) != null;
 
     /// <returns>whether the element is selected/checked</returns>
     public bool ElementIsChecked(string searchCriterion) =>
@@ -494,7 +506,7 @@ public sealed partial class Selenium
     /// <returns>true if successful, null if type not recognized</returns>
     public object SendKeysToElementIfTypeIs(string keys, string searchCriterion, string expectedType)
     {
-        var realType = AttributeOfElement("type", searchCriterion);
+        var realType = DomPropertyOfElement("type", searchCriterion);
         if (expectedType != realType) return null;
         return SendKeysToElement(keys, searchCriterion);
     }

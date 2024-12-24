@@ -219,7 +219,7 @@ public class EndToEndTest
     {
         _ = _selenium.SendKeysToElementIfTypeIs(keys, element, typeAttribute);
         _selenium.SendKeysToElementIfTypeIs("^a^{DEL}" + fallbackKeys, element, "text");
-        Assert.AreEqual(fallbackKeys, _selenium.AttributeOfElement("value", element),
+        Assert.AreEqual(fallbackKeys, _selenium.DomPropertyOfElement("value", element),
             "SendKeys value is correct for '{0}'", element);
     }
 
@@ -228,7 +228,7 @@ public class EndToEndTest
         Assert.IsTrue(_selenium.SetElementTo(element, value), "Set '{0}' to '{1}'", element, value);
         Assert.AreEqual(
             value,
-            _selenium.AttributeOfElement("value", element),
+            _selenium.DomPropertyOfElement("value", element),
             "value of '{0}' is '{1}", element, value);
     }
 
@@ -300,10 +300,10 @@ public class EndToEndTest
             "output element has the expected values");
     }
 
-    private void AttributeOfElementTest()
+    private void DomAttributeOfElementTest()
     {
-        Assert.AreEqual(CreateUri("iframe1.html").ToString(), _selenium.AttributeOfElement("src", "id:iframe1"));
-        var originalClass = _selenium.AttributeOfElement("class", "status");
+        Assert.AreEqual(CreateUri("iframe1.html").ToString(), _selenium.DomPropertyOfElement("src", "id:iframe1"));
+        var originalClass = _selenium.DomAttributeOfElement("class", "status");
         Assert.IsTrue(_selenium.SetAttributeOfElementTo("class", "status", "fail"), "Set class to fail");
         Assert.IsTrue(
             IsRgb(_selenium.CssPropertyOfElement("background-color", "status"), 204, 0, 0),
@@ -327,14 +327,14 @@ public class EndToEndTest
                     "return dragSource.naturalWidth!=\"undefined\" && dragSource.naturalWidth>0;")
                 .ToBool(),
             "Test OK image");
-        Assert.IsTrue(_selenium.ElementHasAttribute("id:brokenImage", "Alt"), "Alt attribute exists");
+        Assert.IsTrue(_selenium.ElementHasDomAttribute("id:brokenImage", "alt"), "Alt attribute exists");
     }
 
     private void ClearTest()
     {
-        var originalValue = _selenium.AttributeOfElement("value", "Label:Text 1");
+        var originalValue = _selenium.DomAttributeOfElement("value", "Label:Text 1");
         Assert.IsTrue(_selenium.ClearElement("text1"), "text1 cleared");
-        Assert.IsTrue(string.IsNullOrEmpty(_selenium.AttributeOfElement("value", "id:text1")), "text1 null or empty");
+        Assert.IsTrue(string.IsNullOrEmpty(_selenium.DomPropertyOfElement("value", "id:text1")), "text1 null or empty");
         _selenium.SetElementTo("text1", originalValue);
     }
 
@@ -517,9 +517,9 @@ public class EndToEndTest
     {
         Assert.IsTrue(_selenium.JustClickElement("am"));
         Assert.IsTrue(_selenium.ElementIsChecked("am"), "am is checked");
-        Assert.IsTrue(_selenium.AttributeOfElement("src", "imageLightbulb").EndsWith("pic_bulboff.gif"));
+        Assert.IsTrue(_selenium.DomPropertyOfElement("src", "imageLightbulb").EndsWith("pic_bulboff.gif"));
         Assert.IsTrue(_selenium.JustClickElement("imageLightbulb"));
-        Assert.IsTrue(_selenium.AttributeOfElement("src", "imageLightbulb").EndsWith("pic_bulbon.gif"));
+        Assert.IsTrue(_selenium.DomPropertyOfElement("src", "imageLightbulb").EndsWith("pic_bulbon.gif"));
         Assert.IsTrue(_selenium.JustClickElement("disabledButton"));
         try
         {
@@ -649,14 +649,14 @@ public class EndToEndTest
     {
         // taking default methods for options, which should use text (via id)
         _ = _selenium.SelectOptionInElement("value:item1", "id:dropdown");
-        Assert.AreEqual("item1", _selenium.AttributeOfElement("value", "dropdown"));
+        Assert.AreEqual("item1", _selenium.DomPropertyOfElement("value", "dropdown"));
 
         AssertOptionValues("dropdown", new Collection<string> { "item 1" }, "dropdown test 1");
         _selenium.SelectOptionInElement("index:2", "dropdown");
         AssertOptionValues("dropdown", new Collection<string> { "item 3" }, "dropdown test 2");
-        Assert.AreEqual("item3", _selenium.AttributeOfElement("value", "dropdown"));
+        Assert.AreEqual("item3", _selenium.DomPropertyOfElement("value", "dropdown"));
         _selenium.SelectOptionInElement("text:item", "dropdown");
-        Assert.AreEqual("item0", _selenium.AttributeOfElement("value", "dropdown"));
+        Assert.AreEqual("item0", _selenium.DomPropertyOfElement("value", "dropdown"));
         AssertOptionValues("dropdown", new Collection<string> { "item" }, "dropdown test 3");
 
         var allSingleValueListboxOptions = _selenium.AllOptionsOfElementBy("id:dropdown", "value");
@@ -673,11 +673,11 @@ public class EndToEndTest
     {
         Assert.AreEqual(
             "7",
-            _selenium.AttributeOfElement("value", "label:Meter:"),
+            _selenium.DomPropertyOfElement("value", "label:Meter:"),
             "Select by label before element, specifying colon");
         Assert.AreEqual(
             "32",
-            _selenium.AttributeOfElement("value", "label:Progress:"),
+            _selenium.DomPropertyOfElement("value", "label:Progress:"),
             "Select by parent label ignoring colon");
         Assert.IsTrue(
             _selenium.TextInElement("label:Text Area").StartsWith("Sample text area"),
@@ -691,7 +691,7 @@ public class EndToEndTest
             "Select text area by partial content");
         Assert.AreEqual(
             "7",
-            _selenium.AttributeOfElement("value", @"partialcontent:7 of"),
+            _selenium.DomPropertyOfElement("value", @"partialcontent:7 of"),
             "Select by partial content");
     }
 
@@ -722,9 +722,9 @@ public class EndToEndTest
     private void SelectSingleElementTest()
     {
         _selenium.SelectOptionInElement("text:item", "id:single-select");
-        Assert.AreEqual("item", _selenium.AttributeOfElement("value", "id:single-select"));
+        Assert.AreEqual("item", _selenium.DomPropertyOfElement("value", "id:single-select"));
         _selenium.SelectOptionInElement("text:item 1", "id:single-select");
-        Assert.AreEqual("item 1", _selenium.AttributeOfElement("value", "id:single-select"));
+        Assert.AreEqual("item 1", _selenium.DomPropertyOfElement("value", "id:single-select"));
         AssertOptionValues("id:single-select", new Collection<string> { "item 1" }, "single select test");
         Assert.AreEqual("item 1", _selenium.SelectedOptionInElement("id:single-select"), "SelectedOptionInElement");
         Assert.AreEqual(
@@ -745,27 +745,27 @@ public class EndToEndTest
     private void SendKeysToElementTest()
     {
         // Chrome Headless does not seem to like to copy (^c fails) -- seems fixed now.
-        var originalValue1 = _selenium.AttributeOfElement("value", "label:Text 1");
-        var originalValue2 = _selenium.AttributeOfElement("value", "text2");
+        var originalValue1 = _selenium.DomAttributeOfElement("value", "label:Text 1");
+        var originalValue2 = _selenium.DomAttributeOfElement("value", "text2");
         Assert.IsTrue(_selenium.SendKeysToElement("^ac^{DEL}New Value", "text1"));
         Assert.IsTrue(_selenium.SendKeysToElement("^a^{DEL}", "text2"));
         Assert.IsTrue(_selenium.SendKeysToElement(originalValue1, "text2"));
-        Assert.AreEqual("New Value", _selenium.AttributeOfElement("value", "text1"));
-        Assert.AreEqual(originalValue1, _selenium.AttributeOfElement("value", "text2"));
+        Assert.AreEqual("New Value", _selenium.DomPropertyOfElement("value", "text1"));
+        Assert.AreEqual(originalValue1, _selenium.DomPropertyOfElement("value", "text2"));
         Assert.IsTrue(_selenium.SendKeysToElement("^zz^", "text1"), "Send undo to text1");
         Assert.IsTrue(_selenium.SendKeysToElement("^zz^", "text2"), "Send unto to text2");
-        Assert.AreEqual(originalValue1, _selenium.AttributeOfElement("value", "text1"), "Undo for text1 succeeded");
-        Assert.AreEqual(originalValue2, _selenium.AttributeOfElement("value", "text2"), "Undo for text2 succeeded");
+        Assert.AreEqual(originalValue1, _selenium.DomPropertyOfElement("value", "text1"), "Undo for text1 succeeded");
+        Assert.AreEqual(originalValue2, _selenium.DomPropertyOfElement("value", "text2"), "Undo for text2 succeeded");
         Assert.IsTrue(_selenium.SendKeysToElement("^a^{DEL}+abc+def+ghi", "text1"), "Send Keys with shift toggles");
-        Assert.AreEqual(@"ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "Shift toggling worked");
+        Assert.AreEqual(@"ABCdefGHI", _selenium.DomPropertyOfElement("value", "text1"), "Shift toggling worked");
         Assert.IsTrue(_selenium.SendKeysToElement("^ac", "text1"), "Send Select All-Copy All to text1");
         Assert.IsTrue(_selenium.MoveToElement("text2"), "Move to text2");
         _selenium.ExecuteScriptWithParameters(
             "document.getElementById(arguments[0]).focus(); ", ["text2"]);
         Assert.IsTrue(_selenium.SendKeys("^av"), "Send Select All-Paste to text2");
-        Assert.AreEqual(@"ABCdefGHI", _selenium.AttributeOfElement("value", "text1"), "text 1 didn't change");
+        Assert.AreEqual(@"ABCdefGHI", _selenium.DomPropertyOfElement("value", "text1"), "text 1 didn't change");
         Assert.AreEqual(
-            @"ABCdefGHI", _selenium.AttributeOfElement("value", "text2"),
+            @"ABCdefGHI", _selenium.DomPropertyOfElement("value", "text2"),
             "text 2 now contains the value of text 1");
 
         // Initially the test had "-+" instead of "+_" to test whether shift"-" is seen as "_" but that fails in Firefox. 
@@ -774,14 +774,14 @@ public class EndToEndTest
             _selenium.SendKeysToElement("{END}+{LEFT}{LEFT}{LEFT}+_-^v", "text1"),
             "Type _- over the last 3 characters in text 1 and paste");
         Assert.AreEqual(
-            @"ABCdef_-ABCdefGHI", _selenium.AttributeOfElement("value", "text1"),
+            @"ABCdef_-ABCdefGHI", _selenium.DomPropertyOfElement("value", "text1"),
             "check final value of test1");
     }
 
     private void SetElementCheckedTest()
     {
         Assert.IsTrue(_selenium.SetElementChecked("am"), "check am 1");
-        Assert.IsTrue(_selenium.ElementHasAttribute("am", "checked"));
+        Assert.IsTrue(_selenium.ElementHasDomAttribute("am", "checked"));
         Assert.IsTrue(_selenium.ElementIsChecked("am"), "am is checked");
         Assert.IsFalse(_selenium.ElementIsChecked("fm"), "fm is not checked");
         Assert.IsTrue(_selenium.SetElementChecked("am", true), "check am 2");
@@ -837,7 +837,7 @@ public class EndToEndTest
         // So we 'cheat' here and directly set the value. We don't have to test the color picker.
 
         _selenium.SetAttributeOfElementTo("value", "color", "#ff7f00");
-        Assert.AreEqual("#ff7f00", _selenium.AttributeOfElement("value", "color"));
+        Assert.AreEqual("#ff7f00", _selenium.DomPropertyOfElement("value", "color"));
     }
 
     private void StorageTest()

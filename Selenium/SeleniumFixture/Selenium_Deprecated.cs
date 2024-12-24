@@ -29,7 +29,19 @@ public sealed partial class Selenium
     /// <summary>Check for using deprecated functions by throwing an exception if a deprecated function is used.</summary>
     public static bool ExceptionOnDeprecatedFunctions { get; set; }
 
-    [Obsolete("Use WindowSize")]
+    /// <returns>an attribute value of a certain element</returns>
+    [Obsolete("[Will be removed in v6] Use DomAttributeOfElement or DomPropertyOfElement")]
+    public string AttributeOfElement(string attribute, string searchCriterion) =>
+        DoOperationOnElement(searchCriterion, element => element.GetAttribute(attribute));
+
+
+    /// <returns>whether a certain element has the specified attribute</returns>
+    [Obsolete("[Will be removed in v6] Use ElementHasDomAttribute or ElementHasDomProperty")]
+    public bool ElementHasAttribute(string searchCriterion, string attribute) =>
+        AttributeOfElement(attribute, searchCriterion) != null;
+
+
+    [Obsolete("[Will be removed in v5] Use WindowSize")]
     public int WindowHeight
     {
         get
@@ -39,7 +51,7 @@ public sealed partial class Selenium
         }
     }
 
-    [Obsolete("Use WindowSize")]
+    [Obsolete("[Will be removed in v5] Use WindowSize")]
     public int WindowWidth
     {
         get
@@ -58,14 +70,14 @@ public sealed partial class Selenium
         }
     }
 
-    [Obsolete("Use PageSource instead")]
+    [Obsolete("[Will be removed in v5] Use PageSource instead")]
     public string HtmlSource()
     {
         HandleDeprecatedFunction("HTML Source", "Page Source");
         return PageSource;
     }
 
-    [Obsolete("Use LengthOfPageSource instead")]
+    [Obsolete("[Will be removed in v5] Use LengthOfPageSource instead")]
     public int LengthOfHtmlSource()
     {
         HandleDeprecatedFunction("Length Of HTML Source", "Length Of Page Source");
@@ -77,21 +89,21 @@ public sealed partial class Selenium
         throw new NotSupportedException(
             ApplicationNameObsoleteMessage + " (" + browserName + "," + baseAddress + "," + name + ")");
 
-    [Obsolete("Use ProtectedModesAre")]
+    [Obsolete("[Will be removed in v5] Use ProtectedModesAre")]
     public bool ProtectedModeIsOff()
     {
         HandleDeprecatedFunction("Protected Mode Is Off", "Protected Modes Are");
         return ProtectedModesAre("Off");
     }
 
-    [Obsolete("Use ProtectedModesAre")]
+    [Obsolete("[Will be removed in v5] Use ProtectedModesAre")]
     public bool ProtectedModeIsOn()
     {
         HandleDeprecatedFunction("Protected Mode Is On", "Protected Modes Are");
         return ProtectedModesAre("On");
     }
 
-    [Obsolete("Use ProtectedModesAre")]
+    [Obsolete("[Will be removed in v5] Use ProtectedModesAre")]
     public bool ProtectedModesAreEqual()
     {
         HandleDeprecatedFunction("Protected Modes Are Equal", "Protected Modes Are");
@@ -104,7 +116,7 @@ public sealed partial class Selenium
         throw new NotSupportedException(
             ApplicationNameObsoleteMessage + " (" + browserName + "," + baseAddress + "," + applicationName + ")");
 
-    [Obsolete("Use WindowSize")]
+    [Obsolete("[Will be removed in v5] Use WindowSize")]
     public bool SetWindowSizeX(int width, int height)
     {
         HandleDeprecatedFunction("Set Window Size X", "Set Window Size");
@@ -113,14 +125,14 @@ public sealed partial class Selenium
         return newSize.CloseTo(WindowSize);
     }
 
-    [Obsolete("Use WaitForPageSourceToChange")]
+    [Obsolete("[Will be removed in v5] Use WaitForPageSourceToChange")]
     public bool WaitForHtmlSourceToChange()
     {
         HandleDeprecatedFunction("Wait For HTML Source To Change", "Wait For Page Source To Change");
         return WaitForPageSourceToChange();
     }
 
-    [Obsolete("use WaitUntilElementDoesNotExist instead")]
+    [Obsolete("[Will be removed in v5] use WaitUntilElementDoesNotExist instead")]
     public bool WaitForNoElement(string searchCriterion)
     {
         HandleDeprecatedFunction("Wait For No Element", "Wait Until Element Does Not Exist");
@@ -143,4 +155,8 @@ public sealed partial class Selenium
         HandleDeprecatedFunction("Wait Until HTML Source Is Larger Than", "Wait Until Page Source Is Larger Than");
         return WaitUntilPageSourceIsLargerThan(thresholdLength);
     }
+
+
+
+
 }

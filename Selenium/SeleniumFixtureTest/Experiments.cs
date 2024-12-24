@@ -41,7 +41,7 @@ public class Experiments
         selenium.SendKeysToElement(new KeyConverter(selectAllInContextMenuSequence).ToSeleniumFormat,
             textboxLocator);
         selenium.SendKeysToElement("{DELETE}", textboxLocator);
-        Assert.IsFalse(string.IsNullOrEmpty(selenium.AttributeOfElement("value", textboxLocator)),
+        Assert.IsFalse(string.IsNullOrEmpty(selenium.DomPropertyOfElement("value", textboxLocator)),
             "text 1 is empty");
         selenium.Close();
     }
@@ -54,7 +54,22 @@ public class Experiments
         var options = Selenium.NewOptionsFor("ie") as InternetExplorerOptions;
         Assert.IsNotNull(options, "Options is not null");
         selenium.SetBrowserWithOptions("ie", options);
-        selenium.Open(new Uri("http://www.google.com?hl=en"));
+        selenium.Open(new Uri("https://www.google.com?hl=en"));
+
+        selenium.Close();
+    }
+
+    [TestMethod]
+    [TestCategory("Experiments")]
+    public void SeleniumTypeTest()
+    {
+        var selenium = new Selenium();
+        Selenium.SetProxyType("system");
+        selenium.SetBrowser("firefox");
+        selenium.Open(EndToEndTest.CreateTestPageUri());
+        selenium.SendKeysToElementIfTypeIs("472024", "week", "week");
+        Assert.IsTrue(selenium.ElementHasDomAttribute("id:brokenImage", "alt"), "Alt attribute exists");
+
         selenium.Close();
     }
 

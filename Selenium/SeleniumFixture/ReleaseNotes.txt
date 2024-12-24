@@ -78,3 +78,6 @@
 4.3.0	 Migrated to .NET 8, upgraded to WebDriver 4.23.0, MSTest 3.2.3, coverlet 6.0.2, Test SDK 17.9.0, fixed ReSharper findings
 4.3.1    Upgraded Appium driver to 6.0.1, Selenium to 4.27, Microsoft.Extensions.Configuration to 9.0.0, fixed a number of ReSharper 
          and SonarLint findings, fixed a few Appium and Edge specific tests and made tests working with public sites pass again.
+4.4.0    Introduced DomAttributeOfElement, DomPropertyOfElement, ElementHasDomAttribute and ElementHasDomProperty, 
+         deprecated AttributeOfElement and ElementHasAttribute (following WebDriver). Upgraded MS Test to v3.7.0.
+         Note: There is an issue with IE mode in Edge giving an exception when opening a URL. Could be a bug in the Edge driver.

@@ -16,6 +16,7 @@ using OpenQA.Selenium.IE;
 
 namespace SeleniumFixture.Model;
 
+
 internal class InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : BrowserDriverCreator(proxy, timeout)
 {
     public override string Name => "IE";
