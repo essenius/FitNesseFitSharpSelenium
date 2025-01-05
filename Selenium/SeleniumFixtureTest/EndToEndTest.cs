@@ -673,7 +673,7 @@ public class EndToEndTest
     {
         Assert.AreEqual(
             "7",
-            _selenium.DomPropertyOfElement("value", "label:Meter:"),
+            _selenium.DomAttributeOfElement("value", "label:Meter:"),
             "Select by label before element, specifying colon");
         Assert.AreEqual(
             "32",
@@ -691,7 +691,7 @@ public class EndToEndTest
             "Select text area by partial content");
         Assert.AreEqual(
             "7",
-            _selenium.DomPropertyOfElement("value", @"partialcontent:7 of"),
+            _selenium.DomAttributeOfElement("value", @"partialcontent:7 of"),
             "Select by partial content");
     }
 

@@ -87,14 +87,16 @@ public class PlainSeleniumTest
     public void TestInternetExplorerStartup()
 
     {
+
         var ieOptions = new InternetExplorerOptions
         {
             AttachToEdgeChrome = true,
-            EdgeExecutablePath = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+            IgnoreZoomLevel = true,
+            IntroduceInstabilityByIgnoringProtectedModeSettings = false
         };
 
         var driver = new InternetExplorerDriver(ieOptions);
-        driver.Navigate().GoToUrl("https://bing.com");
+       driver.Navigate().GoToUrl("https://bing.com");
         driver.FindElement(By.Id("sb_form_q")).SendKeys("WebDriver");
         driver.FindElement(By.Id("sb_form")).Submit();
 

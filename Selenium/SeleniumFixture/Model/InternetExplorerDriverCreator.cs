@@ -46,6 +46,8 @@ internal class InternetExplorerDriverCreator(Proxy proxy, TimeSpan timeout) : Br
         var options = new InternetExplorerOptions
         {
             Proxy = Proxy,
+            IgnoreZoomLevel = true,
+            //InitialBrowserUrl = "https://google.com",
             IntroduceInstabilityByIgnoringProtectedModeSettings = IgnoreProtectedModeSetting()
         };
         var edgePath = EdgePath();

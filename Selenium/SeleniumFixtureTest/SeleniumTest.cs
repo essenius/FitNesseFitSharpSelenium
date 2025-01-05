@@ -130,9 +130,11 @@ public class SeleniumTest
     [SupportedOSPlatform("windows")]
     public void SeleniumIeTimeoutTest()
     {
-        Selenium.CommandTimeoutSeconds = 15;
+        Selenium.CommandTimeoutSeconds = 10;
+        Assert.IsTrue(_selenium.ProtectedModesAre("EQUAL"), "protected mode OK");
         _selenium.SetBrowser("ie");
         _selenium.Open(EndToEndTest.CreateTestPageUri());
+        _selenium.Close();
     }
 
     [TestMethod]
