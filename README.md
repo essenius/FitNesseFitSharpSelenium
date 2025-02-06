@@ -13,7 +13,7 @@ Differences are:
     * Build fixture solution: `dotnet build --configuration release SeleniumFixture.sln`
     * Go to fixture folder: `cd SeleniumFixture`
     * Publish fixture: `dotnet publish SeleniumFixture.csproj --output bin\Deploy\net8.0 --framework net8.0 --configuration release`
-* If you don't have .NET 6 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
+* If you don't have .NET 8 SDK installed: download `SeleniumFixture.zip` from the latest [release](../../releases) and extract it into `Selenium\SeleniumFixture`
 * Install browser drivers and other dependencies that you need (see below).
 * Go to the assembly folder: `cd /d %LOCALAPPDATA%\FitNesse\Selenium\SeleniumFixture\bin\Deploy\net8.0`
 * Run the suite: Open a browser and enter the URL http://localhost:8080/FitSharpDemos.SeleniumSuite.FixtureTestPageSuite?suite
